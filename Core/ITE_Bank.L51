@@ -1,0 +1,41 @@
+KeilMisc\Obj\Core\Core_Irq.OBJ,
+KeilMisc\Obj\Core\Core_Main.OBJ,
+KeilMisc\Obj\Core\Core_Ram.OBJ,
+KeilMisc\Obj\Core\Core_Init.OBJ,
+KeilMisc\Obj\Core\Core_module.OBJ,
+KeilMisc\Obj\Core\Core_Flash.OBJ,
+KeilMisc\Obj\Core\Core_smbus.OBJ,
+KeilMisc\Obj\Core\Core_ACPI.OBJ,
+KeilMisc\Obj\Core\Core_PMC2.OBJ,
+KeilMisc\Obj\Core\Core_PECI.OBJ,
+KeilMisc\Obj\Core\Core_UART.OBJ,
+KeilMisc\Obj\Core\CORE_PORT6064.OBJ,
+KeilMisc\Obj\Core\CORE_ITEString.OBJ,
+KeilMisc\Obj\Core\CORE_FW_Version.OBJ,
+KeilMisc\Obj\Core\Reg_EC.OBJ,
+KeilMisc\Obj\Oem\Oem_Main.OBJ,
+KeilMisc\Obj\Oem\Oem_Ram.OBJ,
+KeilMisc\Obj\Oem\Oem_GPIO.OBJ,
+KeilMisc\Obj\Oem\Oem_6266.OBJ,
+KeilMisc\Obj\Oem\Oem_686C.OBJ,
+KeilMisc\Obj\Oem\Oem_Power.OBJ,
+KeilMisc\Obj\Oem\Oem_CIR.OBJ,
+KeilMisc\Obj\Oem\Oem_SMBUS.OBJ,
+KeilMisc\Obj\Oem\Oem_SWKBC.OBJ,
+KeilMisc\Obj\Oem\OEM_FW_Version.OBJ,
+KeilMisc\Obj\Oem\Oem_Fan.OBJ,
+KeilMisc\Obj\Core\STARTUP.OBJ TO ITEEC.ABS 
+DW( 9, 13, 15, 16 )
+CODE (?CO?CORE_ITEString(0x40),
+		?C_C51STARTUP(0x70),
+		?PR?MAIN?CORE_MAIN(0x200), 
+		?PR?FLASHECCODE?CORE_FLASH(0xFE00),
+		?CO?CORE_FW_Version(0xFEFE),
+		?CO?OEM_FW_Version(0xFFF8))
+STACK(?STACK(0D0h))
+RAMSIZE(256)
+BIT(0x20)
+DATA(0x30)
+XDATA(0x700-0x7FF)
+NOSORTSIZE
+

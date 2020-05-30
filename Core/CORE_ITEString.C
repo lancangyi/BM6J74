@@ -1,0 +1,17 @@
+/*-----------------------------------------------------------------------------
+ * TITLE: CORE_ITESTRING.C
+ *
+ * Copyright (c) ITE INC. All Rights Reserved.
+ *
+ *---------------------------------------------------------------------------*/
+ 
+#include "Core_Inc.h"
+#include "Oem_Inc.h"
+
+const unsigned char code ITEString[] =          // For 8732/8736 HSPI
+{
+	0xA5,0xA5,0xA5,0xA5,0xA5,0xA5,0xA5,0xB5,0x87,0x30,0x5A,0x5A,0xAA,0xAA,0x55,0x55	//Internal Clock
+	//0xA5,0xA5,0xA5,0xA5,0xA5,0xA5,0xA5,0xA5,0x87,0x30,0x5A,0x5A,0xAA,0xAA,0x55,0x55	//External Clock
+};
+
+const unsigned char code VersionString[] =  "IT873X -ITE Tech. Inc.";
