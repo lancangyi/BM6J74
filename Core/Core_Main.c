@@ -137,8 +137,8 @@ void main(void)
 	//----------------------
 	//Set EC FW version
 	//----------------------
-	Code_Version = 0x10;		//V1.0
-	Code_Beta_Version = 0x00;	//Beta 00
+	Code_Version = OEM_Version_MSB;		////Main version
+	Code_Beta_Version = OEM_Version_LSB;	//Beta 00
 	//----------------------
 	
 	

@@ -700,7 +700,8 @@ extern void Initialize_GPIO_Pin_State(void) ;
 #define	STATE_PM_SLP_S4()		IS_BIT_SET(GPIO_5x, 3)
 
 
-
+extern void PWR_LED_ON(void);
+extern void PWR_LED_OFF(void);
 //-----------------------------------------------------------------------------
 
 

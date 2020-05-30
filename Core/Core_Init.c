@@ -108,7 +108,7 @@ void Reset_Initialization(void)
 	Enable_K8_Function();
 	#endif
 	
-
+	LED_S0_Status = 0;
 	
 	Init_BRAM() ;
 	

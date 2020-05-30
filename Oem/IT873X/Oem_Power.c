@@ -394,6 +394,7 @@ void Oem_SysOnInit(void)
 	
     SysPowState = _SYSTEM_S0;   // Set System S0
 
+    LED_S0_Status = 0;
     _CORE_PMFLAG = 0;
     CORE_PMFLAG_S0 = 1;
 

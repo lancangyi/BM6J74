@@ -20,7 +20,22 @@
 */
 
 
+void PWR_LED_ON(void)
+{
+	SET_BIT(GP33_SEL_REG,3);		//Set GP33
+	SET_BIT(GP3X_IOMODE_REG,3);		//Set GP33 output
+	SET_BIT(GP3X_FUNC_REG,3);		//Set GP33 simple IO function
+	GP33_HI();
 
+}
+void PWR_LED_OFF(void)
+{
+	SET_BIT(GP33_SEL_REG,3);		//Set GP33
+	SET_BIT(GP3X_IOMODE_REG,3);		//Set GP33 output
+	SET_BIT(GP3X_FUNC_REG,3);		//Set GP33 simple IO function
+    GP33_LO();
+
+}
 
 
 void Initialize_GPIO_Pin_State(void)
