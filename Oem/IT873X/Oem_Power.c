@@ -1218,7 +1218,59 @@ void Check_Power_State(void)
 	
 }
 
+//power led
+const WORD code PowerLEDPattern[]= 
+{
+  	//--------------------------------------------------------------------------
+  	// 	S0      S3   	S4      S5      index4  index5    					 
+	//--------------------------------------------------------------------------
+  		0xFFFF, 0x5555, 0x0000, 0x0000, 0x0000, 0x0000,		//	Power LED1
+};
 
+//----------------------------------------------------------------------------
+// Turn on/off LEDs according to machine status.
+// Executed once per 1 sec
+// for example:
+//		 ->BIT14	
+// 		1010101010101010
+// 		0101010101010101
+//				  <-BIT3 				
+//----------------------------------------------------------------------------
+void ProcessLED(void) 
+{
+	BYTE bat_index, pwr_index;   
+    
+   	LED_FLASH_CNT <<= 1;
+	if(LED_FLASH_CNT == 0)
+		LED_FLASH_CNT=0x0001;
+
+    /* Power LED control method */
+    pwr_index=0;                // pre-set S0                  
+    
+	if(SystemIsS5)              // pre-set S5    
+	{
+		pwr_index=3;
+	}
+	if(SystemIsS4)              // pre-set S4   
+	{
+		pwr_index=2;
+	}
+	if(SystemIsS3)              // pre-set S3    
+	{
+		pwr_index=1;
+	}
+
+	if(PowerLEDPattern[pwr_index] & LED_FLASH_CNT)	// setup power LED
+	{	
+		PWR_LED_ON();
+	} 
+	else 
+	{	
+		PWR_LED_OFF();
+	}
+    
+
+}
 /*-----------------------------------------------------------------------------
  * End
  *---------------------------------------------------------------------------*/
