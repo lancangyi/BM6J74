@@ -93,7 +93,7 @@ extern XBYTE	SMB_BCNT;						//_at_ (SMBUS_OEM_ScanCenter_BASE+0x1A);
 //=========================================================================================
 //
 //#define	SRAM_200_BASE			0x0200
-extern XBYTE	LED_blink_CNT;
+extern XBYTE	LED_FLASH_CNT;
 extern XBYTE	LED_S0_Status;
 
 //=========================================================================================

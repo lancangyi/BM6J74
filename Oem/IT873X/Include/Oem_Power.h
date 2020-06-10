@@ -64,6 +64,7 @@ extern void Oem_CommonInit(void);
 extern void InitShareMemory(void);
 extern void Oem_ChkS5WakeUp(void);
 extern void Check_Power_State(void);
+extern void ProcessLED(void);
 /*-----------------------------------------------------------------------------
  * Internal Process Definition
  *---------------------------------------------------------------------------*/

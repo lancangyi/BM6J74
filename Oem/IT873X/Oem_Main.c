@@ -127,26 +127,7 @@ void Oem_Hook_50MS_EventC(void)
 //-----------------------------------------------------------------------------
 void Oem_Hook_100MS_EventA(void)
 {
-
-	if(SystemIsS0)
-	{
-		if(LED_S0_Status == 0)
-		{
-			PWR_LED_ON();
-			LED_S0_Status = 1;
-		}
-	}
-	else if(SystemIsS3)
-	{
-		LED_blink_CNT++;
-		if(LED_blink_CNT == 1)
-			PWR_LED_ON();
-		else if (LED_blink_CNT == 11)
-			PWR_LED_OFF();	
-		else if (LED_blink_CNT > 20)
-			LED_blink_CNT=0;
-		LED_S0_Status = 0;	
-	}
+	
 }
 
 void Oem_Hook_100MS_EventB(void)
@@ -200,7 +181,7 @@ void Oem_Hook_500MS_EventC(void)
 //-----------------------------------------------------------------------------
 void Oem_Hook_1S_EventA(void)
 {
-	
+	ProcessLED();
 }
 
 void Oem_Hook_1S_EventB(void)
