@@ -35,7 +35,7 @@ void PWR_LED_OFF(void)
 void Initialize_GPIO_Pin_State(void)
 {	
 	Index_07H = 0x07;
-
+	Index_30H = 0x01;
 	//Set GP7X output
 	Index_CEH = 0xFF;
 	GPIO_7x = 0x00;

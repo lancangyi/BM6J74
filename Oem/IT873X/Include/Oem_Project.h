@@ -157,7 +157,7 @@
 #define	Reset_PMC_UnderS5			FALSE
 
 //OEM Version number
-#define	OEM_Version_MSB	0x01
+#define	OEM_Version_MSB	0x02
 #define	OEM_Version_LSB	0x00
 
 

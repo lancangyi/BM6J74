@@ -16,8 +16,8 @@
 //------------------------------------------------------------------------------
 extern WORD GetFanRPM(BYTE FnTMRR,BYTE FnTLRR);
 
-
-
+extern void EC_start(void);
+extern void EC_stop(void);
 
 #endif
 

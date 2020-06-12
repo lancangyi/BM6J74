@@ -26,7 +26,7 @@ void Kernel_Initialization(void)
 
 	vDelay1ms(100);
 	Index_07H = 0x07;    //LDN=0x07
-
+	Index_30H = 0x01;
 	Index_E9H = 0x20;	// Disable BUS Selection
 
 	Index_2CH = 0x8B;	// Disable SMBUS isolation
@@ -99,7 +99,7 @@ void Reset_Initialization(void)
 	//==================================
 	Initialize_GPIO_Pin_State();
 	//==================================
-
+	InitADC();
 
 	//==================================
 	//Set K8 function (for AMD platform)

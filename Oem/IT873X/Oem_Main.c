@@ -127,6 +127,14 @@ void Oem_Hook_50MS_EventC(void)
 //-----------------------------------------------------------------------------
 void Oem_Hook_100MS_EventA(void)
 {
+	if(SystemIsS0)
+    {
+       EC_start();
+    }
+	else
+	{
+		EC_stop();
+	}
 	
 }
 
