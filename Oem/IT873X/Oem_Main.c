@@ -129,7 +129,7 @@ void Oem_Hook_100MS_EventA(void)
 {
 	if(SystemIsS0)
     {
-       EC_start();
+       //EC_start();
     }
 	else
 	{

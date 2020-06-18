@@ -80,13 +80,13 @@ void EC_start(void)
 	FAN1_TEMP_START = 50;			// First phase: 50°C - 60°C
 	FAN1_TEMP_FULL = 80;			// Full speed temperature: 80°C
 	PWM_FAN_CTL1 = 125;			// Start RPM: 125 * 16 = 2000 RPM
-	FAN1_CTRL = 0x80 + 15;			// Smoothing mode, Slop = 1200 RPM / 10°C = 120 RPM/°C(120 / 8 = 15)
+	FAN1_CTRL = 0x80 + 5;			// Smoothing mode, Slop = 400RPM / 10°C = 40RPM/°C(40 / 8 = 5)
 	FAN1_TEMP_DELTA = 2;			// Delta-temperature: 2°C
 	FAN1_ZONE = 16;					// Target Zone: 128 RPM = 16 * 8
 	FAN_A_TEMP_START = 60;			// Second phase: 60°C - 70°C
-	FAN_A_SLOP = 16;				// (FAN_B_TEMP_DELTA.1, FAN_B_SLOP.7)=00: TMPIN2, SLOP = 1300 RPM / 10°C = 130 RPM/°C(130 / 8 = 16.25)
-	FAN_A_TEMP_DELTA = 0x42;		// Extra-A for FAN1, Delta-temperature: 2°C
-
+	FAN_A_SLOP = 0x80+8;				// (FAN_B_TEMP_DELTA.1, FAN_B_SLOP.7)=01: TMPIN2, SLOP = 600 RPM / 10°C = 60 RPM/°C(60 / 8 = 7.5)
+	FAN_A_TEMP_DELTA = 0x22;		// Extra-A for FAN1, Delta-temperature: 2°C
+/*
 	FAN_CTL2 = 0x84;				// FAN2: auto mode, tacho close-loop mode, temperature: TMPIN1 SYS
 	FAN2_TEMP_OFF = 0;
 	FAN2_TEMP_START = 50;			// First phase: 50°C - 60°C
@@ -94,11 +94,11 @@ void EC_start(void)
 	PWM_FAN_CTL2 = 125;			// Start RPM: 125 * 16 = 2000 RPM
 	FAN2_CTRL = 0x80 + 15;			// Smoothing mode, Slop = 1200 RPM / 10°C = 120 RPM/°C(120 / 8 = 15)
 	FAN2_TEMP_DELTA = 2;			// Delta-temperature: 2°C
-	FAN2_ZONE = 16;					// Target Zone: 128 RPM = 16 * 8
+	FAN2_ZONE = 15;					// Target Zone: 128 RPM = 16 * 8
 	FAN_B_TEMP_START = 60;			// Second phase: 60°C - 70°C
 	FAN_B_SLOP = 0x80 + 16;			// (FAN_B_TEMP_DELTA.1, FAN_B_SLOP.7)=01: TMPIN1, SLOP = 1300 RPM / 10°C = 130 RPM/°C(130 / 8 = 16.25)
 	FAN_B_TEMP_DELTA = 0x22;		// Extra-B for FAN2, Delta-temperature: 2°C
-
+*/
 	ADC_TEMP_ENABLE = 0x03;			// TMPIN2/TMPIN1 enable thermal diode mode
 	ADC_channel_enable = 0xFF;			// enable voltage A/D conversion for VIN0-VIN7
 
