@@ -171,12 +171,16 @@ void main(void)
 	SET_BIT(PWMCTL, PCCE);		//Enable PWMOUT
 	#endif
 	//--------------------------------
-	
-	//--------------------------------
-	//Support CLK-IN Free
-	//--------------------------------
 
+	#if LENOVO_80PORT
+	{
+		BYTE Original_PLLFreq_Setting;
 		//========Change FSPI CLK To 48MHz Start================
+		Original_PLLFreq_Setting = EC_1E06;
+		//RamDebug(Original_PLLFreq_Setting);
+
+		if(Original_PLLFreq_Setting!=0x05)
+		{
 			EC_1E06 = 0x05;	//Select 48.XMHz as PLL frequency.
 											 //0011b: Select 32.3MHz as PLL frequency. (Default)
 											 //0101b: Select 46.0MHz as PLL frequency.
@@ -199,10 +203,10 @@ void main(void)
 			_nop_();
 
 			EnableAllInterrupt();
+		}
 		//========Change FSPI CLK To 48MHz End================
-
-	
-	
+	}
+	#endif
 	
 	while(1)
 	{

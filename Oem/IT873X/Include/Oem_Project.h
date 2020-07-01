@@ -17,6 +17,7 @@
 #define	Enable_SMBUS_ChannelA		TRUE
 #define	Enable_SMBUS_ChannelB		FALSE
 #define	Enable_SMBUS_ChannelC		FALSE
+#define LENOVO_80PORT                       FALSE
 
 #define SMBus_Freq							100//400,100,50,20,13,10
 //------------------------------------------------------------------
