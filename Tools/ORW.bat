@@ -1,0 +1,2 @@
+
+orw ITEBIOS.bin ITEEC.bin 65536

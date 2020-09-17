@@ -1,0 +1,46 @@
+C51 COMPILER V7.50   CORE_ITESTRING                                                        09/16/2020 21:10:04 PAGE 1   
+
+
+C51 COMPILER V7.50, COMPILATION OF MODULE CORE_ITESTRING
+OBJECT MODULE PLACED IN Core\CORE_ITEString.OBJ
+COMPILER INVOKED BY: C:\Keil\C51\BIN\c51.exe Core\CORE_ITEString.c LA WL(1) CD OT(9,SIZE) NOAREGS OR INCDIR(.\Core\Inclu
+                    -de\;.\Oem\Include\)
+
+line level    source
+
+   1          /*-----------------------------------------------------------------------------
+   2           * TITLE: CORE_ITESTRING.C
+   3           *
+   4           * Copyright (c) ITE INC. All Rights Reserved.
+   5           *
+   6           *---------------------------------------------------------------------------*/
+   7           
+   8          #include "Core_Inc.h"
+   9          #include "Oem_Inc.h"
+  10          
+  11          const unsigned char code ITEString[] =          // For 8732/8736 HSPI
+  12          {
+  13                  0xA5,0xA5,0xA5,0xA5,0xA5,0xA5,0xA5,0xB5,0x87,0x30,0x5A,0x5A,0xAA,0xAA,0x55,0x55 //Internal Clock
+  14                  //0xA5,0xA5,0xA5,0xA5,0xA5,0xA5,0xA5,0xA5,0x87,0x30,0x5A,0x5A,0xAA,0xAA,0x55,0x55       //External Clock
+  15          };
+  16          
+  17          const unsigned char code VersionString[] =  "IT873X -ITE Tech. Inc.";
+C51 COMPILER V7.50   CORE_ITESTRING                                                        09/16/2020 21:10:04 PAGE 2   
+
+ASSEMBLY LISTING OF GENERATED OBJECT CODE
+
+
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =   ----    ----
+   CONSTANT SIZE    =     39    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

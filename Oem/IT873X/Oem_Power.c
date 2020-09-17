@@ -397,7 +397,6 @@ void Oem_SysOnInit(void)
     LED_S0_Status = 0;
     _CORE_PMFLAG = 0;
     CORE_PMFLAG_S0 = 1;
-
 	EC_start();
 }
 //-----------------------------------------------------------------------------
@@ -1171,10 +1170,14 @@ void Check_Power_State(void)
 				
 				CLR_BIT(Index_23H, 0);	//Enable 48M clock				
 			}
-			else if( (SysPowState == _SYSTEM_S3) )	//S3->S0
+			else if( (SysPowState == _SYSTEM_S3) )	//S3->S0+
 			{
 				Oem_SysResumeInit();
-				CLR_BIT(Index_23H, 0);	//Enable 48M clock				
+				CLR_BIT(Index_23H, 0);	//Enable 48M clock	
+				//J74_002++>>
+				EC_start();
+				//J74_002++>>
+				
 			}
 			
 		}
@@ -1199,7 +1202,6 @@ void Check_Power_State(void)
 			#endif
 			
 		}
-
 		
 	}
 	else			//S4 or S5

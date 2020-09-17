@@ -92,8 +92,6 @@ void Reset_Initialization(void)
 	Kernel_Initialization();
 
 	AWFCS_EN = 0x01;
-
-	
 	//==================================
 	//Init GPIO
 	//==================================

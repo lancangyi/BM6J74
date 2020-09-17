@@ -1,5 +1,3 @@
-
-
 #include "Core_Inc.h"
 #include "Oem_Inc.h"
 
@@ -77,8 +75,68 @@ void Oem_Hook_1MS_Event(void)
 		#if SMBusServiceCenterFunc
 		SMBusCenter();
 		#endif
-	#endif
+	#endif	
+ 	//J74_001++>>
+ 	Index_07H = 0x07;
+	SET_BIT(GP36_SEL_REG,6);		//Set GP36
+	SET_BIT(GP3X_FUNC_REG,6);		//Set GP36 simple IO function
+	SET_BIT(GP3X_IOMODE_REG,6); 	//Set GP36 output
+	SET_BIT(GP45_PULLUP_REG,5);		// Set GP44 PULL-UP (GPIO Pin Set 4 Pin Internal Pull-up Enable Registers)
+		
+	SET_BIT(GP14_SEL_REG,4);		//Set GP14
+	SET_BIT(GP1X_IOMODE_REG,4); 	//Set GP14 output
+	SET_BIT(GP1X_FUNC_REG,4);		//Set GP14 simple IO function	
+		
+	SET_BIT(GP37_SEL_REG,7);		//Set GP37
+	SET_BIT(GP3X_IOMODE_REG,7); 	//Set GP37 output
+	SET_BIT(GP3X_FUNC_REG,7);		//Set GP37 simple IO function
+		
+	SET_BIT(GP24_SEL_REG,4);		//Set GP24
+	SET_BIT(GP2X_IOMODE_REG,4); 	//Set GP24 output
+	SET_BIT(GP2X_FUNC_REG,4);		//Set GP24 simple IO function
+	Index_07H = 0x00;
+   /* if(STATE_PM_SLP_S3()&&(DDRSIGN==0))
+    {
+	    GP36_HI();	
+		GP14_HI();
+	    GP37_HI();
+		GP24_HI(); 
+    }
+	else if((!STATE_PM_SLP_S3())&&(STATE_PM_SLP_S4()))
+	{
+ 	    DDRSIGN=1;
+		GP36_LO();	
+		GP14_LO();
+		GP37_LO();
+	    GP24_LO();
+	}
+	else if((!STATE_PM_SLP_S3())&&(!STATE_PM_SLP_S4()))
+	{
+	    DDRSIGN=0;
+		GP36_LO();	
+		GP14_LO();
+	    GP37_LO();
+	    GP24_LO();
+	}*/
 
+	if(!STATE_PM_SLP_S4())
+    {
+	    GP36_HI();	
+		GP14_HI();
+	    GP37_HI();
+		GP24_HI(); 
+    }
+	else if(!STATE_PM_SLP_S3())
+	{
+		GP36_LO();	
+		GP14_LO();
+		GP37_LO();
+	    GP24_LO();
+	}
+	
+
+	
+   //J74_001++<<
 
 }
 

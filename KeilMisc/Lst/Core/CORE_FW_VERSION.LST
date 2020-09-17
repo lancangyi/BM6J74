@@ -1,0 +1,43 @@
+C51 COMPILER V7.50   CORE_FW_VERSION                                                       09/16/2020 21:10:04 PAGE 1   
+
+
+C51 COMPILER V7.50, COMPILATION OF MODULE CORE_FW_VERSION
+OBJECT MODULE PLACED IN Core\CORE_FW_VERSION.OBJ
+COMPILER INVOKED BY: C:\Keil\C51\BIN\c51.exe Core\CORE_FW_VERSION.c LA WL(1) CD OT(9,SIZE) NOAREGS OR INCDIR(.\Core\Incl
+                    -ude\;.\Oem\Include\)
+
+line level    source
+
+   1          /*-----------------------------------------------------------------------------
+   2           * TITLE: CORE_ITESTRING.C
+   3           *
+   4           * Copyright (c) ITE INC. All Rights Reserved.
+   5           *
+   6           *---------------------------------------------------------------------------*/
+   7           
+   8          #include "Core_Inc.h"
+   9          #include "Oem_Inc.h"
+  10          
+  11          const unsigned char code FW_Version[] =         //Version in ROM
+  12          {
+  13                  0x12,0x06                                                       //V1.2  Rev06
+  14          };
+C51 COMPILER V7.50   CORE_FW_VERSION                                                       09/16/2020 21:10:04 PAGE 2   
+
+ASSEMBLY LISTING OF GENERATED OBJECT CODE
+
+
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =   ----    ----
+   CONSTANT SIZE    =      2    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

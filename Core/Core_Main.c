@@ -26,7 +26,7 @@ void main(void)
 
 	DisableAllInterrupt() ;
 	SP = 0xD0 ; 
-
+    
 
 	#if	COMPARE_CHECKSUM
 		ROM_Checksum = Get_Checksum();
@@ -63,7 +63,7 @@ void main(void)
 	else
 	{
 
-		
+	
 		#if SUPPORT_SHARE_ROM
 		    HCTRL2 = 0x80;  //For Share ROM
 		    FMSSR = 0x0F;	//For Share ROM

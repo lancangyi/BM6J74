@@ -1,0 +1,325 @@
+C51 COMPILER V7.50   CORE_UART                                                             09/16/2020 21:10:04 PAGE 1   
+
+
+C51 COMPILER V7.50, COMPILATION OF MODULE CORE_UART
+OBJECT MODULE PLACED IN Core\Core_UART.OBJ
+COMPILER INVOKED BY: C:\Keil\C51\BIN\c51.exe Core\Core_UART.c LA WL(1) CD OT(9,SIZE) NOAREGS OR INCDIR(.\Core\Include\;.
+                    -\Oem\Include\)
+
+line level    source
+
+   1          /*-----------------------------------------------------------------------------
+   2           * Filename: CORE_UART.C
+   3           * Function: System Management SMBus Protocol drivers.
+   4           *
+   5           * Copyright (c) 2006-2013, ITE Tech. Inc. All Rights Reserved.
+   6           *---------------------------------------------------------------------------*/
+   7          #include "CORE_INC.H"
+   8          #include "OEM_INC.H"
+   9          
+  10          
+  11          const BYTE code ScalarCommand[][8]              =       
+  12          {
+  13                  {0x00,0x00,0x00,0x00,0x01,0x02,0x03,0x04},      // 00: Reserve
+  14                  {0x04,0x12,0x78,0x72,0x01,0x02,0x03,0x04},      // 01:
+  15                  {0x04,0x12,0x79,0x71,0x01,0x02,0x03,0x04},      // 02:
+  16                  {0x04,0x12,0x7A,0x70,0x01,0x02,0x03,0x04},      // 03:
+  17                  {0x04,0x12,0x7B,0x6F,0x01,0x02,0x03,0x04},      // 04:
+  18                  {0x04,0x12,0x7C,0x6E,0x01,0x02,0x03,0x04},      // 05:
+  19                  {0x04,0x12,0x7D,0x6D,0x01,0x02,0x03,0x04},      // 06:
+  20                  {0x04,0x12,0x7E,0x6C,0x01,0x02,0x03,0x04},      // 07:
+  21                  {0x04,0x12,0x7F,0x6B,0x01,0x02,0x03,0x04},      // 08:
+  22                  {0x04,0x12,0x80,0x6A,0x01,0x02,0x03,0x04},      // 09:
+  23                  {0x04,0x12,0x81,0x69,0x01,0x02,0x03,0x04},      // 0A
+  24                  {0x04,0x12,0x01,0x02,0x01,0x02,0x03,0x04},      // 0B
+  25                  {0x04,0x12,0x01,0x02,0x01,0x02,0x03,0x04},      // 0C
+  26                  {0x04,0x12,0x01,0x02,0x01,0x02,0x03,0x04},      // 0D
+  27                  {0x04,0x12,0x01,0x02,0x01,0x02,0x03,0x04},      // 0E
+  28                  {0x04,0x12,0x01,0x02,0x01,0x02,0x03,0x04},      // 0F
+  29                  {0x04,0x12,0x01,0x02,0x01,0x02,0x03,0x04},      // 10
+  30                  {0x04,0x12,0x01,0x02,0x01,0x02,0x03,0x04},      // 11
+  31                  {0x04,0x12,0x01,0x02,0x01,0x02,0x03,0x04},      // 12
+  32                  {0x04,0x12,0x01,0x02,0x01,0x02,0x03,0x04},      // 13
+  33                  {0x04,0x12,0x01,0x02,0x01,0x02,0x03,0x04}       // 14
+  34                  
+  35          
+  36          };
+  37          
+  38          //==============================================================================
+  39          // Name:                UartSendData
+  40          // Descript:    Send data from THR register
+  41          //==============================================================================
+  42          void UartSendData(BYTE bTxData)
+  43          {
+  44   1              Set_T1_Timeout(T_Timer_5ms);    //Reset TF1
+  45   1              
+  46   1              while( (!(UART2_LSR&0x20)) && (TF1 == 0) );             // Wait
+  47   1              UART2_THR = bTxData;
+  48   1      }
+  49          
+  50          
+  51          
+  52          //==============================================================================
+  53          // Name:                UartSendData
+  54          // Descript:    Send data from THR register
+C51 COMPILER V7.50   CORE_UART                                                             09/16/2020 21:10:04 PAGE 2   
+
+  55          //==============================================================================
+  56          void UartSendData_UART1(BYTE bTxData)
+  57          {
+  58   1              Set_T1_Timeout(T_Timer_5ms);    //Reset TF1
+  59   1              
+  60   1              while( (!(UART1_LSR&0x20)) && (TF1 == 0) );             // Wait
+  61   1              UART1_THR = bTxData;
+  62   1      }
+  63          
+  64          
+  65          
+  66          //==============================================================================
+  67          // Name:                SendCmd2Scalar
+  68          // Descript:    Send command to Scalar
+  69          //==============================================================================
+  70          void SendCmd2Scalar(BYTE command)
+  71          {
+  72   1              BYTE iTemp;
+  73   1              for (iTemp=0 ; iTemp<8 ; iTemp++) 
+  74   1              {
+  75   2                      UartSendData(ScalarCommand[command][iTemp]);
+  76   2              }
+  77   1              
+  78   1      }
+  79          
+  80          
+  81          void Clear_UART_Rx_Buffer(void)
+  82          {
+  83   1              for(UART_RxIndex=0 ; UART_RxIndex<4 ; UART_RxIndex++)
+  84   1              {
+  85   2                      UART_RxBuff[UART_RxIndex] = 0;
+  86   2              }
+  87   1      }
+  88          
+  89          void Clear_UART_Tx_Buffer(void)
+  90          {
+  91   1              for(UART_TxIndex=0 ; UART_TxIndex<4 ; UART_TxIndex++)
+  92   1              {
+  93   2                      UART_TxBuff[UART_TxIndex] = 0;
+  94   2              }
+  95   1      }
+  96          
+  97          
+  98          void UART1_Data_Handler(void)
+  99          {
+ 100   1              _nop_();
+ 101   1      }
+ 102          
+ 103          
+ 104          void UART2_Data_Handler(void)
+ 105          {
+ 106   1              _nop_();
+ 107   1      }
+C51 COMPILER V7.50   CORE_UART                                                             09/16/2020 21:10:04 PAGE 3   
+
+ASSEMBLY LISTING OF GENERATED OBJECT CODE
+
+
+             ; FUNCTION _UartSendData (BEGIN)
+                                           ; SOURCE LINE # 42
+0000 900000      R     MOV     DPTR,#bTxData
+0003 EF                MOV     A,R7
+0004 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 43
+                                           ; SOURCE LINE # 44
+0005 7F06              MOV     R7,#06H
+0007 7EF1              MOV     R6,#0F1H
+0009 120000      E     LCALL   _Set_T1_Timeout
+000C         ?C0001:
+                                           ; SOURCE LINE # 46
+000C 902805            MOV     DPTR,#02805H
+000F E0                MOVX    A,@DPTR
+0010 20E503            JB      ACC.5,?C0002
+0013 308FF6            JNB     TF1,?C0001
+0016         ?C0002:
+                                           ; SOURCE LINE # 47
+0016 900000      R     MOV     DPTR,#bTxData
+0019 E0                MOVX    A,@DPTR
+001A 902800            MOV     DPTR,#02800H
+001D F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 48
+001E 22                RET     
+             ; FUNCTION _UartSendData (END)
+
+             ; FUNCTION _UartSendData_UART1 (BEGIN)
+                                           ; SOURCE LINE # 56
+0000 900000      R     MOV     DPTR,#bTxData
+0003 EF                MOV     A,R7
+0004 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 57
+                                           ; SOURCE LINE # 58
+0005 7F06              MOV     R7,#06H
+0007 7EF1              MOV     R6,#0F1H
+0009 120000      E     LCALL   _Set_T1_Timeout
+000C         ?C0004:
+                                           ; SOURCE LINE # 60
+000C 902705            MOV     DPTR,#02705H
+000F E0                MOVX    A,@DPTR
+0010 20E503            JB      ACC.5,?C0005
+0013 308FF6            JNB     TF1,?C0004
+0016         ?C0005:
+                                           ; SOURCE LINE # 61
+0016 900000      R     MOV     DPTR,#bTxData
+0019 E0                MOVX    A,@DPTR
+001A 902700            MOV     DPTR,#02700H
+001D F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 62
+001E 22                RET     
+             ; FUNCTION _UartSendData_UART1 (END)
+
+             ; FUNCTION _SendCmd2Scalar (BEGIN)
+                                           ; SOURCE LINE # 70
+0000 900000      R     MOV     DPTR,#command
+0003 EF                MOV     A,R7
+0004 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 71
+                                           ; SOURCE LINE # 73
+C51 COMPILER V7.50   CORE_UART                                                             09/16/2020 21:10:04 PAGE 4   
+
+0005 E4                CLR     A
+0006 A3                INC     DPTR
+0007 F0                MOVX    @DPTR,A
+0008         ?C0007:
+0008 900000      R     MOV     DPTR,#iTemp
+000B E0                MOVX    A,@DPTR
+000C FF                MOV     R7,A
+000D C3                CLR     C
+000E 9408              SUBB    A,#08H
+0010 5029              JNC     ?C0010
+                                           ; SOURCE LINE # 74
+                                           ; SOURCE LINE # 75
+0012 900000      R     MOV     DPTR,#command
+0015 E0                MOVX    A,@DPTR
+0016 75F008            MOV     B,#08H
+0019 A4                MUL     AB
+001A 2400        R     ADD     A,#LOW ScalarCommand
+001C F582              MOV     DPL,A
+001E E4                CLR     A
+001F 3400        R     ADDC    A,#HIGH ScalarCommand
+0021 F583              MOV     DPH,A
+0023 E582              MOV     A,DPL
+0025 2F                ADD     A,R7
+0026 F582              MOV     DPL,A
+0028 E4                CLR     A
+0029 3583              ADDC    A,DPH
+002B F583              MOV     DPH,A
+002D E4                CLR     A
+002E 93                MOVC    A,@A+DPTR
+002F FF                MOV     R7,A
+0030 120000      R     LCALL   _UartSendData
+                                           ; SOURCE LINE # 76
+0033 900000      R     MOV     DPTR,#iTemp
+0036 E0                MOVX    A,@DPTR
+0037 04                INC     A
+0038 F0                MOVX    @DPTR,A
+0039 80CD              SJMP    ?C0007
+                                           ; SOURCE LINE # 78
+003B         ?C0010:
+003B 22                RET     
+             ; FUNCTION _SendCmd2Scalar (END)
+
+             ; FUNCTION Clear_UART_Rx_Buffer (BEGIN)
+                                           ; SOURCE LINE # 81
+                                           ; SOURCE LINE # 82
+                                           ; SOURCE LINE # 83
+0000 E4                CLR     A
+0001 900000      E     MOV     DPTR,#UART_RxIndex
+0004 F0                MOVX    @DPTR,A
+0005         ?C0011:
+                                           ; SOURCE LINE # 84
+                                           ; SOURCE LINE # 85
+0005 900000      E     MOV     DPTR,#UART_RxIndex
+0008 E0                MOVX    A,@DPTR
+0009 2400        E     ADD     A,#LOW UART_RxBuff
+000B F582              MOV     DPL,A
+000D E4                CLR     A
+000E 3400        E     ADDC    A,#HIGH UART_RxBuff
+0010 F583              MOV     DPH,A
+0012 E4                CLR     A
+0013 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 86
+C51 COMPILER V7.50   CORE_UART                                                             09/16/2020 21:10:04 PAGE 5   
+
+0014 900000      E     MOV     DPTR,#UART_RxIndex
+0017 E0                MOVX    A,@DPTR
+0018 04                INC     A
+0019 F0                MOVX    @DPTR,A
+001A E0                MOVX    A,@DPTR
+001B B404E7            CJNE    A,#04H,?C0011
+                                           ; SOURCE LINE # 87
+001E         ?C0014:
+001E 22                RET     
+             ; FUNCTION Clear_UART_Rx_Buffer (END)
+
+             ; FUNCTION Clear_UART_Tx_Buffer (BEGIN)
+                                           ; SOURCE LINE # 89
+                                           ; SOURCE LINE # 90
+                                           ; SOURCE LINE # 91
+0000 E4                CLR     A
+0001 900000      E     MOV     DPTR,#UART_TxIndex
+0004 F0                MOVX    @DPTR,A
+0005         ?C0015:
+                                           ; SOURCE LINE # 92
+                                           ; SOURCE LINE # 93
+0005 900000      E     MOV     DPTR,#UART_TxIndex
+0008 E0                MOVX    A,@DPTR
+0009 2400        E     ADD     A,#LOW UART_TxBuff
+000B F582              MOV     DPL,A
+000D E4                CLR     A
+000E 3400        E     ADDC    A,#HIGH UART_TxBuff
+0010 F583              MOV     DPH,A
+0012 E4                CLR     A
+0013 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 94
+0014 900000      E     MOV     DPTR,#UART_TxIndex
+0017 E0                MOVX    A,@DPTR
+0018 04                INC     A
+0019 F0                MOVX    @DPTR,A
+001A E0                MOVX    A,@DPTR
+001B B404E7            CJNE    A,#04H,?C0015
+                                           ; SOURCE LINE # 95
+001E         ?C0018:
+001E 22                RET     
+             ; FUNCTION Clear_UART_Tx_Buffer (END)
+
+             ; FUNCTION UART1_Data_Handler (BEGIN)
+                                           ; SOURCE LINE # 98
+                                           ; SOURCE LINE # 99
+                                           ; SOURCE LINE # 100
+0000 00                NOP     
+                                           ; SOURCE LINE # 101
+0001 22                RET     
+             ; FUNCTION UART1_Data_Handler (END)
+
+             ; FUNCTION UART2_Data_Handler (BEGIN)
+                                           ; SOURCE LINE # 104
+                                           ; SOURCE LINE # 105
+                                           ; SOURCE LINE # 106
+0000 00                NOP     
+                                           ; SOURCE LINE # 107
+0001 22                RET     
+             ; FUNCTION UART2_Data_Handler (END)
+
+
+
+C51 COMPILER V7.50   CORE_UART                                                             09/16/2020 21:10:04 PAGE 6   
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    188    ----
+   CONSTANT SIZE    =    168    ----
+   XDATA SIZE       =   ----       4
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

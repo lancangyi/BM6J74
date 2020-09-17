@@ -272,6 +272,8 @@ Footnote:
 extern ECReg CPRS;			//_at_    (EC_PWM_BASE_ADDR + 0x00);
 extern ECReg DCR;			//_at_    (EC_PWM_BASE_ADDR + 0x01);
 extern ECReg PWMCTL;		//_at_    (EC_PWM_BASE_ADDR + 0x02);
+extern ECReg DDRSIGN;      	//_at_    (EC_PWM_BASE_ADDR + 0x03);
+
 #define	PWMODEN	5
 #define	PCFS		4
 #define	PCCE		3

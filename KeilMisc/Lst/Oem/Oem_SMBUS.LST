@@ -1,0 +1,1355 @@
+C51 COMPILER V7.50   OEM_SMBUS                                                             09/16/2020 21:10:05 PAGE 1   
+
+
+C51 COMPILER V7.50, COMPILATION OF MODULE OEM_SMBUS
+OBJECT MODULE PLACED IN Oem\Oem_SMBUS.OBJ
+COMPILER INVOKED BY: C:\Keil\C51\BIN\c51.exe Oem\Oem_SMBUS.c LA WL(1) CD OT(9,SIZE) NOAREGS OR INCDIR(.\Core\Include\;.\
+                    -Oem\Include\)
+
+line level    source
+
+   1          /*-----------------------------------------------------------------------------
+   2           * Filename: OEM_SMBUS.C
+   3           * Function: OEM SMBUS HANDLE
+   4           *
+   5           * Copyright (c) 2006-2012, ITE Tech. Inc. All Rights Reserved.
+   6           *---------------------------------------------------------------------------*/
+   7          #include "CORE_INC.H"
+   8          #include "OEM_INC.H"
+   9          
+  10          
+  11          void Hook_GetSMBusReadBlockByteCount(BYTE rblk_bc)
+  12          {
+  13   1          SMB_BCNT = rblk_bc;      // For ACPI SMBus EC SMB1 Block Count register
+  14   1      }
+  15          
+  16          
+  17          //----------------------------------------------------------------------------
+  18          // For SMBus utility only
+  19          //----------------------------------------------------------------------------
+  20          void Hook_SMBDebug(void)
+  21          {
+  22   1              DB_SMBusAck1=ACK_Done;                  // Transmission done ACK
+  23   1              DB_SMBusAddr=0x00;
+  24   1      }
+  25          
+  26          void Error_SMBDebug(void)
+  27          {
+  28   1              DB_SMBusAck1=ACK_Error;                 // Transmission error ACK
+  29   1              DB_SMBusAddr=0x00;
+  30   1      }
+  31          
+  32          
+  33          //----------------------------------------------------------------------------
+  34          // For SMBus Test function
+  35          //----------------------------------------------------------------------------
+  36          void Hook_SMB_Test_Debug(void)
+  37          {
+  38   1      
+  39   1      }
+  40          
+  41          void Hook_SMB_Test_Error_Debug(void)
+  42          {
+  43   1      
+  44   1      
+  45   1      }
+  46          
+  47          #if SMBusServiceCenterFunc
+              //----------------------------------------------------------------------------
+              //      SMBus Center Variables
+              //----------------------------------------------------------------------------
+              const sSSC code asSSC[] = 
+              {          
+                      {   &SMBus1index,  &SMBus1counter,      &SMBus1ByteCunt, &SMBus1InUsing,  &SMBus1TableSize, &F_Service_SMBus1
+             -,   service_smbus1  },        
+C51 COMPILER V7.50   OEM_SMBUS                                                             09/16/2020 21:10:05 PAGE 2   
+
+                      {   &SMBus2index,  &SMBus2counter,      &SMBus2ByteCunt, &SMBus2InUsing,  &SMBus2TableSize, &F_Service_SMBus2
+             -,   service_smbus2  },
+                      {   &SMBus3index,  &SMBus3counter,      &SMBus3ByteCunt, &SMBus3InUsing,  &SMBus3TableSize, &F_Service_SMBus3
+             -,   service_smbus3  },        
+              };
+              
+              
+              //----------------------------------------------------------------------------
+              //      SMBus channel table 1
+              //----------------------------------------------------------------------------
+              const sSCS code asSCS1[] = 
+              {
+                      // For SMBus channel 1 debug
+                      // SMBus protocol       Addr            Cmd             Data                            Flag(bit)       active flag Var         Hook_Func               Error_Func              Byte Count
+                      #if 1
+                      { Cmd_RecvByte, 0x01,   0xFF,   &DB_SMBusData,  DB_R,   &DB_SMBusFlag1, Hook_SMBDebug,  Error_SMBDebug, 0x00},  
+                      { Cmd_SendByte, 0x01,   0xFF,   &DB_SMBusData,  DB_S,   &DB_SMBusFlag1, Hook_SMBDebug,  Error_SMBDebug, 0x00},
+                      { Cmd_ReadByte, 0x01,   0xFF,   &DB_SMBusData,  DB_RB,  &DB_SMBusFlag1, Hook_SMBDebug,  Error_SMBDebug, 0x00},  
+                      { Cmd_WriteByte,        0x01,   0xFF,   &DB_SMBusData,  DB_WB,  &DB_SMBusFlag1, Hook_SMBDebug,  Error_SMBDebug, 0x00},
+                      { Cmd_ReadWord, 0x01,   0xFF,   &DB_SMBusData,  DB_RW,  &DB_SMBusFlag1, Hook_SMBDebug,  Error_SMBDebug, 0x00},
+                      { Cmd_WriteWord,        0x01,   0xFF,   &DB_SMBusData,  DB_WW,  &DB_SMBusFlag1, Hook_SMBDebug,  Error_SMBDebug, 0x00},
+                      { Cmd_ReadBlock,        0x01,   0xFF,   &DB_SMBusData,  DB_RBB, &DB_SMBusFlag1, Hook_SMBDebug,  Error_SMBDebug, 0x00}
+             -,
+                      { Cmd_WriteBlock,       0x01,   0xFF,   &DB_SMBusData,  DB_WBB, &DB_SMBusFlag1, Hook_SMBDebug,  Error_SMBDebug, 0x00
+             -},        
+                      #endif
+              
+                      #if 0
+                      // SMBus protocol       Addr                            Cmd                                     Data                            Flag(bit)               active flag Var         Hook_Func               Error_Func              Byte Count
+                      { Cmd_ReadByte, SmartBat_Addr,  BATCmd_RSOC,            &BAT1_RSOC,             B1_RSOC,        &SMBus1Flag1,   BAT1_Read_OK,   BAT1_Read_
+             -Fail,        0x00     },
+                      { Cmd_ReadWord, SmartBat_Addr,  BATCmd_current,         &BAT1_current_L,        B1_C,           &SMBus1Flag1,   BAT1_Read_OK,   BAT1_
+             -Read_Fail,        0x00    },
+                      { Cmd_ReadWord, SmartBat_Addr,  BATCmd_volt,                    &BAT1_volt_L,           B1_V,           &SMBus1Flag1,   BAT1_Read_OK,   BAT1_Rea
+             -d_Fail,        0x00    },
+                      { Cmd_ReadWord, SmartBat_Addr,  BATCmd_RMcap,           &BAT1_RMcap_L,  B1_RMcap,       &SMBus1Flag1,   BAT1_Read_OK,   BAT1_R
+             -ead_Fail,        0x00    },      
+                      { Cmd_ReadWord, SmartBat_Addr,  BATCmd_BatStatus,       &BAT1_ALARM1,   B1_Status,      &SMBus1Flag1,   BAT1_Read_OK,   BAT
+             -1_Read_Fail,        0x00    },      
+                      { Cmd_ReadWord, SmartBat_Addr,  BATCmd_FCcap,           &BAT1_FCcap_L,  B1_FCC,         &SMBus1Flag1,   BAT1_Read_OK,   BAT1_Re
+             -ad_Fail,        0x00    },      
+                      { Cmd_ReadWord, SmartBat_Addr,  BATCmd_temp,            &BAT1_temp_L,   B1_Temp,        &SMBus1Flag1,   BAT1_Read_OK,   BAT1_Read
+             -_Fail,        0x00    },      
+                      { Cmd_ReadWord, SmartBat_Addr,  BATCmd_CC,                      &BAT1_CC_L,             B1_CC,          &SMBus1Flag2,   BAT1_Read_OK,   BAT1_Read_Fa
+             -il,        0x00       },      
+                      { Cmd_ReadWord, SmartBat_Addr,  BATCmd_CV,                      &BAT1_CV_L,             B1_CV,          &SMBus1Flag2,   BAT1_Read_OK,   BAT1_Read_Fa
+             -il,        0x00       },
+                      #endif
+              
+                      #if 0
+                      //for Test example
+                      // SMBus protocol       Addr            Cmd             Data                            Flag(bit)               active flag Var         Hook_Func               Error_Func              Byte Count
+                      { Cmd_ReadWord, 0xAA,   0x2C,   &SMB_TEST_D0,                   BIT0,   &SMB_TEST,              Hook_SMB_Test_Debug,    Hook_SMB_Test_Error_De
+             -bug,        0x00      },
+                      { Cmd_ReadWord, 0xAA,   0x06,   &SMB_TEST_D1,                   BIT1,   &SMB_TEST,              Hook_SMB_Test_Debug,    Hook_SMB_Test_Error_De
+             -bug,        0x00      },
+                      { Cmd_ReadWord, 0xAA,   0x0A,   &SMB_TEST_D2,                   BIT2,   &SMB_TEST,              Hook_SMB_Test_Debug,    Hook_SMB_Test_Error_De
+             -bug,        0x00      },
+                      { Cmd_ReadWord, 0xAA,   0x0C,   &SMB_TEST_D3,                   BIT3,   &SMB_TEST,              Hook_SMB_Test_Debug,    Hook_SMB_Test_Error_De
+             -bug,        0x00      },
+              //      { Cmd_ReadBlock,        0xAA,   0x00,   &SMB_TEST_D4,                   BIT4,   &SMB_TEST,              Hook_SMB_Test_Debug,    Hook_SMB_Test_Error
+             -_Debug,        0x08    },
+C51 COMPILER V7.50   OEM_SMBUS                                                             09/16/2020 21:10:05 PAGE 3   
+
+                      #endif
+              
+              };
+              
+              //----------------------------------------------------------------------------
+              //      SMBus channel table 2
+              //----------------------------------------------------------------------------
+              const sSCS code asSCS2[] = 
+              {       
+                      // For SMBus channel 3 debug
+                      // SMBus protocol       Addr            Cmd             Data                            Flag(bit)       active flag Var         Hook_Func               Error_Func              Byte Count
+                      { Cmd_RecvByte, 0x01,   0xFF,   &DB_SMBusData,  DB_R,   &DB_SMBusFlag2, Hook_SMBDebug,  Error_SMBDebug, 0x00},  
+                      { Cmd_SendByte, 0x01,   0xFF,   &DB_SMBusData,  DB_S,   &DB_SMBusFlag2, Hook_SMBDebug,  Error_SMBDebug, 0x00},
+                      { Cmd_ReadByte, 0x01,   0xFF,   &DB_SMBusData,  DB_RB,  &DB_SMBusFlag2, Hook_SMBDebug,  Error_SMBDebug, 0x00},  
+                      { Cmd_WriteByte,        0x01,   0xFF,   &DB_SMBusData,  DB_WB,  &DB_SMBusFlag2, Hook_SMBDebug,  Error_SMBDebug, 0x00},
+                      { Cmd_ReadWord, 0x01,   0xFF,   &DB_SMBusData,  DB_RW,  &DB_SMBusFlag2, Hook_SMBDebug,  Error_SMBDebug, 0x00},
+                      { Cmd_WriteWord,        0x01,   0xFF,   &DB_SMBusData,  DB_WW,  &DB_SMBusFlag2, Hook_SMBDebug,  Error_SMBDebug, 0x00},
+                      { Cmd_ReadBlock,        0x01,   0xFF,   &DB_SMBusData,  DB_RBB, &DB_SMBusFlag2, Hook_SMBDebug,  Error_SMBDebug, 0x00}
+             -,
+                      { Cmd_WriteBlock,       0x01,   0xFF,   &DB_SMBusData,  DB_WBB, &DB_SMBusFlag2, Hook_SMBDebug,  Error_SMBDebug, 0x00
+             -},        
+              
+                      #if 0
+                      // OEM SMBus2 function
+                      { Cmd_ReadByte, ThermalAddr,    RemoteCmd,      &TCPU_temp,     PollRemote,     &SMBus2Flag2,   Hook_PollThermal,       Error_Pol
+             -lThermal,        0x00    },
+                      { Cmd_ReadByte, ThermalAddr,    LocalCmd,       &TSys_temp,     PollLocal,              &SMBus2Flag2,   Hook_PollThermal,       Error_Poll
+             -Thermal,        0x00    },
+                      #endif
+                  
+              };
+              
+              //----------------------------------------------------------------------------
+              //      SMBus channel table 3
+              //----------------------------------------------------------------------------
+              const sSCS code asSCS3[] = 
+              {       
+                      // For SMBus channel 3 debug
+                      // SMBus protocol       Addr            Cmd             Data                            Flag(bit)       active flag Var         Hook_Func               Error_Func              Byte Count
+                      { Cmd_RecvByte, 0x01,   0xFF,   &DB_SMBusData,  DB_R,   &DB_SMBusFlag3, Hook_SMBDebug,  Error_SMBDebug, 0x00},  
+                      { Cmd_SendByte, 0x01,   0xFF,   &DB_SMBusData,  DB_S,   &DB_SMBusFlag3, Hook_SMBDebug,  Error_SMBDebug, 0x00},
+                      { Cmd_ReadByte, 0x01,   0xFF,   &DB_SMBusData,  DB_RB,  &DB_SMBusFlag3, Hook_SMBDebug,  Error_SMBDebug, 0x00},  
+                      { Cmd_WriteByte,        0x01,   0xFF,   &DB_SMBusData,  DB_WB,  &DB_SMBusFlag3, Hook_SMBDebug,  Error_SMBDebug, 0x00},
+                      { Cmd_ReadWord, 0x01,   0xFF,   &DB_SMBusData,  DB_RW,  &DB_SMBusFlag3, Hook_SMBDebug,  Error_SMBDebug, 0x00},
+                      { Cmd_WriteWord,        0x01,   0xFF,   &DB_SMBusData,  DB_WW,  &DB_SMBusFlag3, Hook_SMBDebug,  Error_SMBDebug, 0x00},
+                      { Cmd_ReadBlock,        0x01,   0xFF,   &DB_SMBusData,  DB_RBB, &DB_SMBusFlag3, Hook_SMBDebug,  Error_SMBDebug, 0x00}
+             -,
+                      { Cmd_WriteBlock,       0x01,   0xFF,   &DB_SMBusData,  DB_WBB, &DB_SMBusFlag3, Hook_SMBDebug,  Error_SMBDebug, 0x00
+             -},        
+              
+                      #if 0
+                      // OEM SMBus3 function
+                      { Cmd_ReadByte, ThermalAddr,    RemoteCmd,      &TCPU_temp,     PollRemote,     &SMBus2Flag1,   Hook_PollThermal,       Error_Pol
+             -lThermal,        0x00    },
+                      { Cmd_ReadByte, ThermalAddr,    LocalCmd,       &TSys_temp,     PollLocal,              &SMBus2Flag1,   Hook_PollThermal,       Error_Poll
+             -Thermal,        0x00    },
+                      #endif
+                  
+              };
+              
+              
+              //----------------------------------------------------------------------------
+C51 COMPILER V7.50   OEM_SMBUS                                                             09/16/2020 21:10:05 PAGE 4   
+
+              // To calculate smbus table size.
+              //----------------------------------------------------------------------------
+              void CheckSMBusTableSize(void)
+              {
+                  SMBus1TableSize = (sizeof(asSCS1)/sizeof(sSCS));
+                  SMBus2TableSize = (sizeof(asSCS2)/sizeof(sSCS));
+                  SMBus3TableSize = (sizeof(asSCS3)/sizeof(sSCS));
+              }
+              
+              //----------------------------------------------------------------------------
+              // To service SMBus 
+              //----------------------------------------------------------------------------
+              void ServiceSMBus(void)
+              {
+                  if(F_Service_SMBus1==SMBus_NeedService)
+                  {
+                      F_Service_SMBus1=SMBus_ClearService;
+                      service_smbus1();
+                  }
+              
+                  if(F_Service_SMBus2==SMBus_NeedService)
+                  {
+                      F_Service_SMBus2=SMBus_ClearService;
+                      service_smbus2();
+                  }
+              
+                  if(F_Service_SMBus3==SMBus_NeedService)
+                  {
+                      F_Service_SMBus3=SMBus_ClearService;
+                      service_smbus3();
+                  }
+              }
+              
+              
+              //#pragma OT(8, SPEED)
+              //----------------------------------------------------------------------------
+              // SMBus channelx service function
+              //----------------------------------------------------------------------------
+              void SMBusCenterSelection(BYTE channel)
+              {
+                      XBYTE tempSMBusindex;
+                      BYTE smbus_cmd;
+                      BYTE smbus_address;
+                      XBYTE *smbus_data;
+                      BYTE smbus_Bcunt;
+                      BYTE smbus_flag;
+                      BYTE smbus_protocol;
+                  
+                      tempSMBusindex = *asSSC[channel].index;
+                      
+                      if(*asSSC[channel].inusing !=0x00)      //in using
+                      {
+                              (*asSSC[channel].timeout)++;    //add Timeout
+                              
+                              if((*asSSC[channel].timeout) > 50) // TotalSMBusChannel x 50 ms //Timeout
+                              {
+                                      ResetSMBus(channel);                
+                                      //**********************************************************************
+                                      //Do Error Func
+                                      //**********************************************************************
+                                      switch(channel)                 // Channel selection.
+                                      {
+C51 COMPILER V7.50   OEM_SMBUS                                                             09/16/2020 21:10:05 PAGE 5   
+
+                                              case SMbusCh1:              // Channel 1
+                                                      CLEAR_MASK(*asSCS1[tempSMBusindex].ConditionVar, asSCS1[tempSMBusindex].Conditionflag);
+                                                      (asSCS1[tempSMBusindex].errorfunc)();
+                                              break;
+                                      
+                                              case SMbusCh2:              // Channel 2
+                                                      CLEAR_MASK(*asSCS2[tempSMBusindex].ConditionVar, asSCS2[tempSMBusindex].Conditionflag);
+                                                      (asSCS2[tempSMBusindex].errorfunc)();
+                                              break;
+              
+                                              case SMbusCh3:              // Channel 3
+                                                      CLEAR_MASK(*asSCS3[tempSMBusindex].ConditionVar, asSCS3[tempSMBusindex].Conditionflag);
+                                                      (asSCS3[tempSMBusindex].errorfunc)();
+                                              break;                        
+                                      }
+                              
+                                      *asSSC[channel].inusing = 0x00;
+                                      
+                                      tempSMBusindex++;       //Next
+                                      if(tempSMBusindex >= *asSSC[channel].tablesize)
+                                      {
+                                              tempSMBusindex=0x00;
+                                      }
+                              }       //End Timout handler
+              
+                      *asSSC[channel].index = tempSMBusindex; //goto Next table(item)
+                      }
+                      else            //SMBUS Channel Free
+                      {
+                              *asSSC[channel].timeout = 0x00; // Clear time-out flag.
+                              smbus_flag = 0x00;              // Pre-clear need service flag.
+                              //**********************************************************************
+                              //Check flag (need service or not)
+                              //**********************************************************************
+                              switch(channel)                 // Channel selection.
+                              {
+                                      case SMbusCh1:              // Channel 1
+                                              if(IS_MASK_SET(*asSCS1[tempSMBusindex].ConditionVar, asSCS1[tempSMBusindex].Conditionflag))
+                                              {
+                                                      smbus_flag=0x01;    // Need service.
+                                              }
+                                      break;
+              
+                                      case SMbusCh2:              // Channel 2
+                                              if(IS_MASK_SET(*asSCS2[tempSMBusindex].ConditionVar, asSCS2[tempSMBusindex].Conditionflag))
+                                              {
+                                                      smbus_flag=0x01;    // Need service.
+                                              }
+                                      break;
+              
+                                      case SMbusCh3:              // Channel 3
+                                              if(IS_MASK_SET(*asSCS3[tempSMBusindex].ConditionVar, asSCS3[tempSMBusindex].Conditionflag))
+                                              {
+                                                      smbus_flag=0x01;    // Need service.
+                                              }
+                                      break;
+              
+                                      default:
+                                      break;
+                              }
+                              //**********************************************************************
+                              //End (Check flag)
+C51 COMPILER V7.50   OEM_SMBUS                                                             09/16/2020 21:10:05 PAGE 6   
+
+                              //**********************************************************************
+              
+                              if(smbus_flag==0x00)            // Don't need service.
+                              {
+                                      tempSMBusindex++;           // next step.
+              
+                                      if(tempSMBusindex >= *asSSC[channel].tablesize)
+                                      {
+                                              tempSMBusindex=0x00;
+                                      }
+                                      *asSSC[channel].index = tempSMBusindex;
+                              }
+                              else            //need service
+                              {       
+                                      *asSSC[channel].inusing = 0x01;
+                          
+                                      *asSMBus[channel].SMBusCTL=0x00;        // stop transaction
+                                      *asSMBus[channel].SMBusSTA=0xFE;    // clear bits
+              
+                              //**********************************************************************
+                              //Assign        SMBUS protocol,address,cmd,data...etc (ready to R/W SMBUS)
+                              //**********************************************************************
+                              switch(channel)             // Channel selection.
+                              {
+                                      case SMbusCh1:
+                                              smbus_protocol = asSCS1[tempSMBusindex].protocol;
+                                              smbus_cmd = asSCS1[tempSMBusindex].cmd;
+                                              smbus_address = asSCS1[tempSMBusindex].address;
+                                              smbus_data = asSCS1[tempSMBusindex].smbdata;
+                                              smbus_Bcunt = asSCS1[tempSMBusindex].Bcunt;
+                                              if(smbus_protocol==Cmd_WriteBlock)
+                                              {
+                                                      if(smbus_address==0x01) //For DBGR
+                                                      {
+                                                              SMBus1BlockPtr = &DB_SMBusData[0];
+                                                              *asSMBus[channel].SMBusBData = *SMBus1BlockPtr;
+                                                      }                                       
+                                                      else
+                                                      {
+                                                              SMBus1BlockPtr = asSCS1[tempSMBusindex].smbdata;
+                                                              *asSMBus[channel].SMBusBData = *SMBus1BlockPtr;
+                                                      }
+                                              }
+                                      break;
+              
+                                      case SMbusCh2:
+                                              smbus_protocol = asSCS2[tempSMBusindex].protocol;
+                                              smbus_cmd = asSCS2[tempSMBusindex].cmd;
+                                              smbus_address = asSCS2[tempSMBusindex].address;
+                                              smbus_data = asSCS2[tempSMBusindex].smbdata;
+                                              smbus_Bcunt = asSCS2[tempSMBusindex].Bcunt;
+                                              if(smbus_protocol==Cmd_WriteBlock)
+                                              {
+                                                      if(smbus_address==0x01)
+                                                      {
+                                                              SMBus2BlockPtr = &DB_SMBusData[0];
+                                                              *asSMBus[channel].SMBusBData = *SMBus2BlockPtr;
+                                                      }
+                                                      else
+                                                      {
+                                                              SMBus2BlockPtr = asSCS2[tempSMBusindex].smbdata;
+                                                              *asSMBus[channel].SMBusBData = *SMBus2BlockPtr;
+C51 COMPILER V7.50   OEM_SMBUS                                                             09/16/2020 21:10:05 PAGE 7   
+
+                                                      }
+                                              }
+                                      break;
+              
+                                      case SMbusCh3:
+                                              smbus_protocol = asSCS3[tempSMBusindex].protocol;
+                                              smbus_cmd = asSCS3[tempSMBusindex].cmd;
+                                              smbus_address = asSCS3[tempSMBusindex].address;
+                                              smbus_data = asSCS3[tempSMBusindex].smbdata;
+                                              smbus_Bcunt = asSCS3[tempSMBusindex].Bcunt;
+                                              if(smbus_protocol==Cmd_WriteBlock)
+                                              {
+                                                      if(smbus_address==0x01)
+                                                      {
+                                                              SMBus3BlockPtr = &DB_SMBusData[0];
+                                                              *asSMBus[channel].SMBusBData = *SMBus3BlockPtr;
+                                                      }
+                                                      else
+                                                      {
+                                                              SMBus3BlockPtr = asSCS3[tempSMBusindex].smbdata;
+                                                              *asSMBus[channel].SMBusBData = *SMBus3BlockPtr;
+                                                      }
+                                              }
+                                      break;
+              
+                                      default:
+                                      break;
+                              }
+                              //**********************************************************************
+                              //End (Assign   SMBUS protocol,address,cmd,data...etc)
+                              //**********************************************************************
+              
+              
+                              //**********************************************************************
+                              //Do SMBUS service
+                              //**********************************************************************
+                              switch(smbus_protocol)
+                              {
+                              
+                                      case Cmd_Quick:
+                                      break;
+                                                      
+                                      case Cmd_SendByte:
+                                              if(smbus_address==0x01)     // Debug mode, for SMBus utility
+                                              {
+                                                      PollSMBusSendByte(channel,DB_SMBusAddr,DB_SMBusCmd);
+                                              }
+                                              else
+                                              {
+                                                      PollSMBusSendByte(channel,smbus_address,smbus_cmd);
+                                              }
+                                      break;  
+                                                      
+                                      case Cmd_RecvByte:
+                                              if(smbus_address==0x01)     // Debug mode, for SMBus utility
+                                              {
+                                                      PollSMBusReceiveByte(channel,DB_SMBusAddr);
+                                              }
+                                              else
+                                              {
+                                                      PollSMBusReceiveByte(channel,smbus_address);
+                                              }
+C51 COMPILER V7.50   OEM_SMBUS                                                             09/16/2020 21:10:05 PAGE 8   
+
+                                      break;
+                                                      
+                                      case Cmd_ReadByte:
+                                              if(smbus_address==0x01)     // Debug mode, for SMBus utility
+                                              {
+                                                      PollReadSMBusByte(channel,DB_SMBusAddr,DB_SMBusCmd);
+                                              }
+                                              else
+                                              {
+                                                      PollReadSMBusByte(channel,smbus_address,smbus_cmd);
+                                              }
+                                      break;
+                                                      
+                                      case Cmd_WriteByte:
+                                              if(smbus_address==0x01)     // Debug mode, for SMBus utility
+                                              {
+                                                      PollWriteSMBusByte(channel,DB_SMBusAddr,DB_SMBusCmd,DB_SMBusData[0]);
+                                              }
+                                              else
+                                              {
+                                                      PollWriteSMBusByte(channel,smbus_address,smbus_cmd,*smbus_data);
+                                              }
+                                      break;
+                                                      
+                                      case Cmd_ReadWord:
+                                              if(smbus_address==0x01)     // Debug mode, for SMBus utility
+                                              {
+                                                      PollReadSMBusWord(channel,DB_SMBusAddr,DB_SMBusCmd);
+                                              }
+                                              else
+                                              {
+                                                      PollReadSMBusWord(channel,smbus_address,smbus_cmd);
+                                              }
+                                      break;
+                                                      
+                                      case Cmd_WriteWord:
+                                              if(smbus_address==0x01)     // Debug mode, for SMBus utility
+                                              {
+                                                      PollWriteSMBusWord(channel,DB_SMBusAddr,DB_SMBusCmd,DB_SMBusData[0],DB_SMBusData[1]);
+                                              }
+                                              else
+                                              {
+                                                      Tmp_XPntr = smbus_data;
+                                                      Tmp_XPntr1 = Tmp_XPntr+1;
+                                                      PollWriteSMBusWord(channel,smbus_address,smbus_cmd,*Tmp_XPntr,*Tmp_XPntr1);
+                                              }
+                                      break;
+              
+                                      case Cmd_ReadBlock:             // Debug mode, for SMBus utility
+                                              *asSSC[channel].bytecount = 0x00;
+                                              if(smbus_address==0x01)
+                                              {
+                                                      DB_SMBusBCunt = 0x00;
+                                                      PollReadSMBusBlock(channel,DB_SMBusAddr,DB_SMBusCmd);
+                                              }                                       
+                                              else
+                                              {
+                                                      PollReadSMBusBlock(channel,smbus_address,smbus_cmd);
+                                              }
+                                      break;
+                                                      
+                                      case Cmd_WriteBlock:            // Debug mode, for SMBus utility
+C51 COMPILER V7.50   OEM_SMBUS                                                             09/16/2020 21:10:05 PAGE 9   
+
+                                              if(smbus_address==0x01)
+                                              {
+                                                      *asSSC[channel].bytecount = DB_SMBusBCunt;
+                                                      PollWriteSMBusBlock(channel,DB_SMBusAddr,DB_SMBusCmd,DB_SMBusBCunt);
+                                              }                                       
+                                              else
+                                              {
+                                                      *asSSC[channel].bytecount = smbus_Bcunt;
+                                                      PollWriteSMBusBlock(channel,smbus_address,smbus_cmd,smbus_Bcunt);
+                                              }
+                                      break;                                  
+              
+                                      default:
+                                              *asSSC[channel].inusing=0x00;
+                                      break;                                  
+                                      }
+                          }
+                      }
+              }
+              
+              //----------------------------------------------------------------------------
+              // SMBus service center -> call SMBusCenterSelection -> Do SMBUS service
+              //----------------------------------------------------------------------------
+              void SMBusCenter(void) 
+              {
+                  if(++SMBusSelection >= TotalSMBusChannel)
+                  {
+                      SMBusSelection=0x00;
+                  }
+                  SMBusCenterSelection(SMBusSelection);
+              }
+              
+              //----------------------------------------------------------------------------
+              // Wait SMBus channel x free.
+              //----------------------------------------------------------------------------
+              void WatiSMBusCHxFree(BYTE channel)
+              {
+                      BYTE tempSMBusindex;
+              
+                      TR1 = 0;                        // Disable timer 1
+                      ET1 = 0;                                    // Disable timer1 interrupt
+                      _nop_();
+                      _nop_();
+                      _nop_();
+                      _nop_();
+                      TH1 = T_Timer_30ms>>8;          // set timer1 counter 30 ms 
+                      TL1 = T_Timer_30ms;                     // set timer1 counter 30 ms
+                      TF1 = 0;                                    // clear overflow flag
+                      TR1 = 1;                                    // enable timer1    
+              
+                      tempSMBusindex = *asSSC[channel].index;
+              
+                      while(*asSSC[channel].inusing !=0x00)
+                      {
+                              if( (*asSSC[channel].serviceflag == SMBus_NeedService) ||
+                              (IS_MASK_SET(*asSMBus[channel].SMBusIER, asSMBus[channel].IERFlag)&&IS_MASK_SET(*asSMBus[channel].SMBusI
+             -SR, asSMBus[channel].IERFlag)) )
+                              {
+                                      CLEAR_MASK(*asSMBus[channel].SMBusIER, asSMBus[channel].IERFlag);
+                                      *asSMBus[channel].SMBusISR = asSMBus[channel].IERFlag;
+                                      *asSSC[channel].serviceflag = SMBus_ClearService;
+                                      (asSSC[channel].servicefunc)();
+C51 COMPILER V7.50   OEM_SMBUS                                                             09/16/2020 21:10:05 PAGE 10  
+
+                              }
+                              else
+                              {
+                                      if(TF1)
+                                      {
+                                              ResetSMBus(channel);
+              
+                                              //**********************************************************************
+                                              //
+                                              //**********************************************************************
+                                              switch(channel)                 // Channel selection.
+                                              {
+                                                      case SMbusCh1:              // Channel 1
+                                                              CLEAR_MASK(*asSCS1[tempSMBusindex].ConditionVar, asSCS1[tempSMBusindex].Conditionflag);
+                                                              (asSCS1[tempSMBusindex].errorfunc)();
+                                                      break;
+                                      
+                                                      case SMbusCh2:              // Channel 2
+                                                              CLEAR_MASK(*asSCS2[tempSMBusindex].ConditionVar, asSCS2[tempSMBusindex].Conditionflag);
+                                                              (asSCS2[tempSMBusindex].errorfunc)();
+                                                      break;
+              
+                                                      case SMbusCh3:              // Channel 3
+                                                              CLEAR_MASK(*asSCS3[tempSMBusindex].ConditionVar, asSCS3[tempSMBusindex].Conditionflag);
+                                                              (asSCS3[tempSMBusindex].errorfunc)();
+                                                      break;                        
+                                              }
+                                              //**********************************************************************
+                                              //
+                                              //**********************************************************************
+                              
+                                              *asSSC[channel].inusing = 0x00;
+                                              tempSMBusindex++;
+                                              if(tempSMBusindex >= *asSSC[channel].tablesize)
+                                              {
+                                                      tempSMBusindex=0x00;
+                                              }
+                                              *asSSC[channel].index = tempSMBusindex;
+                                              break;
+                                      }
+                              }
+                      }
+                  
+                      TR1 = 0;                            // disable timer1
+                      TF1 = 0;                            // clear overflow flag
+                      //ET1 = 1;                          // Enable timer1 interrupt
+              }
+              void Init_OEM_SMBus(void)
+              {
+                      DB_SMBusAddr=0x00;
+                      DB_SMBusFlag1=0x00;                                             
+                      DB_SMBusFlag2=0x00;                     
+                      DB_SMBusFlag3=0x00;                                     
+              
+                      DB_SMBusAck1=0x00;                                      
+              
+                      CheckSMBusTableSize();
+              
+              }
+              
+              //----------------------------------------------------------------------------
+              //01
+C51 COMPILER V7.50   OEM_SMBUS                                                             09/16/2020 21:10:05 PAGE 11  
+
+              //----------------------------------------------------------------------------
+              void PollSMBusReceiveByte(BYTE Channel,BYTE Addr)
+              {       
+                      if(CheckSMBusInterfaceCanbeUse(Channel, SMBus_AccessType_Table)==SMBus_CanNotUse)
+                      {
+                              *asSSC[Channel].inusing=0x00;       // SMBus interface can't be used.                           
+                      }
+                      else
+                      {
+                              *asSMBus[Channel].SMBusIER |=asSMBus[Channel].IERFlag; // Enable interrupt 
+                              *asSMBus[Channel].SMBusADR=Addr|0x01;   // set address with reading bit 
+                              *asSMBus[Channel].SMBusCTL=(SMbusSRB|HOCTL_SRT|HOCTL_INTREN);   // Start transaction
+                      }
+              }
+              
+              
+              //----------------------------------------------------------------------------
+              //02
+              //----------------------------------------------------------------------------
+              void PollSMBusSendByte(BYTE Channel,BYTE Addr,BYTE cmd)
+              {       
+                      if(CheckSMBusInterfaceCanbeUse(Channel, SMBus_AccessType_Table)==SMBus_CanNotUse)
+                      {
+                              *asSSC[Channel].inusing=0x00;       // SMBus interface can't be used.                           
+                      }
+                      else
+                      {
+                              *asSMBus[Channel].SMBusIER|= asSMBus[Channel].IERFlag; // Enable interrupt 
+                              *asSMBus[Channel].SMBusADR = Addr&0xFE;;        // set address with reading bit                                         
+                              *asSMBus[Channel].SMBusCMD = cmd;               // Set data
+                              *asSMBus[Channel].SMBusCTL = (SMbusSRB|HOCTL_SRT|HOCTL_INTREN); // Start transaction
+                      }
+              }
+              
+              //----------------------------------------------------------------------------
+              //03
+              //----------------------------------------------------------------------------
+              void PollReadSMBusByte(BYTE Channel,BYTE Addr,BYTE Comd)
+              {
+                      if(CheckSMBusInterfaceCanbeUse(Channel, SMBus_AccessType_Table)==SMBus_CanNotUse)
+                      {
+                              *asSSC[Channel].inusing=0x00;       // SMBus interface can't be used.                           
+                      }
+                      else
+                      {  
+                              *asSMBus[Channel].SMBusIER|=asSMBus[Channel].IERFlag; // Enable interrupt 
+                              *asSMBus[Channel].SMBusADR=Addr|0x01;   // set address with reading bit                                         
+                              *asSMBus[Channel].SMBusCMD=Comd;                // Set command
+                              *asSMBus[Channel].SMBusCTL=(SMbusRWB|HOCTL_SRT|HOCTL_INTREN);   // Start transaction
+                      }
+              }
+              
+              //----------------------------------------------------------------------------
+              //04
+              //----------------------------------------------------------------------------
+              void PollWriteSMBusByte(BYTE Channel,BYTE Addr,BYTE Comd,BYTE data1)
+              {
+                  if(CheckSMBusInterfaceCanbeUse(Channel, SMBus_AccessType_Table)==SMBus_CanNotUse)
+                  {
+                      *asSSC[Channel].inusing=0x00;       // SMBus interface can't be used.                           
+                  }
+                  else
+C51 COMPILER V7.50   OEM_SMBUS                                                             09/16/2020 21:10:05 PAGE 12  
+
+                  {   
+                          *asSMBus[Channel].SMBusIER|=asSMBus[Channel].IERFlag; // Enable interrupt   
+                          *asSMBus[Channel].SMBusData0=data1;
+                          *asSMBus[Channel].SMBusADR=Addr&0xFE;       // set address with reading bit                                         
+                          *asSMBus[Channel].SMBusCMD=Comd;            // Set command
+                          *asSMBus[Channel].SMBusCTL=(SMbusRWB|HOCTL_SRT|HOCTL_INTREN);       // Start transaction
+                  }
+              }
+              
+              //----------------------------------------------------------------------------
+              //05
+              //----------------------------------------------------------------------------
+              void PollReadSMBusWord(BYTE Channel,BYTE Addr,BYTE Comd)
+              {
+                      if(CheckSMBusInterfaceCanbeUse(Channel, SMBus_AccessType_Table)==SMBus_CanNotUse)
+                      {
+                              *asSSC[Channel].inusing=0x00;       // SMBus interface can't be used.    
+                      }
+                      else
+                      {
+                              *asSMBus[Channel].SMBusIER|=asSMBus[Channel].IERFlag; // Enable interrupt 
+                              *asSMBus[Channel].SMBusADR=Addr|0x01;   // set address with reading bit                                         
+                              *asSMBus[Channel].SMBusCMD=Comd;                // Set command
+                              *asSMBus[Channel].SMBusCTL=(SMbusRWW|HOCTL_SRT|HOCTL_INTREN);   // Start transaction
+                      }
+              }
+              
+              //----------------------------------------------------------------------------
+              //06
+              //----------------------------------------------------------------------------
+              void PollWriteSMBusWord(BYTE Channel,BYTE Addr,BYTE Comd,BYTE data1,BYTE data2)
+              {
+                      if(CheckSMBusInterfaceCanbeUse(Channel, SMBus_AccessType_Table)==SMBus_CanNotUse)
+                      {
+                              *asSSC[Channel].inusing=0x00;       // SMBus interface can't be used.                           
+                      }
+                      else
+                      {
+                              *asSMBus[Channel].SMBusIER|=asSMBus[Channel].IERFlag; // Enable interrupt       
+                              *asSMBus[Channel].SMBusData0=data1;
+                              *asSMBus[Channel].SMBusData1=data2;
+                              *asSMBus[Channel].SMBusADR=Addr&0xFE;   // set address with reading bit                                         
+                              *asSMBus[Channel].SMBusCMD=Comd;                // Set command
+                              *asSMBus[Channel].SMBusCTL=(SMbusRWW|HOCTL_SRT|HOCTL_INTREN);   // Start transaction
+                      }
+              }
+              
+              //----------------------------------------------------------------------------
+              //07
+              //----------------------------------------------------------------------------
+              void PollReadSMBusBlock(BYTE Channel,BYTE Addr,BYTE Comd)
+              {
+                      if(CheckSMBusInterfaceCanbeUse(Channel, SMBus_AccessType_Table)==SMBus_CanNotUse)
+                      {
+                              *asSSC[Channel].inusing=0x00;       // SMBus interface can't be used.                           
+                      }
+                      else
+                      {
+                              *asSMBus[Channel].SMBusIER|=asSMBus[Channel].IERFlag; // Enable interrupt 
+                              *asSMBus[Channel].SMBusADR=Addr|0x01;   // set address with reading bit 
+                              *asSMBus[Channel].SMBusCMD=Comd;                // Set command
+                              *asSMBus[Channel].SMBusCTL=(SMbusRWBB|HOCTL_SRT|HOCTL_INTREN);  // Start transaction
+C51 COMPILER V7.50   OEM_SMBUS                                                             09/16/2020 21:10:05 PAGE 13  
+
+                      }
+              }       
+              
+              //----------------------------------------------------------------------------
+              //08
+              //----------------------------------------------------------------------------
+              void PollWriteSMBusBlock(BYTE Channel,BYTE Addr,BYTE Comd,BYTE ByteCunt)
+              {
+                      if(CheckSMBusInterfaceCanbeUse(Channel, SMBus_AccessType_Table)==SMBus_CanNotUse)
+                      {
+                              *asSSC[Channel].inusing=0x00;       // SMBus interface can't be used.                           
+                      }
+                      else
+                      {   
+                              *asSMBus[Channel].SMBusIER|=asSMBus[Channel].IERFlag; // Enable interrupt       
+                              *asSMBus[Channel].SMBusData0=ByteCunt;  // set byte count
+                              *asSMBus[Channel].SMBusADR=Addr&0xFE;   // set address with reading bit 
+                              *asSMBus[Channel].SMBusCMD=Comd;                // Set command
+                              *asSMBus[Channel].SMBusCTL=(SMbusRWBB|HOCTL_SRT|HOCTL_INTREN);  // Start transaction
+                      }
+              }
+              
+              //----------------------------------------------------------------------------
+              // SMBus channel 1 service function
+              //----------------------------------------------------------------------------
+              void service_smbus1(void)
+              {
+                      if(SMBus1InUsing)
+                      {
+                              CLEAR_MASK(SMBusXStatus, (SMBus1_OK+SMBus1_Fail));
+                      
+                              if(IS_MASK_SET(HOSTA_A, (HOSTA_DVER+HOSTA_BSER+HOSTA_FAIL+HOSTA_NACK+HOSTA_TMOE)))  // any error
+                              {
+                                      if(IS_MASK_SET(HOSTA_A, (HOSTA_BSER+HOSTA_FAIL)))
+                                      {
+                                              ResetSMBus(SMbusCh1);               // Reset SMBus
+                                      }
+                                      SET_MASK(SMBusXStatus, SMBus1_Fail);    // SMBus fail
+                              }
+                              else                                        // Byte Done Status or Finish Interrupt or no any status bit
+                              {
+                                      //*********************************************************************
+                                      // Cmd_ReadBlock
+                                      //*********************************************************************
+                                      if(asSCS1[SMBus1index].protocol==Cmd_ReadBlock)
+                                      {                                   
+                                              if(IS_MASK_SET(HOSTA_A, (HOSTA_FINTR+HOSTA_BDS)))   // Only Byte Done Status or Finish Interrupt bit i
+             -s set.
+                                              {
+                                                      if(SMBus1ByteCunt==0x00)
+                                                      {
+                                                              SMBus1BlockPtr = asSCS1[SMBus1index].smbdata;
+                                                              SMBus1ByteCunt = D0REG_A;
+              
+                                                              if(SMBus1ByteCunt>32)
+                                                              {
+                                                                      SMBus1ByteCunt=32;          // DB_SMBusData[] max 32 bytes
+                                                              }
+                                                              
+                                                              SMB_BCNT = SMBus1ByteCunt;
+                                                              DB_SMBusBCunt = SMBus1ByteCunt;
+                                                                      
+C51 COMPILER V7.50   OEM_SMBUS                                                             09/16/2020 21:10:05 PAGE 14  
+
+                                                              *SMBus1BlockPtr = HOBDB_A;  // read data1
+                                                              SMBus1ByteCunt--;
+                                                      }
+                                                      else
+                                                      {
+                                                              SMBus1BlockPtr++;
+                                                              *SMBus1BlockPtr=HOBDB_A;
+                                                              SMBus1ByteCunt--;
+                                                              if(SMBus1ByteCunt==0x01)
+                                                              {
+                                                                      SET_MASK(HOCTL_A,HOCTL_LABY);
+                                                              }
+                                                      }
+                                                      
+                                                      if(SMBus1ByteCunt!=0x00)                // Byte count isn't 0.
+                                                      {
+                                                              HOSTA_A=0xFE;
+                                                              SET_MASK(IER1,Int_SMBUS0);
+                                                      }
+                                                      else                                    // Byte count is 0.
+                                                      {
+                                                              CLEAR_MASK(HOCTL_A,HOCTL_LABY);
+                                                              SET_MASK(SMBusXStatus, SMBus1_OK);  // SMBus protocol OK
+                                                      }
+                                              }
+                                              else                                        // No any bit is set of host status register.
+                                              {
+                                                      SET_MASK(SMBusXStatus, SMBus1_Fail);    // SMBus fail
+                                              }
+                                      }
+                                      //*********************************************************************
+                                      // Cmd_WriteBlock
+                                      //*********************************************************************
+                                      else if(asSCS1[SMBus1index].protocol==Cmd_WriteBlock)
+                                      {
+                                              if(IS_MASK_SET(HOSTA_A, (HOSTA_FINTR+HOSTA_BDS)))   // Only Byte Done Status or Finish Interrupt bit i
+             -s set.
+                                              {
+                                                      SMBus1ByteCunt--;
+                                                      if(SMBus1ByteCunt==0x00)
+                                                      {
+                                                              SET_MASK(SMBusXStatus, SMBus1_OK);  // SMBus protocol OK
+                                                      }
+                                                      else  
+                                                      {
+                                                              SMBus1BlockPtr++;
+                                                              HOBDB_A=*SMBus1BlockPtr;
+              
+                                                              HOSTA_A=0xFE;
+                                                              SET_MASK(IER1,Int_SMBUS0);
+                                                      }
+                                              }
+                                              else                                        // No any bit is set of host status register.
+                                              {
+                                                      SET_MASK(SMBusXStatus, SMBus1_Fail);    // SMBus fail
+                                              }
+                                      }
+                                      //******************************************************************************************
+                                      // Cmd_SendByte, Cmd_RecvByte, Cmd_ReadByte, Cmd_WriteByte, Cmd_ReadWord and Cmd_WriteWord 
+                                      //******************************************************************************************
+                                      else
+                                      {
+C51 COMPILER V7.50   OEM_SMBUS                                                             09/16/2020 21:10:05 PAGE 15  
+
+                                              if(IS_MASK_SET(HOSTA_A, HOSTA_FINTR))       // Only Finish Interrupt bit is set.
+                                              {
+                                                      *asSCS1[SMBus1index].smbdata = D0REG_A; // read data byte 1
+                                                      if(asSCS1[SMBus1index].protocol==Cmd_ReadWord)  // read word protocol
+                                                      {
+                                                              Tmp_XPntr = asSCS1[SMBus1index].smbdata;
+                                                              Tmp_XPntr++;
+                                                              *Tmp_XPntr=D1REG_A;                 // read data byte 2
+                                                      }
+                                                      SET_MASK(SMBusXStatus, SMBus1_OK);      // SMBus protocol OK
+                                              }
+                                              else                                        // No any bit is set of host status register.
+                                              {
+                                                      SET_MASK(SMBusXStatus, SMBus1_Fail);    // SMBus protocol Fail
+                                              }
+                                      }
+                              }
+                      }
+              
+                      if(IS_MASK_SET(SMBusXStatus, (SMBus1_Fail+SMBus1_OK)))  // SMBus protocol Fail or OK
+                      {
+                              HOSTA_A=0xFE;                               // Clear Host Status register.
+                              SMBus1InUsing = 0;                          // Clear smbus in used flag.
+                              CLEAR_MASK(*asSCS1[SMBus1index].ConditionVar, asSCS1[SMBus1index].Conditionflag);   // clear OEM smbus s
+             -ervice flag.
+                      
+                              if(IS_MASK_SET(SMBusXStatus, SMBus1_Fail))  // if protocol fail
+                              {
+                                      (asSCS1[SMBus1index].errorfunc)();      // OEM error hook function
+                              }
+                              else                                        // protocol OK
+                              {
+                                      (asSCS1[SMBus1index].hookfunc)();       // OEM OK hook function
+                              }
+                              CLEAR_MASK(SMBusXStatus, (SMBus1_OK+SMBus1_Fail));  // To clear flag
+                      }
+              }
+              
+              
+              //----------------------------------------------------------------------------
+              // SMBus channel 2 service function
+              //----------------------------------------------------------------------------
+              void service_smbus2(void)
+              {
+                      if(SMBus2InUsing)
+                      {
+                              CLEAR_MASK(SMBusXStatus, (SMBus2_OK+SMBus2_Fail));
+                      
+                              if(IS_MASK_SET(HOSTA_B, (HOSTA_DVER+HOSTA_BSER+HOSTA_FAIL+HOSTA_NACK+HOSTA_TMOE)))  // any error
+                              {
+                                      if(IS_MASK_SET(HOSTA_B, (HOSTA_BSER+HOSTA_FAIL)))
+                                      {
+                                              ResetSMBus(SMbusCh2);               // Reset SMBus
+                                      }
+                                      SET_MASK(SMBusXStatus, SMBus2_Fail);    // SMBus fail
+                              }
+                              else                                        // Byte Done Status or Finish Interrupt or no any statys bit
+                              {
+                                      //*********************************************************************
+                                      // Cmd_ReadBlock
+                                      //*********************************************************************
+                                      if(asSCS2[SMBus2index].protocol==Cmd_ReadBlock)
+C51 COMPILER V7.50   OEM_SMBUS                                                             09/16/2020 21:10:05 PAGE 16  
+
+                                      {
+                                              if(IS_MASK_SET(HOSTA_B, (HOSTA_FINTR+HOSTA_BDS)))   // Only Byte Done Status or Finish Interrupt bit i
+             -s set.
+                                              {
+                                                      if(SMBus2ByteCunt==0x00)
+                                                      {
+                                                              SMBus2BlockPtr = asSCS2[SMBus2index].smbdata;
+                                                              SMBus2ByteCunt = D0REG_B;
+              
+                                                              if(SMBus2ByteCunt>32)
+                                                              {
+                                                                      SMBus2ByteCunt=32;          // DB_SMBusData[] max 32 bytes
+                                                              }
+              
+                                                              SMB_BCNT = SMBus2ByteCunt;
+                                                              DB_SMBusBCunt = SMBus2ByteCunt;
+              
+                                                              *SMBus2BlockPtr = HOBDB_B;  // read data1
+                                                              SMBus2ByteCunt--;
+                                                      }
+                                                      else
+                                                      {
+                                                              SMBus2BlockPtr++;
+                                                              *SMBus2BlockPtr=HOBDB_B;
+                                                              SMBus2ByteCunt--;
+                                                              if(SMBus2ByteCunt==0x01)
+                                                              {
+                                                                      SET_MASK(HOCTL_B,HOCTL_LABY);
+                                                              }
+                                                      }
+                                                      
+                                                      if(SMBus2ByteCunt!=0x00)                // Byte count isn't 0.
+                                                      {
+                                                              HOSTA_B=0xFE;
+                                                              SET_MASK(IER1,Int_SMBUS1);
+                                                      }
+                                                      else                                    // Byte count is 0.
+                                                      {
+                                                              CLEAR_MASK(HOCTL_B,HOCTL_LABY);
+                                                              SET_MASK(SMBusXStatus, SMBus2_OK);  // SMBus protocol OK
+                                                      }
+                                              }
+                                              else                                        // No any bit is set of host status register.
+                                              {
+                                                      SET_MASK(SMBusXStatus, SMBus2_Fail);    // SMBus fail
+                                              }
+                                      }
+                                      //*********************************************************************
+                                      // Cmd_WriteBlock
+                                      //*********************************************************************
+                                      else if(asSCS2[SMBus2index].protocol==Cmd_WriteBlock)
+                                      {
+                                              if(IS_MASK_SET(HOSTA_B, (HOSTA_FINTR+HOSTA_BDS)))   // Only Byte Done Status or Finish Interrupt bit i
+             -s set.
+                                              {
+                                                      SMBus2ByteCunt--;
+                                                      if(SMBus2ByteCunt==0x00)
+                                                      {
+                                                              SET_MASK(SMBusXStatus, SMBus2_OK);  // SMBus protocol OK
+                                                      }
+                                                      else  
+                                                      {
+C51 COMPILER V7.50   OEM_SMBUS                                                             09/16/2020 21:10:05 PAGE 17  
+
+                                                              SMBus2BlockPtr++;
+                                                              HOBDB_B=*SMBus2BlockPtr;
+              
+                                                              HOSTA_B=0xFE;
+                                                              SET_MASK(IER1,Int_SMBUS1);
+                                                      }
+                                              }
+                                              else                                        // No any bit is set of host status register.
+                                              {
+                                                      SET_MASK(SMBusXStatus, SMBus2_Fail);    // SMBus fail
+                                              }
+                                      }
+                                      //******************************************************************************************
+                                      // Cmd_SendByte, Cmd_RecvByte, Cmd_ReadByte, Cmd_WriteByte, Cmd_ReadWord and Cmd_WriteWord 
+                                      //******************************************************************************************
+                                      else
+                                      {
+                                              if(IS_MASK_SET(HOSTA_B, HOSTA_FINTR))       // Only Finish Interrupt bit is set.
+                                              {
+                                                      *asSCS2[SMBus2index].smbdata = D0REG_B; // read data byte 1
+                                                      if(asSCS2[SMBus2index].protocol==Cmd_ReadWord)  // read word protocol
+                                                      {
+                                                              Tmp_XPntr = asSCS2[SMBus2index].smbdata;
+                                                              Tmp_XPntr++;
+                                                              *Tmp_XPntr=D1REG_B;                 // read data byte 2
+                                                      }
+                                                      SET_MASK(SMBusXStatus, SMBus2_OK);      // SMBus protocol OK
+                                              }
+                                              else                                        // No any bit is set of host status register.
+                                              {
+                                                      SET_MASK(SMBusXStatus, SMBus2_Fail);    // SMBus protocol Fail
+                                              }
+                                      }
+                              }
+                      }
+              
+                      if(IS_MASK_SET(SMBusXStatus, (SMBus2_Fail+SMBus2_OK)))  // SMBus protocol Fail or OK
+                      {
+                              HOSTA_B=0xFE;                               // Clear Host Status register.
+                              SMBus2InUsing = 0;                          // Clear smbus in used flag.
+                              CLEAR_MASK(*asSCS2[SMBus2index].ConditionVar, asSCS2[SMBus2index].Conditionflag);   // clear OEM smbus s
+             -ervice flag.
+                          
+                              if(IS_MASK_SET(SMBusXStatus, SMBus2_Fail))  // if protocol fail
+                              {
+                                      (asSCS2[SMBus2index].errorfunc)();      // OEM error hook function
+                              }
+                              else                                        // protocol OK
+                              {
+                                      (asSCS2[SMBus2index].hookfunc)();       // OEM OK hook function
+                              }
+                              CLEAR_MASK(SMBusXStatus, (SMBus2_OK+SMBus2_Fail));  // To clear flag
+                      }
+              
+              
+              }
+              
+              //----------------------------------------------------------------------------
+              // SMBus channel 3 service function
+              //----------------------------------------------------------------------------
+              void service_smbus3(void)
+              {
+C51 COMPILER V7.50   OEM_SMBUS                                                             09/16/2020 21:10:05 PAGE 18  
+
+                      if(SMBus3InUsing)
+                      {
+                              CLEAR_MASK(SMBusXStatus, (SMBus3_OK+SMBus3_Fail));
+              
+                              if(IS_MASK_SET(HOSTA_C, (HOSTA_DVER+HOSTA_BSER+HOSTA_FAIL+HOSTA_NACK+HOSTA_TMOE)))  // any error
+                              {
+                                      if(IS_MASK_SET(HOSTA_C, (HOSTA_BSER+HOSTA_FAIL)))
+                                      {
+                                              ResetSMBus(SMbusCh3);               // Reset SMBus
+                                      }
+                                      SET_MASK(SMBusXStatus, SMBus3_Fail);    // SMBus fail
+                              }
+                              else                                        // Byte Done Status or Finish Interrupt or no any statys bit
+                              {
+                                      //*********************************************************************
+                                      // Cmd_ReadBlock
+                                      //*********************************************************************
+                                      if(asSCS3[SMBus3index].protocol==Cmd_ReadBlock)
+                                      {
+                                              if(IS_MASK_SET(HOSTA_C, (HOSTA_FINTR+HOSTA_BDS)))   // Only Byte Done Status or Finish Interrupt bit i
+             -s set.
+                                              {
+                                                      if(SMBus3ByteCunt==0x00)
+                                                      {
+                                                              SMBus3BlockPtr = asSCS3[SMBus3index].smbdata;
+                                                              SMBus3ByteCunt = D0REG_C;
+              
+                                                              if(SMBus3ByteCunt>32)
+                                                              {
+                                                                      SMBus3ByteCunt=32;          // DB_SMBusData[] max 32 bytes
+                                                              }
+                                                                      
+                                                              SMB_BCNT = SMBus3ByteCunt;
+                                                              DB_SMBusBCunt = SMBus3ByteCunt;
+              
+                                                              *SMBus3BlockPtr = HOBDB_C;  // read data1
+                                                              SMBus3ByteCunt--;
+                                                      }
+                                                      else
+                                                      {
+                                                              SMBus3BlockPtr++;
+                                                              *SMBus3BlockPtr=HOBDB_C;
+                                                              SMBus3ByteCunt--;
+                                                              if(SMBus3ByteCunt==0x01)
+                                                              {
+                                                                      SET_MASK(HOCTL_C,HOCTL_LABY);
+                                                              }
+                                                      }
+                                                      
+                                                      if(SMBus3ByteCunt!=0x00)                // Byte count isn't 0.
+                                                      {
+                                                              HOSTA_C=0xFE;
+                                                              SET_MASK(IER2,Int_SMBUS2);
+                                                      }
+                                                      else                                    // Byte count is 0.
+                                                      {
+                                                              CLEAR_MASK(HOCTL_C,HOCTL_LABY);
+                                                              SET_MASK(SMBusXStatus, SMBus3_OK);  // SMBus protocol OK
+                                                      }
+                                              }
+                                              else                                        // No any bit is set of host status register.
+                                              {
+C51 COMPILER V7.50   OEM_SMBUS                                                             09/16/2020 21:10:05 PAGE 19  
+
+                                                      SET_MASK(SMBusXStatus, SMBus3_Fail);    // SMBus fail
+                                              }
+                                      }
+                                      //*********************************************************************
+                                      // Cmd_WriteBlock
+                                      //*********************************************************************
+                                      else if(asSCS3[SMBus3index].protocol==Cmd_WriteBlock)
+                                      {
+                                              if(IS_MASK_SET(HOSTA_C, (HOSTA_FINTR+HOSTA_BDS)))   // Only Byte Done Status or Finish Interrupt bit i
+             -s set.
+                                              {
+                                                      SMBus3ByteCunt--;
+                                                      if(SMBus3ByteCunt==0x00)
+                                                      {
+                                                              SET_MASK(SMBusXStatus, SMBus3_OK);  // SMBus protocol OK
+                                                      }
+                                                      else  
+                                                      {
+                                                              SMBus3BlockPtr++;
+                                                              HOBDB_C=*SMBus3BlockPtr;
+              
+                                                              HOSTA_C=0xFE;
+                                                              SET_MASK(IER2,Int_SMBUS2);
+                                                      }
+                                              }
+                                              else                                        // No any bit is set of host status register.
+                                              {
+                                                      SET_MASK(SMBusXStatus, SMBus3_Fail);    // SMBus fail
+                                              }
+                                      }
+                                      //******************************************************************************************
+                                      // Cmd_SendByte, Cmd_RecvByte, Cmd_ReadByte, Cmd_WriteByte, Cmd_ReadWord and Cmd_WriteWord 
+                                      //******************************************************************************************
+                                      else
+                                      {
+                                              if(IS_MASK_SET(HOSTA_C, HOSTA_FINTR))       // Only Finish Interrupt bit is set.
+                                              {
+                                                      *asSCS3[SMBus3index].smbdata = D0REG_C; // read data byte 1
+                                                      if(asSCS3[SMBus3index].protocol==Cmd_ReadWord)  // read word protocol
+                                                      {
+                                                              Tmp_XPntr = asSCS3[SMBus3index].smbdata;
+                                                              Tmp_XPntr++;
+                                                              *Tmp_XPntr=D1REG_C;                 // read data byte 2
+                                                      }
+                                                      SET_MASK(SMBusXStatus, SMBus3_OK);      // SMBus protocol OK
+                                              }
+                                              else                                        // No any bit is set of host status register.
+                                              {
+                                                      SET_MASK(SMBusXStatus, SMBus3_Fail);    // SMBus protocol Fail
+                                              }
+                                      }
+                              }
+                      }
+              
+                      if(IS_MASK_SET(SMBusXStatus, (SMBus3_Fail+SMBus3_OK)))  // SMBus protocol Fail or OK
+                      {
+                              HOSTA_C=0xFE;                               // Clear Host Status register.
+                              SMBus3InUsing = 0;                          // Clear smbus in used flag.
+                              CLEAR_MASK(*asSCS3[SMBus3index].ConditionVar, asSCS3[SMBus3index].Conditionflag);   // clear OEM smbus s
+             -ervice flag.
+              
+                              if(IS_MASK_SET(SMBusXStatus, SMBus3_Fail))  // if protocol fail
+C51 COMPILER V7.50   OEM_SMBUS                                                             09/16/2020 21:10:05 PAGE 20  
+
+                              {
+                                      (asSCS3[SMBus3index].errorfunc)();      // OEM error hook function
+                              }
+                              else                                        // protocol OK
+                              {
+                                      (asSCS3[SMBus3index].hookfunc)();       // OEM OK hook function
+                              }
+                              CLEAR_MASK(SMBusXStatus, (SMBus3_OK+SMBus3_Fail));  // To clear flag
+                      }
+              }
+              
+              #endif
+1146          
+1147          //----------------------------------------------------------------------------
+1148          // The function of checking smbus need service
+1149          // Note : 
+1150          //      Always return SMBus_ClearService, if SMBusCenter is no use function.
+1151          //----------------------------------------------------------------------------
+1152          BYTE CheckSMBusNeedService(void)
+1153          {
+1154   1              if((F_Service_SMBus1==SMBus_NeedService)||(F_Service_SMBus2==SMBus_NeedService)||(F_Service_SMBus3==SMBus
+             -_NeedService))
+1155   1              {
+1156   2                      return(SMBus_NeedService);
+1157   2              }
+1158   1      
+1159   1              // Always return SMBus_ClearService, if SMBusCenter is no use function.
+1160   1              return(SMBus_ClearService);
+1161   1      }
+C51 COMPILER V7.50   OEM_SMBUS                                                             09/16/2020 21:10:05 PAGE 21  
+
+ASSEMBLY LISTING OF GENERATED OBJECT CODE
+
+
+             ; FUNCTION Com0009 (BEGIN)
+0000         L?0010:
+0000 900000      E     MOV     DPTR,#DB_SMBusAck1
+0003 F0                MOVX    @DPTR,A
+0004 E4                CLR     A
+0005 900000      E     MOV     DPTR,#DB_SMBusAddr
+0008 F0                MOVX    @DPTR,A
+0009 22                RET     
+             ; FUNCTION Com0009 (END)
+
+             ; FUNCTION _Hook_GetSMBusReadBlockByteCount (BEGIN)
+                                           ; SOURCE LINE # 11
+;---- Variable 'rblk_bc' assigned to Register 'R7' ----
+                                           ; SOURCE LINE # 12
+                                           ; SOURCE LINE # 13
+0000 900000      E     MOV     DPTR,#SMB_BCNT
+0003 EF                MOV     A,R7
+0004 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 14
+0005 22                RET     
+             ; FUNCTION _Hook_GetSMBusReadBlockByteCount (END)
+
+             ; FUNCTION Hook_SMBDebug (BEGIN)
+                                           ; SOURCE LINE # 20
+                                           ; SOURCE LINE # 21
+                                           ; SOURCE LINE # 22
+0000 7433              MOV     A,#033H
+                                           ; SOURCE LINE # 23
+0002 120000      R     LCALL   L?0010
+                                           ; SOURCE LINE # 24
+0005 22                RET     
+             ; FUNCTION Hook_SMBDebug (END)
+
+             ; FUNCTION Error_SMBDebug (BEGIN)
+                                           ; SOURCE LINE # 26
+                                           ; SOURCE LINE # 27
+                                           ; SOURCE LINE # 28
+0000 7444              MOV     A,#044H
+                                           ; SOURCE LINE # 29
+0002 120000      R     LCALL   L?0010
+                                           ; SOURCE LINE # 30
+0005 22                RET     
+             ; FUNCTION Error_SMBDebug (END)
+
+             ; FUNCTION Hook_SMB_Test_Debug (BEGIN)
+                                           ; SOURCE LINE # 36
+                                           ; SOURCE LINE # 37
+                                           ; SOURCE LINE # 39
+0000 22                RET     
+             ; FUNCTION Hook_SMB_Test_Debug (END)
+
+             ; FUNCTION Hook_SMB_Test_Error_Debug (BEGIN)
+                                           ; SOURCE LINE # 41
+                                           ; SOURCE LINE # 42
+                                           ; SOURCE LINE # 45
+0000 22                RET     
+             ; FUNCTION Hook_SMB_Test_Error_Debug (END)
+
+             ; FUNCTION CheckSMBusNeedService (BEGIN)
+C51 COMPILER V7.50   OEM_SMBUS                                                             09/16/2020 21:10:05 PAGE 22  
+
+                                           ; SOURCE LINE # 1152
+                                           ; SOURCE LINE # 1153
+                                           ; SOURCE LINE # 1154
+0000 900000      E     MOV     DPTR,#F_Service_SMBus1
+0003 E0                MOVX    A,@DPTR
+0004 6401              XRL     A,#01H
+0006 600F              JZ      ?C0007
+0008 900000      E     MOV     DPTR,#F_Service_SMBus2
+000B E0                MOVX    A,@DPTR
+000C 6401              XRL     A,#01H
+000E 6007              JZ      ?C0007
+0010 900000      E     MOV     DPTR,#F_Service_SMBus3
+0013 E0                MOVX    A,@DPTR
+0014 B40103            CJNE    A,#01H,?C0006
+0017         ?C0007:
+                                           ; SOURCE LINE # 1155
+                                           ; SOURCE LINE # 1156
+0017 7F01              MOV     R7,#01H
+0019 22                RET     
+                                           ; SOURCE LINE # 1157
+001A         ?C0006:
+                                           ; SOURCE LINE # 1160
+001A 7F00              MOV     R7,#00H
+                                           ; SOURCE LINE # 1161
+001C         ?C0008:
+001C 22                RET     
+             ; FUNCTION CheckSMBusNeedService (END)
+
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     59    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

@@ -1,0 +1,1445 @@
+C51 COMPILER V7.50   CORE_ACPI                                                             09/16/2020 21:10:03 PAGE 1   
+
+
+C51 COMPILER V7.50, COMPILATION OF MODULE CORE_ACPI
+OBJECT MODULE PLACED IN Core\Core_ACPI.OBJ
+COMPILER INVOKED BY: C:\Keil\C51\BIN\c51.exe Core\Core_ACPI.c LA WL(1) CD OT(9,SIZE) NOAREGS OR INCDIR(.\Core\Include\;.
+                    -\Oem\Include\)
+
+line level    source
+
+   1          /*----------------------------------------------------------------------------
+   2           * TITLE: CORE_ACPI.C - ACPI Handler
+   3           * FUNCTION:
+   4           * SCI event generation.
+   5           * ACPI SMBus transfer initiated by ACPI command.
+   6           *
+   7           * Copyright(c)1983-2009, Insyde Software Corporation. All Rights Reserved.
+   8           *
+   9           * You may not reproduce,distribute,publish,display,perform,modify,adapt,
+  10           * transmit,broadcast,present,recite,release,license or otherwise exploit
+  11           * any part of this publication in any form,by any means,without the prior
+  12           * written permission of Insyde Software Corporation.
+  13           *---------------------------------------------------------------------------*/
+  14          #include "CORE_INC.H"
+  15          #include "OEM_INC.H"
+  16          
+  17          /*-----------------------------------------------------------------------------
+  18           * Local Parameter Definition
+  19           *---------------------------------------------------------------------------*/
+  20          #define T_Burst_Loop        250
+  21          
+  22          //-----------------------------------------------------------------------------
+  23          // ACPI Spec.13 ACPI Embedded Controller Interface Specification
+  24          // Embedded Controller Command
+  25          // Read Embedded Controller (RD_EC) 0x80
+  26          // Write Embedded Controller (WR_EC) 0x81
+  27          // Burst Enable Embedded Controller (BE_EC) 0x82
+  28          // Burst Disable Embedded Controller (BD_EC) 0x83
+  29          // Query Embedded Controller (QR_EC) 0x84
+  30          // Process Command/Data received from System via the 2nd Host interface
+  31          //-----------------------------------------------------------------------------
+  32          void Service_PCI2(void)
+  33          {
+  34   1          if ( IsFlag0(PM1STS, IBF1) )  return;
+  35   1          vSetTotalBurstTime();   // Set Burst mode total time (2ms)
+  36   1          Service_PCI2_Main();    // Process Command/Data
+  37   1      
+  38   1      }
+  39          
+  40          //-----------------------------------------------------------------------------
+  41          // ACPI EC Command 0x80:
+  42          // ACPI Spec.13.3.1 Read Embedded Controller, RD_EC (0x80)
+  43          // Read Command (3 Bytes) -- First Bytes: Port 66H <-0x80
+  44          // Byte #1 (Command byte Header) Interrupt on IBF=0
+  45          //-----------------------------------------------------------------------------
+  46          void EC6266_CMD_80(void)
+  47          {
+  48   1          SCI_RESPONSE();     // Interrupt on IBF=0
+  49   1          PM1Step = _PM1_STEP_1;
+  50   1      
+  51   1      }
+  52          
+  53          //-----------------------------------------------------------------------------
+  54          // ACPI Spec.13.3.1 Read Embedded Controller, RD_EC (0x80)
+C51 COMPILER V7.50   CORE_ACPI                                                             09/16/2020 21:10:03 PAGE 2   
+
+  55          // Second Bytes: Port 62H -> Address Index (EC Space)
+  56          // Byte #2 (Address byte to read) No Interrupt
+  57          //-----------------------------------------------------------------------------
+  58          void EC62_DATA_STEP1(void)
+  59          {   // Byte #3 (Data read to host)
+  60   1          // PM1DO = ACPI Sepc.13.2.3 Embedded Controller Data, EC_DATA (R/W)
+  61   1          PM1Data1 = Read_MapECSpace(PM1Data);
+  62   1          PM1DO = PM1Data1;
+  63   1          SCI_RESPONSE();     // Interrupt on OBF=1
+  64   1          #if En_Record62
+                  RamDebug(PM1Data1);
+                  #endif
+  67   1          PM1Step = 0;
+  68   1      }
+  69          
+  70          //-----------------------------------------------------------------------------
+  71          // ACPI EC Command 0x81:
+  72          // ACPI Spec.13.3.2 Write Embedded Controller, WR_EC (0x81)
+  73          // Write Command (3 Bytes) -- First Bytes: Port 66H <-0x81
+  74          // Byte #1 (Command byte Header) Interrupt on IBF=0
+  75          //-----------------------------------------------------------------------------
+  76          void EC6266_CMD_81(void)
+  77          {
+  78   1          SCI_RESPONSE();     // Interrupt on IBF=0
+  79   1          PM1Step = _PM1_STEP_2;
+  80   1      
+  81   1      }
+  82          
+  83          //-----------------------------------------------------------------------------
+  84          // ACPI Spec.13.3.2 Write Embedded Controller, WR_EC (0x81)
+  85          // Second Bytes: Port 62H -> Address Index (EC Space)
+  86          // Byte #2 (Address byte to write) Interrupt on IBF=0
+  87          //-----------------------------------------------------------------------------
+  88          void EC62_DATA_STEP2(void)
+  89          {
+  90   1          PM1Data1=PM1Data;   //  Byte #2 Save Address Index
+  91   1          SCI_RESPONSE();     // Interrupt on OBF=1
+  92   1          PM1Step = _PM1_STEP_3;
+  93   1      //AGA-Kernel>>
+  94   1      
+  95   1      //AGA-Kernel<<          
+  96   1      }
+  97          
+  98          //-----------------------------------------------------------------------------
+  99          // ACPI Spec.13.3.2 Write Embedded Controller, WR_EC (0x81)
+ 100          // Third Bytes: Port 62H -> Data Write to Address Index (EC Space)
+ 101          // Byte #3 (data byte to write) Interrupt on IBF=0
+ 102          //-----------------------------------------------------------------------------
+ 103          void EC62_DATA_STEP3(void)
+ 104          {   // Byte #3 (Data read to host)
+ 105   1          SCI_RESPONSE(); // Interrupt on OBF=1
+ 106   1          Write_MapECSpace( PM1Data1,PM1Data );
+ 107   1          PM1Step = 0;
+ 108   1      }
+ 109          
+ 110          //-----------------------------------------------------------------------------
+ 111          // ACPI EC Command 0x82:
+ 112          // ACPI Spec.13.3.3 Burst Enable Embedded Controller, BE_EC (0x82)
+ 113          // Burst Enable Command (2 Bytes)
+ 114          // Byte #1 (Command byte Header) No Interrupt
+ 115          // The Embedded Controller sets the Burst bit of the Embedded Controller
+ 116          // Status Register, puts the Burst Acknowledge byte (0x90) into the SCI output
+C51 COMPILER V7.50   CORE_ACPI                                                             09/16/2020 21:10:03 PAGE 3   
+
+ 117          // buffer, sets the OBF bit, and generates an SCI to signal OSPM that it is
+ 118          // in Burst mode.
+ 119          //-----------------------------------------------------------------------------
+ 120          void EC6266_CMD_82(void)
+ 121          {
+ 122   1          SET_BIT(PM1STS,4);  // PM1STS.4 Set Burst mode flag
+ 123   1          PM1DO = 0x90;       // Byte #2 (Burst acknowledge byte)
+ 124   1          OS_ACPI_Mode = 1;   // Auto Set ACPI Mode if Host Do ECCmd82
+ 125   1          SCI_RESPONSE();     // Interrupt on IBF=0
+ 126   1          #if En_Record62
+                  RamDebug(0x90);
+                  #endif
+ 129   1      
+ 130   1      }
+ 131          
+ 132          //-----------------------------------------------------------------------------
+ 133          // ACPI EC Command 0x83:
+ 134          // ACPI Spec.13.3.4 Burst Disable Embedded Controller, BD_EC (0x83)
+ 135          // Burst Disable Command (1 Byte)
+ 136          // Byte #1 (Command byte Header) Interrupt on IBF=0
+ 137          //-----------------------------------------------------------------------------
+ 138          void EC6266_CMD_83(void)
+ 139          {
+ 140   1          CLEAR_BIT(PM1STS,4);    /* PM1STS.4 Set Burst mode flag.        */
+ 141   1          /*  Clear Burst bit in secondary Host interface status register.*/
+ 142   1          SCI_RESPONSE();         /* Interrupt on IBF=0.                  */
+ 143   1      
+ 144   1      }
+ 145          
+ 146          //-----------------------------------------------------------------------------
+ 147          // ACPI EC Command 0x84:
+ 148          // ACPI Spec.13.3.5 Query Embedded Controller, QR_EC (0x84)
+ 149          // Query Command (2 Bytes)
+ 150          // Byte #1 (Command byte Header) No Interrupt
+ 151          // Byte #2 (Query value to host) Interrupt on OBF=1
+ 152          //-----------------------------------------------------------------------------
+ 153          void EC6266_CMD_84(void)
+ 154          {
+ 155   1          //OS_ACPI_Mode = 1;   // Auto Set ACPI Mode if Host Do ECCmd84
+ 156   1          /* Byte #2 (Query value to host).*/
+ 157   1          //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ 158   1          #if (SUPPORT_ACPI_SMI)
+                  if( IsFlag1(PM1STS,5) )
+                  {   SCI_LastQueryEvent = ReadSCI_QueryValue();  }
+                  else if( IsFlag1(PM1STS,6) )
+                  {   SCI_LastQueryEvent = ReadSMI_QueryValue();  }
+                  else
+                  {
+                      SCI_LastQueryEvent = 0x00;
+                  }
+                  //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                  #else
+ 169   1          SCI_LastQueryEvent = ReadSCI_QueryValue();
+ 170   1          #endif
+ 171   1          //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ 172   1          PM1DO = SCI_LastQueryEvent;
+ 173   1          SCI_RESPONSE(); /* Interrupt on IBF=0.*/
+ 174   1          //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ 175   1          #if SCI_EVENT_LOG
+ 176   1          if( SCI_LastQueryEvent > 0 )
+ 177   1          {
+ 178   2              SCI_SMI_Event_Record[(SCI_SMI_Index_Record&0x0F)] = SCI_LastQueryEvent;
+C51 COMPILER V7.50   CORE_ACPI                                                             09/16/2020 21:10:03 PAGE 4   
+
+ 179   2              SCI_SMI_Index_Record++;
+ 180   2          }
+ 181   1          #endif
+ 182   1          //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ 183   1          SCI_QueryEvent = 0x00;
+ 184   1          SCI_StepTimer = 0;
+ 185   1          WAIT_SCI_CENTER = 0;
+ 186   1      }
+ 187          
+ 188          //-----------------------------------------------------------------------------
+ 189          // Generate SCIs in response to related transactions
+ 190          //-----------------------------------------------------------------------------
+ 191          void SCI_RESPONSE(void)
+ 192          {
+ 193   1      
+ 194   1          if (!OS_ACPI_Mode)  return;
+ 195   1      
+ 196   1          SCI_ON();
+ 197   1          //Loop_Delay(T_SCI_RESPONSE);
+ 198   1          _nop_();
+ 199   1          SCI_OFF();
+ 200   1      
+ 201   1      }
+ 202          
+ 203          //-----------------------------------------------------------------------------
+ 204          // Generate SCIs for Query event request
+ 205          //-----------------------------------------------------------------------------
+ 206          void SCI_INTERRUPT(void)
+ 207          {
+ 208   1          SCI_ON();
+ 209   1          _nop_();
+ 210   1          //Loop_Delay(T_SCI_EVENT);
+ 211   1          SCI_OFF();
+ 212   1      }
+ 213          
+ 214          //-----------------------------------------------------------------------------
+ 215          // Generate SMIs for Query event request
+ 216          //-----------------------------------------------------------------------------
+ 217          void SMI_INTERRUPT(void)
+ 218          {
+ 219   1      
+ 220   1          SMI_ON();
+ 221   1          Loop_Delay(T_SMI_EVENT);
+ 222   1          SMI_OFF();
+ 223   1      
+ 224   1      }
+ 225          
+ 226          //-----------------------------------------------------------------------------
+ 227          // FUNCTION: Loop Delay - Delay a number of microseconds.
+ 228          // Input:  0x00 - 0xFF for delay timing.
+ 229          //-----------------------------------------------------------------------------
+ 230          void Loop_Delay(BYTE delay)
+ 231          {
+ 232   1          while ( delay > 0 )
+ 233   1          {
+ 234   2              delay--;
+ 235   2          }
+ 236   1      
+ 237   1      }
+ 238          //-----------------------------------------------------------------------------
+ 239          
+ 240          //-----------------------------------------------------------------------------
+C51 COMPILER V7.50   CORE_ACPI                                                             09/16/2020 21:10:03 PAGE 5   
+
+ 241          // Upon receipt of the QR_EC command byte, the embedded
+ 242          // controller places a notification byte with a value between 0-255,
+ 243          // indicating the cause of the notification. The notification byte
+ 244          // indicates which interrupt handler operation should be executed
+ 245          // by OSPM to process the embedded controller SCI.
+ 246          // The query value of zero is reserved for a spurious query result
+ 247          // and indicates no outstanding event.
+ 248          //-----------------------------------------------------------------------------
+ 249          //Function: ReadSCI_QueryValue
+ 250          //          Read Query event Value
+ 251          //-----------------------------------------------------------------------------
+ 252          BYTE ReadSCI_QueryValue(void)
+ 253          {
+ 254   1          SCI_QueryEvent = SCI_Event_Buffer[SCI_Event_Out_Index];
+ 255   1          if( SCI_QueryEvent == 0x00 )
+ 256   1          {
+ 257   2              CLEAR_BIT(PM1STS,5);
+ 258   2              return SCI_QueryEvent;
+ 259   2          }
+ 260   1      
+ 261   1          SCI_Event_Buffer[SCI_Event_Out_Index] = 0x00;
+ 262   1          SCI_Event_Out_Index++;
+ 263   1          if (SCI_Event_Out_Index > EVENT_BUFFER_SIZE)
+ 264   1          {
+ 265   2              SCI_Event_Out_Index = 0x00;
+ 266   2          }
+ 267   1          return SCI_QueryEvent;
+ 268   1      
+ 269   1      }
+ 270          
+ 271          //-----------------------------------------------------------------------------
+ 272          //Function: WriteSCI_QueryValue
+ 273          //          Write Query Value to Buffer
+ 274          //-----------------------------------------------------------------------------
+ 275          BYTE WriteSCI_QueryValue(BYTE NewSCI)
+ 276          {
+ 277   1          if( !CORE_PMFLAG_S0 )       return 0x00;
+ 278   1      
+ 279   1          if( (SCI_Event_Buffer[SCI_Event_In_Index]) == 0x00  )
+ 280   1          {
+ 281   2              SCI_Event_Buffer[SCI_Event_In_Index] = NewSCI;
+ 282   2              SCI_Event_In_Index++;
+ 283   2          }
+ 284   1          if( SCI_Event_In_Index > EVENT_BUFFER_SIZE )
+ 285   1          {
+ 286   2              SCI_Event_In_Index = 0x00;
+ 287   2          }
+ 288   1      
+ 289   1          SET_BIT(PM1STS,5);
+ 290   1          if ( WAIT_SCI_CENTER )  {   return 0x00;    }
+ 291   1          WAIT_SCI_CENTER = 1;    //Recovery default SCI center
+ 292   1          SCI_RESPONSE();
+ 293   1          return 0x00;
+ 294   1      
+ 295   1      }
+ 296          
+ 297          //-----------------------------------------------------------------------------
+ 298          //Function: ReadSMI_QueryValue
+ 299          //          Read Query event Value
+ 300          //-----------------------------------------------------------------------------
+ 301          BYTE ReadSMI_QueryValue(void)
+ 302          {
+C51 COMPILER V7.50   CORE_ACPI                                                             09/16/2020 21:10:03 PAGE 6   
+
+ 303   1          SMI_QueryEvent = SMI_Event_Buffer[SMI_Event_Out_Index];
+ 304   1      
+ 305   1          if( SMI_QueryEvent == 0x00 )
+ 306   1          {
+ 307   2              CLEAR_BIT(PM1STS,6);
+ 308   2              return SCI_QueryEvent;
+ 309   2          }
+ 310   1      
+ 311   1          SMI_Event_Buffer[SMI_Event_Out_Index] = 0x00;
+ 312   1          SMI_Event_Out_Index++;
+ 313   1          if (SMI_Event_Out_Index > EVENT_BUFFER_SIZE)
+ 314   1          {
+ 315   2              SMI_Event_Out_Index = 0x00;
+ 316   2          }
+ 317   1          return SMI_QueryEvent;
+ 318   1      
+ 319   1      }
+ 320          
+ 321          //-----------------------------------------------------------------------------
+ 322          //Function: WriteSMI_QueryValue
+ 323          //          Write Query Value to Buffer
+ 324          //-----------------------------------------------------------------------------
+ 325          BYTE WriteSMI_QueryValue(BYTE NewSMI)
+ 326          {
+ 327   1      
+ 328   1          if( NewSMI == 0x00 )    return 0x00;
+ 329   1      
+ 330   1          if( (SMI_Event_Buffer[SMI_Event_In_Index]) == 0x00  )
+ 331   1          {
+ 332   2              SMI_Event_Buffer[SMI_Event_In_Index] = NewSMI;
+ 333   2              SMI_Event_In_Index++;
+ 334   2          }
+ 335   1          if( SMI_Event_In_Index > EVENT_BUFFER_SIZE )
+ 336   1          {
+ 337   2              SMI_Event_In_Index = 0x00;
+ 338   2          }
+ 339   1          return 0x00;
+ 340   1      
+ 341   1      }
+ 342          
+ 343          //-----------------------------------------------------------------------------
+ 344          //Function: ClearEventBuffer
+ 345          //          Clear SCI/SMI Event Buffer
+ 346          //-----------------------------------------------------------------------------
+ 347          void ClearEventBuffer(void)
+ 348          {
+ 349   1          BYTE  i;
+ 350   1          for( i=0; i<EVENT_BUFFER_SIZE; i++ )
+ 351   1          {
+ 352   2              SMI_Event_Buffer[i] = 0;
+ 353   2              SCI_Event_Buffer[i] = 0;
+ 354   2          }
+ 355   1          SCI_Event_In_Index  = 0x00;
+ 356   1          SMI_Event_In_Index  = 0x00;
+ 357   1          SCI_Event_Out_Index = 0x00;
+ 358   1          SMI_Event_Out_Index = 0x00;
+ 359   1      }
+ 360          
+ 361          //-----------------------------------------------------------------------------
+ 362          //Function: Service_EventCenter
+ 363          //
+ 364          //-----------------------------------------------------------------------------
+C51 COMPILER V7.50   CORE_ACPI                                                             09/16/2020 21:10:03 PAGE 7   
+
+ 365          void Service_EventCenter(void)
+ 366          {
+ 367   1          //-------------------------------------------------------------------------
+ 368   1          SCI_StepTimer++;
+ 369   1          if( SCI_StepTimer > T_SCI_STEP )
+ 370   1          {
+ 371   2              SCI_StepTimer = 0;
+ 372   2      
+ 373   2              SCI_QueryEvent = SCI_Event_Buffer[SCI_Event_Out_Index];
+ 374   2              if( SCI_QueryEvent > 0x00 && CORE_PMFLAG_S0 )
+ 375   2              {
+ 376   3                  if( OS_ACPI_Mode )
+ 377   3                  {
+ 378   4                      SET_BIT(PM1STS,5);
+ 379   4                      CLR_BIT(PM1STS,6);
+ 380   4                        SCI_INTERRUPT();
+ 381   4                      return ;
+ 382   4                  }
+ 383   3                  #if (SUPPORT_ACPI_SMI)
+                          else
+                          {
+                              SMI_INTERRUPT();
+                          }
+                          #endif
+ 389   3              }
+ 390   2          }
+ 391   1          //------------------------------------------------------------------------
+ 392   1          #if (SUPPORT_ACPI_SMI)
+                  SMI_StepTimer++;
+                  if( SMI_StepTimer > T_SMI_STEP )
+                  {
+                      SMI_QueryEvent = SMI_Event_Buffer[SMI_Event_Out_Index];
+                      if( SMI_QueryEvent > 0x00 && CORE_PMFLAG_S0 )
+                      {
+                          if( OS_ACPI_Mode )
+                          {
+                              if( !(IsFlag1(PM1STS,5) ) )    //SCI Service First
+                              {
+                                  SET_BIT(PM1STS,6);
+                                  SMI_INTERRUPT();
+                                  return ;
+                              }
+                          }
+                          else
+                          {
+                              SMI_INTERRUPT();
+                          }
+                      }
+                  }
+                  #endif
+ 415   1          //------------------------------------------------------------------------
+ 416   1      }
+ 417          
+ 418          
+ 419          //-----------------------------------------------------------------------------
+ 420          // Burst mode or normal mode
+ 421          //-----------------------------------------------------------------------------
+ 422          bit CheckBurstMode(void)
+ 423          {
+ 424   1          WORD BurstLoopOut;
+ 425   1      
+ 426   1          BurstLoopOut = T_Burst_Loop;
+C51 COMPILER V7.50   CORE_ACPI                                                             09/16/2020 21:10:03 PAGE 8   
+
+ 427   1      
+ 428   1          while((PM1STS&0x02)==0x00)
+ 429   1          {
+ 430   2              BurstLoopOut--;
+ 431   2              if( TF1 || (BurstLoopOut==0) )  // Time-Out
+ 432   2              {
+ 433   3                  ClearFlag( PM1STS,BURST );
+ 434   3                  SCI_RESPONSE();     // Generate Interrupt
+ 435   3                  TF1=0;
+ 436   3                  return(0);
+ 437   3              }
+ 438   2          }
+ 439   1          return(1);
+ 440   1      
+ 441   1      }
+ 442          
+ 443          //-----------------------------------------------------------------------------
+ 444          // Set Burst mode total time (1ms)
+ 445          //-----------------------------------------------------------------------------
+ 446          void vSetTotalBurstTime(void)
+ 447          {
+ 448   1          ET1 = 0;                        // Disable timer1 interrupt
+ 449   1          TH1 = (T_ACPI_BurstTime)>>8;    // Set timer1 counter 2ms
+ 450   1          TL1 = (T_ACPI_BurstTime);       // Set timer1 counter 2ms
+ 451   1          TR1 = 1;                        // Enable timer1
+ 452   1          TF1 = 0;                        // Clear overflow flag
+ 453   1      }
+ 454          //-----------------------------------------------------------------------------
+ 455          
+ 456          //-----------------------------------------------------------------------------
+ 457          const FUNCT_PTR_V_V code EC6266Cmd8X_Table[16] =
+ 458          {
+ 459              EC6266_CMD_80,          // Process ACPI command 80
+ 460              EC6266_CMD_81,          // Process ACPI command 81
+ 461              EC6266_CMD_82,          // Process ACPI command 82
+ 462              EC6266_CMD_83,          // Process ACPI command 83
+ 463              EC6266_CMD_84,          // Process ACPI command 84
+ 464              EC6266_CMD_85,          // Process ACPI command 85
+ 465              EC6266_CMD_86,          // Process ACPI command 86
+ 466              EC6266_CMD_87,          // Process ACPI command 87
+ 467              EC6266_CMD_88,          // Process ACPI command 88
+ 468              EC6266_CMD_89,          // Process ACPI command 89
+ 469              EC6266_CMD_8A,          // Process ACPI command 8A
+ 470              EC6266_CMD_8B,          // Process ACPI command 8B
+ 471              EC6266_CMD_8C,          // Process ACPI command 8C
+ 472              EC6266_CMD_8D,          // Process ACPI command 8D
+ 473              EC6266_CMD_8E,          // Process ACPI command 8E
+ 474              EC6266_CMD_8F           // Process ACPI command 8F
+ 475          };
+ 476          //-----------------------------------------------------------------------------
+ 477          void EC_Cmd_8X(void)
+ 478          {
+ 479   1          (EC6266Cmd8X_Table[PM1Cmd&0x0F])();
+ 480   1      }
+ 481          //-----------------------------------------------------------------------------
+ 482          // Process Command/Data received from System via the 2nd Host interface
+ 483          //-----------------------------------------------------------------------------
+ 484          const FUNCT_PTR_V_V code Port66_Table[16] =
+ 485          {
+ 486              EC_Cmd_0X,          // Process ACPI command 0x
+ 487              EC_Cmd_1X,          // Process ACPI command 1x
+ 488              EC_Cmd_2X,          // Process ACPI command 2x
+C51 COMPILER V7.50   CORE_ACPI                                                             09/16/2020 21:10:03 PAGE 9   
+
+ 489              EC_Cmd_3X,          // Process ACPI command 3x
+ 490              EC_Cmd_4X,          // Process ACPI command 4x
+ 491              EC_Cmd_5X,          // Process ACPI command 5x
+ 492              EC_Cmd_6X,          // Process ACPI command 6x
+ 493              EC_Cmd_7X,          // Process ACPI command 7x
+ 494              EC_Cmd_8X,          // Process ACPI command 8x
+ 495              EC_Cmd_9X,          // Process ACPI command 9x
+ 496              EC_Cmd_AX,          // Process ACPI command Ax
+ 497              EC_Cmd_BX,          // Process ACPI command Bx
+ 498              EC_Cmd_CX,          // Process ACPI command Cx
+ 499              EC_Cmd_DX,          // Process ACPI command Dx
+ 500              EC_Cmd_EX,          // Process ACPI command Ex
+ 501              EC_Cmd_FX,          // Process ACPI command Fx
+ 502          };
+ 503          //-----------------------------------------------------------------------------
+ 504          const FUNCT_PTR_V_V code Port62_Table[16] =
+ 505          {
+ 506              EC62_DATA_STEP0,    // PM1Step=0 Process ACPI EC data
+ 507              EC62_DATA_STEP1,    // PM1Step=1 Process ACPI EC data
+ 508              EC62_DATA_STEP2,    // PM1Step=2 Process ACPI EC data
+ 509              EC62_DATA_STEP3,    // PM1Step=3 Process ACPI EC data
+ 510              EC62_DATA_STEP4,    // PM1Step=4 Process ACPI EC data
+ 511              EC62_DATA_STEP5,    // PM1Step=5 Process ACPI EC data
+ 512              EC62_DATA_STEP6,    // PM1Step=6 Process ACPI EC data
+ 513              EC62_DATA_STEP7     // PM1Step=7 Process ACPI EC data
+ 514          };
+ 515          //-----------------------------------------------------------------------------
+ 516          // Service Embedded Controller Interface
+ 517          //-----------------------------------------------------------------------------
+ 518          void Service_PCI2_Main(void)
+ 519          {
+ 520   1      
+ 521   1          do
+ 522   1          {   // PM1STS = Embedded Controller Status, EC_SC (R)
+ 523   2              if ( PM1STS & C_D1 )  // CMD:1=Byte in data register is a command byte
+ 524   2              {
+ 525   3                  PM1Cmd  = PM1DI; // Load command from Port Buffer
+ 526   3                  PM1Step = 0;
+ 527   3      
+ 528   3                  #if SUPPORTED_RECORDER
+                          if(En_Record66 )
+                          {
+                              RamDebug(0x66); RamDebug(PM1Cmd);
+                          }
+                          #endif
+ 534   3      
+ 535   3                  (Port66_Table[PM1Cmd>>4])(); // Handle command
+ 536   3      
+ 537   3              }
+ 538   2              else    // CMD:0=Byte in data register is a data byte
+ 539   2              {
+ 540   3                  //PM1DI,PM1DO=ACPI Sepc.13.2.3 Embedded Controller Data,EC_DATA(R/W)
+ 541   3                  PM1Data = PM1DI;         // Load data
+ 542   3                  if (PM1Step!=0x00)
+ 543   3                  {
+ 544   4                      #if SUPPORTED_RECORDER
+                              if(En_Record62)
+                              {
+                                  RamDebug(0x62); RamDebug(PM1Data);
+                              }
+                              #endif
+ 550   4      
+C51 COMPILER V7.50   CORE_ACPI                                                             09/16/2020 21:10:03 PAGE 10  
+
+ 551   4                      (Port62_Table[PM1Step&0x07])(); // Handle command data
+ 552   4      
+ 553   4                  }
+ 554   3                  else
+ 555   3                  {
+ 556   4                      while( ECUnProcessCnt < 0xFF )
+ 557   4                      {
+ 558   5                          ECUnProcessCnt++;
+ 559   5                      }
+ 560   4                  }
+ 561   3              }
+ 562   2      
+ 563   2          }
+ 564   1          while( IsFlag1(PM1STS,BURST) && CheckBurstMode() );
+ 565   1      
+ 566   1          ET1 = 1;    // Enable timer1 interrupt
+ 567   1      
+ 568   1          #if  SUPPORTED_ACPI_SMB_EC
+                  // ACPI Spec.13.9 SMBus Host Controller In terface via Embedded Controller
+                  ACPISMBusviaEC();   // ACPI SMBus command  process
+                  #endif
+ 572   1      }
+ 573          //-----------------------------------------------------------------------------
+ 574          
+ 575          /*-----------------------------------------------------------------------------
+ 576           * End
+ 577           *---------------------------------------------------------------------------*/
+C51 COMPILER V7.50   CORE_ACPI                                                             09/16/2020 21:10:03 PAGE 11  
+
+ASSEMBLY LISTING OF GENERATED OBJECT CODE
+
+
+             ; FUNCTION Com003F (BEGIN)
+0000         L?0064:
+0000         L?0065:
+0000 900000      E     MOV     DPTR,#SCI_Event_Out_Index
+0003         L?0066:
+0003 E0                MOVX    A,@DPTR
+0004 2400        E     ADD     A,#LOW SCI_Event_Buffer
+0006         L?0067:
+0006 F582              MOV     DPL,A
+0008 E4                CLR     A
+0009 3400        E     ADDC    A,#HIGH SCI_Event_Buffer
+000B F583              MOV     DPH,A
+000D 22                RET     
+000E         L?0068:
+000E 900000      E     MOV     DPTR,#SMI_Event_Out_Index
+0011         L?0069:
+0011 E0                MOVX    A,@DPTR
+0012 2400        E     ADD     A,#LOW SMI_Event_Buffer
+0014         L?0070:
+0014 F582              MOV     DPL,A
+0016 E4                CLR     A
+0017 3400        E     ADDC    A,#HIGH SMI_Event_Buffer
+0019 F583              MOV     DPH,A
+001B 22                RET     
+001C         L?0071:
+001C F583              MOV     DPH,A
+001E E4                CLR     A
+001F 93                MOVC    A,@A+DPTR
+0020 FE                MOV     R6,A
+0021 7401              MOV     A,#01H
+0023 93                MOVC    A,@A+DPTR
+0024 CA                XCH     A,R2
+0025 EE                MOV     A,R6
+0026 CA                XCH     A,R2
+0027 F9                MOV     R1,A
+0028 22                RET     
+             ; FUNCTION Com003F (END)
+
+             ; FUNCTION Service_PCI2 (BEGIN)
+                                           ; SOURCE LINE # 32
+                                           ; SOURCE LINE # 33
+                                           ; SOURCE LINE # 34
+0000 900000      E     MOV     DPTR,#PM1STS
+0003 E0                MOVX    A,@DPTR
+0004 30E106            JNB     ACC.1,?C0002
+0007         ?C0001:
+                                           ; SOURCE LINE # 35
+0007 120000      R     LCALL   vSetTotalBurstTime
+                                           ; SOURCE LINE # 36
+000A 120000      R     LCALL   Service_PCI2_Main
+                                           ; SOURCE LINE # 38
+000D         ?C0002:
+000D 22                RET     
+             ; FUNCTION Service_PCI2 (END)
+
+             ; FUNCTION EC6266_CMD_80 (BEGIN)
+                                           ; SOURCE LINE # 46
+                                           ; SOURCE LINE # 47
+                                           ; SOURCE LINE # 48
+C51 COMPILER V7.50   CORE_ACPI                                                             09/16/2020 21:10:03 PAGE 12  
+
+0000 120000      R     LCALL   SCI_RESPONSE
+                                           ; SOURCE LINE # 49
+0003 750001      E     MOV     PM1Step,#01H
+                                           ; SOURCE LINE # 51
+0006 22                RET     
+             ; FUNCTION EC6266_CMD_80 (END)
+
+             ; FUNCTION EC62_DATA_STEP1 (BEGIN)
+                                           ; SOURCE LINE # 58
+                                           ; SOURCE LINE # 59
+                                           ; SOURCE LINE # 61
+0000 AF00        E     MOV     R7,PM1Data
+0002 120000      E     LCALL   _Read_MapECSpace
+0005 8F00        E     MOV     PM1Data1,R7
+                                           ; SOURCE LINE # 62
+0007 900000      E     MOV     DPTR,#PM1DO
+000A E500        E     MOV     A,PM1Data1
+000C F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 63
+000D 120000      R     LCALL   SCI_RESPONSE
+                                           ; SOURCE LINE # 67
+0010 E4                CLR     A
+0011 F500        E     MOV     PM1Step,A
+                                           ; SOURCE LINE # 68
+0013 22                RET     
+             ; FUNCTION EC62_DATA_STEP1 (END)
+
+             ; FUNCTION EC6266_CMD_81 (BEGIN)
+                                           ; SOURCE LINE # 76
+                                           ; SOURCE LINE # 77
+                                           ; SOURCE LINE # 78
+0000 120000      R     LCALL   SCI_RESPONSE
+                                           ; SOURCE LINE # 79
+0003 750002      E     MOV     PM1Step,#02H
+                                           ; SOURCE LINE # 81
+0006 22                RET     
+             ; FUNCTION EC6266_CMD_81 (END)
+
+             ; FUNCTION EC62_DATA_STEP2 (BEGIN)
+                                           ; SOURCE LINE # 88
+                                           ; SOURCE LINE # 89
+                                           ; SOURCE LINE # 90
+0000 850000      E     MOV     PM1Data1,PM1Data
+                                           ; SOURCE LINE # 91
+0003 120000      R     LCALL   SCI_RESPONSE
+                                           ; SOURCE LINE # 92
+0006 750003      E     MOV     PM1Step,#03H
+                                           ; SOURCE LINE # 96
+0009 22                RET     
+             ; FUNCTION EC62_DATA_STEP2 (END)
+
+             ; FUNCTION EC62_DATA_STEP3 (BEGIN)
+                                           ; SOURCE LINE # 103
+                                           ; SOURCE LINE # 104
+                                           ; SOURCE LINE # 105
+0000 120000      R     LCALL   SCI_RESPONSE
+                                           ; SOURCE LINE # 106
+0003 AD00        E     MOV     R5,PM1Data
+0005 AF00        E     MOV     R7,PM1Data1
+0007 120000      E     LCALL   _Write_MapECSpace
+                                           ; SOURCE LINE # 107
+000A E4                CLR     A
+C51 COMPILER V7.50   CORE_ACPI                                                             09/16/2020 21:10:03 PAGE 13  
+
+000B F500        E     MOV     PM1Step,A
+                                           ; SOURCE LINE # 108
+000D 22                RET     
+             ; FUNCTION EC62_DATA_STEP3 (END)
+
+             ; FUNCTION EC6266_CMD_82 (BEGIN)
+                                           ; SOURCE LINE # 120
+                                           ; SOURCE LINE # 121
+                                           ; SOURCE LINE # 122
+0000 900000      E     MOV     DPTR,#PM1STS
+0003 E0                MOVX    A,@DPTR
+0004 4410              ORL     A,#010H
+0006 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 123
+0007 900000      E     MOV     DPTR,#PM1DO
+000A 7490              MOV     A,#090H
+000C F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 124
+000D 7800        E     MOV     R0,#LOW CORE_PMFLAG
+000F E6                MOV     A,@R0
+0010 4480              ORL     A,#080H
+0012 F6                MOV     @R0,A
+                                           ; SOURCE LINE # 125
+0013 020000      R     LJMP    SCI_RESPONSE
+             ; FUNCTION EC6266_CMD_82 (END)
+
+             ; FUNCTION EC6266_CMD_83 (BEGIN)
+                                           ; SOURCE LINE # 138
+                                           ; SOURCE LINE # 139
+                                           ; SOURCE LINE # 140
+0000 900000      E     MOV     DPTR,#PM1STS
+0003 E0                MOVX    A,@DPTR
+0004 54EF              ANL     A,#0EFH
+0006 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 142
+0007 020000      R     LJMP    SCI_RESPONSE
+             ; FUNCTION EC6266_CMD_83 (END)
+
+             ; FUNCTION EC6266_CMD_84 (BEGIN)
+                                           ; SOURCE LINE # 153
+                                           ; SOURCE LINE # 154
+                                           ; SOURCE LINE # 169
+0000 120000      R     LCALL   ReadSCI_QueryValue
+0003 900000      E     MOV     DPTR,#SCI_LastQueryEvent
+0006 EF                MOV     A,R7
+0007 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 172
+0008 E0                MOVX    A,@DPTR
+0009 900000      E     MOV     DPTR,#PM1DO
+000C F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 173
+000D 120000      R     LCALL   SCI_RESPONSE
+                                           ; SOURCE LINE # 176
+0010 900000      E     MOV     DPTR,#SCI_LastQueryEvent
+0013 E0                MOVX    A,@DPTR
+0014 D3                SETB    C
+0015 9400              SUBB    A,#00H
+0017 4019              JC      ?C0010
+                                           ; SOURCE LINE # 177
+                                           ; SOURCE LINE # 178
+0019 E0                MOVX    A,@DPTR
+001A FF                MOV     R7,A
+C51 COMPILER V7.50   CORE_ACPI                                                             09/16/2020 21:10:03 PAGE 14  
+
+001B 900000      E     MOV     DPTR,#SCI_SMI_Index_Record
+001E E0                MOVX    A,@DPTR
+001F 540F              ANL     A,#0FH
+0021 2400        E     ADD     A,#LOW SCI_SMI_Event_Record
+0023 F582              MOV     DPL,A
+0025 E4                CLR     A
+0026 3400        E     ADDC    A,#HIGH SCI_SMI_Event_Record
+0028 F583              MOV     DPH,A
+002A EF                MOV     A,R7
+002B F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 179
+002C 900000      E     MOV     DPTR,#SCI_SMI_Index_Record
+002F E0                MOVX    A,@DPTR
+0030 04                INC     A
+0031 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 180
+0032         ?C0010:
+                                           ; SOURCE LINE # 183
+0032 E4                CLR     A
+0033 900000      E     MOV     DPTR,#SCI_QueryEvent
+0036 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 184
+0037 900000      E     MOV     DPTR,#SCI_StepTimer
+003A F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 185
+003B 7800        E     MOV     R0,#LOW CORE_PMFLAG
+003D E6                MOV     A,@R0
+003E 54BF              ANL     A,#0BFH
+0040 F6                MOV     @R0,A
+                                           ; SOURCE LINE # 186
+0041 22                RET     
+             ; FUNCTION EC6266_CMD_84 (END)
+
+             ; FUNCTION SCI_RESPONSE (BEGIN)
+                                           ; SOURCE LINE # 191
+                                           ; SOURCE LINE # 192
+                                           ; SOURCE LINE # 194
+0000 7800        E     MOV     R0,#LOW CORE_PMFLAG
+0002 E6                MOV     A,@R0
+0003 C4                SWAP    A
+0004 13                RRC     A
+0005 13                RRC     A
+0006 13                RRC     A
+0007 5401              ANL     A,#01H
+0009 30E00C            JNB     ACC.0,?C0013
+000C         ?C0012:
+                                           ; SOURCE LINE # 196
+000C 900000      E     MOV     DPTR,#GPIO_8x
+000F E0                MOVX    A,@DPTR
+0010 54DF              ANL     A,#0DFH
+0012 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 198
+0013 00                NOP     
+                                           ; SOURCE LINE # 199
+0014 E0                MOVX    A,@DPTR
+0015 4420              ORL     A,#020H
+0017 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 201
+0018         ?C0013:
+0018 22                RET     
+             ; FUNCTION SCI_RESPONSE (END)
+
+C51 COMPILER V7.50   CORE_ACPI                                                             09/16/2020 21:10:03 PAGE 15  
+
+             ; FUNCTION SCI_INTERRUPT (BEGIN)
+                                           ; SOURCE LINE # 206
+                                           ; SOURCE LINE # 207
+                                           ; SOURCE LINE # 208
+0000 900000      E     MOV     DPTR,#GPIO_8x
+0003 E0                MOVX    A,@DPTR
+0004 54DF              ANL     A,#0DFH
+0006 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 209
+0007 00                NOP     
+                                           ; SOURCE LINE # 211
+0008 E0                MOVX    A,@DPTR
+0009 4420              ORL     A,#020H
+000B F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 212
+000C 22                RET     
+             ; FUNCTION SCI_INTERRUPT (END)
+
+             ; FUNCTION SMI_INTERRUPT (BEGIN)
+                                           ; SOURCE LINE # 217
+                                           ; SOURCE LINE # 218
+                                           ; SOURCE LINE # 220
+0000 900000      E     MOV     DPTR,#GPIO_7x
+0003 E0                MOVX    A,@DPTR
+0004 54FD              ANL     A,#0FDH
+0006 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 221
+0007 7F19              MOV     R7,#019H
+0009 120000      R     LCALL   _Loop_Delay
+                                           ; SOURCE LINE # 222
+000C 900000      E     MOV     DPTR,#GPIO_7x
+000F E0                MOVX    A,@DPTR
+0010 4402              ORL     A,#02H
+0012 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 224
+0013 22                RET     
+             ; FUNCTION SMI_INTERRUPT (END)
+
+             ; FUNCTION _Loop_Delay (BEGIN)
+                                           ; SOURCE LINE # 230
+;---- Variable 'delay' assigned to Register 'R7' ----
+                                           ; SOURCE LINE # 231
+0000         ?C0016:
+                                           ; SOURCE LINE # 232
+0000 EF                MOV     A,R7
+0001 D3                SETB    C
+0002 9400              SUBB    A,#00H
+0004 4003              JC      ?C0018
+                                           ; SOURCE LINE # 233
+                                           ; SOURCE LINE # 234
+0006 1F                DEC     R7
+                                           ; SOURCE LINE # 235
+0007 80F7              SJMP    ?C0016
+                                           ; SOURCE LINE # 237
+0009         ?C0018:
+0009 22                RET     
+             ; FUNCTION _Loop_Delay (END)
+
+             ; FUNCTION ReadSCI_QueryValue (BEGIN)
+                                           ; SOURCE LINE # 252
+                                           ; SOURCE LINE # 253
+                                           ; SOURCE LINE # 254
+C51 COMPILER V7.50   CORE_ACPI                                                             09/16/2020 21:10:03 PAGE 16  
+
+0000 120000      R     LCALL   L?0064
+0003 E0                MOVX    A,@DPTR
+0004 900000      E     MOV     DPTR,#SCI_QueryEvent
+0007 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 255
+0008 E0                MOVX    A,@DPTR
+0009 7009              JNZ     ?C0019
+                                           ; SOURCE LINE # 256
+                                           ; SOURCE LINE # 257
+000B 900000      E     MOV     DPTR,#PM1STS
+000E E0                MOVX    A,@DPTR
+000F 54DF              ANL     A,#0DFH
+0011 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 258
+0012 8013              SJMP    ?C0061
+                                           ; SOURCE LINE # 259
+0014         ?C0019:
+                                           ; SOURCE LINE # 261
+0014 120000      R     LCALL   L?0064
+0017 E4                CLR     A
+0018 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 262
+0019 900000      E     MOV     DPTR,#SCI_Event_Out_Index
+001C E0                MOVX    A,@DPTR
+001D 04                INC     A
+001E F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 263
+001F E0                MOVX    A,@DPTR
+0020 D3                SETB    C
+0021 9409              SUBB    A,#09H
+0023 4002              JC      ?C0021
+                                           ; SOURCE LINE # 264
+                                           ; SOURCE LINE # 265
+0025 E4                CLR     A
+0026 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 266
+0027         ?C0021:
+                                           ; SOURCE LINE # 267
+0027         ?C0061:
+0027 900000      E     MOV     DPTR,#SCI_QueryEvent
+002A E0                MOVX    A,@DPTR
+002B FF                MOV     R7,A
+                                           ; SOURCE LINE # 269
+002C         ?C0020:
+002C 22                RET     
+             ; FUNCTION ReadSCI_QueryValue (END)
+
+             ; FUNCTION _WriteSCI_QueryValue (BEGIN)
+                                           ; SOURCE LINE # 275
+;---- Variable 'NewSCI' assigned to Register 'R7' ----
+                                           ; SOURCE LINE # 276
+                                           ; SOURCE LINE # 277
+0000 7800        E     MOV     R0,#LOW CORE_PMFLAG
+0002 E6                MOV     A,@R0
+0003 20E003            JB      ACC.0,?C0022
+0006 7F00              MOV     R7,#00H
+0008 22                RET     
+0009         ?C0022:
+                                           ; SOURCE LINE # 279
+0009 900000      E     MOV     DPTR,#SCI_Event_In_Index
+000C 120000      R     LCALL   L?0066
+000F E0                MOVX    A,@DPTR
+C51 COMPILER V7.50   CORE_ACPI                                                             09/16/2020 21:10:03 PAGE 17  
+
+0010 700E              JNZ     ?C0024
+                                           ; SOURCE LINE # 280
+                                           ; SOURCE LINE # 281
+0012 900000      E     MOV     DPTR,#SCI_Event_In_Index
+0015 120000      R     LCALL   L?0066
+0018 EF                MOV     A,R7
+0019 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 282
+001A 900000      E     MOV     DPTR,#SCI_Event_In_Index
+001D E0                MOVX    A,@DPTR
+001E 04                INC     A
+001F F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 283
+0020         ?C0024:
+                                           ; SOURCE LINE # 284
+0020 900000      E     MOV     DPTR,#SCI_Event_In_Index
+0023 E0                MOVX    A,@DPTR
+0024 D3                SETB    C
+0025 9409              SUBB    A,#09H
+0027 4002              JC      ?C0025
+                                           ; SOURCE LINE # 285
+                                           ; SOURCE LINE # 286
+0029 E4                CLR     A
+002A F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 287
+002B         ?C0025:
+                                           ; SOURCE LINE # 289
+002B 900000      E     MOV     DPTR,#PM1STS
+002E E0                MOVX    A,@DPTR
+002F 4420              ORL     A,#020H
+0031 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 290
+0032 7800        E     MOV     R0,#LOW CORE_PMFLAG
+0034 E6                MOV     A,@R0
+0035 FF                MOV     R7,A
+0036 C4                SWAP    A
+0037 13                RRC     A
+0038 13                RRC     A
+0039 5403              ANL     A,#03H
+003B 30E003            JNB     ACC.0,?C0026
+003E 7F00              MOV     R7,#00H
+0040 22                RET     
+0041         ?C0026:
+                                           ; SOURCE LINE # 291
+0041 7800        E     MOV     R0,#LOW CORE_PMFLAG
+0043 E6                MOV     A,@R0
+0044 4440              ORL     A,#040H
+0046 F6                MOV     @R0,A
+                                           ; SOURCE LINE # 292
+0047 120000      R     LCALL   SCI_RESPONSE
+                                           ; SOURCE LINE # 293
+004A 7F00              MOV     R7,#00H
+                                           ; SOURCE LINE # 295
+004C         ?C0023:
+004C 22                RET     
+             ; FUNCTION _WriteSCI_QueryValue (END)
+
+             ; FUNCTION ReadSMI_QueryValue (BEGIN)
+                                           ; SOURCE LINE # 301
+                                           ; SOURCE LINE # 302
+                                           ; SOURCE LINE # 303
+0000 120000      R     LCALL   L?0068
+C51 COMPILER V7.50   CORE_ACPI                                                             09/16/2020 21:10:03 PAGE 18  
+
+0003 E0                MOVX    A,@DPTR
+0004 900000      E     MOV     DPTR,#SMI_QueryEvent
+0007 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 305
+0008 E0                MOVX    A,@DPTR
+0009 700D              JNZ     ?C0027
+                                           ; SOURCE LINE # 306
+                                           ; SOURCE LINE # 307
+000B 900000      E     MOV     DPTR,#PM1STS
+000E E0                MOVX    A,@DPTR
+000F 54BF              ANL     A,#0BFH
+0011 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 308
+0012 900000      E     MOV     DPTR,#SCI_QueryEvent
+0015 E0                MOVX    A,@DPTR
+0016 FF                MOV     R7,A
+0017 22                RET     
+                                           ; SOURCE LINE # 309
+0018         ?C0027:
+                                           ; SOURCE LINE # 311
+0018 120000      R     LCALL   L?0068
+001B E4                CLR     A
+001C F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 312
+001D 900000      E     MOV     DPTR,#SMI_Event_Out_Index
+0020 E0                MOVX    A,@DPTR
+0021 04                INC     A
+0022 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 313
+0023 E0                MOVX    A,@DPTR
+0024 D3                SETB    C
+0025 9409              SUBB    A,#09H
+0027 4002              JC      ?C0029
+                                           ; SOURCE LINE # 314
+                                           ; SOURCE LINE # 315
+0029 E4                CLR     A
+002A F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 316
+002B         ?C0029:
+                                           ; SOURCE LINE # 317
+002B 900000      E     MOV     DPTR,#SMI_QueryEvent
+002E E0                MOVX    A,@DPTR
+002F FF                MOV     R7,A
+                                           ; SOURCE LINE # 319
+0030         ?C0028:
+0030 22                RET     
+             ; FUNCTION ReadSMI_QueryValue (END)
+
+             ; FUNCTION _WriteSMI_QueryValue (BEGIN)
+                                           ; SOURCE LINE # 325
+;---- Variable 'NewSMI' assigned to Register 'R7' ----
+                                           ; SOURCE LINE # 326
+                                           ; SOURCE LINE # 328
+0000 EF                MOV     A,R7
+0001 7002              JNZ     ?C0030
+0003 FF                MOV     R7,A
+0004 22                RET     
+0005         ?C0030:
+                                           ; SOURCE LINE # 330
+0005 900000      E     MOV     DPTR,#SMI_Event_In_Index
+0008 120000      R     LCALL   L?0069
+000B E0                MOVX    A,@DPTR
+C51 COMPILER V7.50   CORE_ACPI                                                             09/16/2020 21:10:03 PAGE 19  
+
+000C 700E              JNZ     ?C0032
+                                           ; SOURCE LINE # 331
+                                           ; SOURCE LINE # 332
+000E 900000      E     MOV     DPTR,#SMI_Event_In_Index
+0011 120000      R     LCALL   L?0069
+0014 EF                MOV     A,R7
+0015 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 333
+0016 900000      E     MOV     DPTR,#SMI_Event_In_Index
+0019 E0                MOVX    A,@DPTR
+001A 04                INC     A
+001B F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 334
+001C         ?C0032:
+                                           ; SOURCE LINE # 335
+001C 900000      E     MOV     DPTR,#SMI_Event_In_Index
+001F E0                MOVX    A,@DPTR
+0020 D3                SETB    C
+0021 9409              SUBB    A,#09H
+0023 4002              JC      ?C0033
+                                           ; SOURCE LINE # 336
+                                           ; SOURCE LINE # 337
+0025 E4                CLR     A
+0026 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 338
+0027         ?C0033:
+                                           ; SOURCE LINE # 339
+0027 7F00              MOV     R7,#00H
+                                           ; SOURCE LINE # 341
+0029         ?C0031:
+0029 22                RET     
+             ; FUNCTION _WriteSMI_QueryValue (END)
+
+             ; FUNCTION ClearEventBuffer (BEGIN)
+                                           ; SOURCE LINE # 347
+                                           ; SOURCE LINE # 348
+                                           ; SOURCE LINE # 350
+;---- Variable 'i' assigned to Register 'R7' ----
+0000 E4                CLR     A
+0001 FF                MOV     R7,A
+0002         ?C0034:
+                                           ; SOURCE LINE # 351
+                                           ; SOURCE LINE # 352
+0002 7400        E     MOV     A,#LOW SMI_Event_Buffer
+0004 2F                ADD     A,R7
+0005 120000      R     LCALL   L?0070
+0008 E4                CLR     A
+0009 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 353
+000A 7400        E     MOV     A,#LOW SCI_Event_Buffer
+000C 2F                ADD     A,R7
+000D 120000      R     LCALL   L?0067
+0010 E4                CLR     A
+0011 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 354
+0012 0F                INC     R7
+0013 EF                MOV     A,R7
+0014 B409EB            CJNE    A,#09H,?C0034
+0017         ?C0035:
+                                           ; SOURCE LINE # 355
+0017 E4                CLR     A
+0018 900000      E     MOV     DPTR,#SCI_Event_In_Index
+C51 COMPILER V7.50   CORE_ACPI                                                             09/16/2020 21:10:03 PAGE 20  
+
+001B F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 356
+001C 900000      E     MOV     DPTR,#SMI_Event_In_Index
+001F F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 357
+0020 900000      E     MOV     DPTR,#SCI_Event_Out_Index
+0023 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 358
+0024 900000      E     MOV     DPTR,#SMI_Event_Out_Index
+0027 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 359
+0028 22                RET     
+             ; FUNCTION ClearEventBuffer (END)
+
+             ; FUNCTION Service_EventCenter (BEGIN)
+                                           ; SOURCE LINE # 365
+                                           ; SOURCE LINE # 366
+                                           ; SOURCE LINE # 368
+0000 900000      E     MOV     DPTR,#SCI_StepTimer
+0003 E0                MOVX    A,@DPTR
+0004 04                INC     A
+0005 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 369
+0006 E0                MOVX    A,@DPTR
+0007 D3                SETB    C
+0008 9428              SUBB    A,#028H
+000A 402F              JC      ?C0041
+                                           ; SOURCE LINE # 370
+                                           ; SOURCE LINE # 371
+000C E4                CLR     A
+000D F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 373
+000E 120000      R     LCALL   L?0065
+0011 E0                MOVX    A,@DPTR
+0012 900000      E     MOV     DPTR,#SCI_QueryEvent
+0015 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 374
+0016 E0                MOVX    A,@DPTR
+0017 D3                SETB    C
+0018 9400              SUBB    A,#00H
+001A 401F              JC      ?C0041
+001C 7800        E     MOV     R0,#LOW CORE_PMFLAG
+001E E6                MOV     A,@R0
+001F 30E019            JNB     ACC.0,?C0041
+                                           ; SOURCE LINE # 375
+                                           ; SOURCE LINE # 376
+0022 E6                MOV     A,@R0
+0023 FF                MOV     R7,A
+0024 C4                SWAP    A
+0025 13                RRC     A
+0026 13                RRC     A
+0027 13                RRC     A
+0028 5401              ANL     A,#01H
+002A 30E00E            JNB     ACC.0,?C0041
+                                           ; SOURCE LINE # 377
+                                           ; SOURCE LINE # 378
+002D 900000      E     MOV     DPTR,#PM1STS
+0030 E0                MOVX    A,@DPTR
+0031 4420              ORL     A,#020H
+0033 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 379
+0034 E0                MOVX    A,@DPTR
+C51 COMPILER V7.50   CORE_ACPI                                                             09/16/2020 21:10:03 PAGE 21  
+
+0035 54BF              ANL     A,#0BFH
+0037 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 380
+0038 120000      R     LCALL   SCI_INTERRUPT
+                                           ; SOURCE LINE # 382
+                                           ; SOURCE LINE # 389
+                                           ; SOURCE LINE # 390
+                                           ; SOURCE LINE # 416
+003B         ?C0041:
+003B 22                RET     
+             ; FUNCTION Service_EventCenter (END)
+
+             ; FUNCTION CheckBurstMode (BEGIN)
+                                           ; SOURCE LINE # 422
+                                           ; SOURCE LINE # 423
+                                           ; SOURCE LINE # 426
+0000 900000      R     MOV     DPTR,#BurstLoopOut
+0003 E4                CLR     A
+0004 F0                MOVX    @DPTR,A
+0005 A3                INC     DPTR
+0006 74FA              MOV     A,#0FAH
+0008 F0                MOVX    @DPTR,A
+0009         ?C0042:
+                                           ; SOURCE LINE # 428
+0009 900000      E     MOV     DPTR,#PM1STS
+000C E0                MOVX    A,@DPTR
+000D 20E125            JB      ACC.1,?C0043
+                                           ; SOURCE LINE # 429
+                                           ; SOURCE LINE # 430
+0010 900000      R     MOV     DPTR,#BurstLoopOut
+0013 74FF              MOV     A,#0FFH
+0015 F5F0              MOV     B,A
+0017 120000      E     LCALL   ?C?IILDX
+                                           ; SOURCE LINE # 431
+001A 208F0A            JB      TF1,?C0045
+001D 900000      R     MOV     DPTR,#BurstLoopOut
+0020 E0                MOVX    A,@DPTR
+0021 7002              JNZ     ?C0060
+0023 A3                INC     DPTR
+0024 E0                MOVX    A,@DPTR
+0025         ?C0060:
+0025 70E2              JNZ     ?C0042
+0027         ?C0045:
+                                           ; SOURCE LINE # 432
+                                           ; SOURCE LINE # 433
+0027 900000      E     MOV     DPTR,#PM1STS
+002A E0                MOVX    A,@DPTR
+002B 54EF              ANL     A,#0EFH
+002D F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 434
+002E 120000      R     LCALL   SCI_RESPONSE
+                                           ; SOURCE LINE # 435
+0031 C28F              CLR     TF1
+                                           ; SOURCE LINE # 436
+0033 C3                CLR     C
+0034 22                RET     
+                                           ; SOURCE LINE # 437
+                                           ; SOURCE LINE # 438
+0035         ?C0043:
+                                           ; SOURCE LINE # 439
+0035 D3                SETB    C
+                                           ; SOURCE LINE # 441
+C51 COMPILER V7.50   CORE_ACPI                                                             09/16/2020 21:10:03 PAGE 22  
+
+0036         ?C0046:
+0036 22                RET     
+             ; FUNCTION CheckBurstMode (END)
+
+             ; FUNCTION vSetTotalBurstTime (BEGIN)
+                                           ; SOURCE LINE # 446
+                                           ; SOURCE LINE # 447
+                                           ; SOURCE LINE # 448
+0000 C2AB              CLR     ET1
+                                           ; SOURCE LINE # 449
+0002 758DFA            MOV     TH1,#0FAH
+                                           ; SOURCE LINE # 450
+0005 758B01            MOV     TL1,#01H
+                                           ; SOURCE LINE # 451
+0008 D28E              SETB    TR1
+                                           ; SOURCE LINE # 452
+000A C28F              CLR     TF1
+                                           ; SOURCE LINE # 453
+000C 22                RET     
+             ; FUNCTION vSetTotalBurstTime (END)
+
+             ; FUNCTION EC_Cmd_8X (BEGIN)
+                                           ; SOURCE LINE # 477
+                                           ; SOURCE LINE # 478
+                                           ; SOURCE LINE # 479
+0000 E500        E     MOV     A,PM1Cmd
+0002 540F              ANL     A,#0FH
+0004 25E0              ADD     A,ACC
+0006 2400        R     ADD     A,#LOW EC6266Cmd8X_Table
+0008 F582              MOV     DPL,A
+000A E4                CLR     A
+000B 3400        R     ADDC    A,#HIGH EC6266Cmd8X_Table
+000D 120000      R     LCALL   L?0071
+0010 020000      E     LJMP    ?C?ICALL
+             ; FUNCTION EC_Cmd_8X (END)
+
+             ; FUNCTION Service_PCI2_Main (BEGIN)
+                                           ; SOURCE LINE # 518
+                                           ; SOURCE LINE # 519
+0000         ?C0051:
+                                           ; SOURCE LINE # 522
+                                           ; SOURCE LINE # 523
+0000 900000      E     MOV     DPTR,#PM1STS
+0003 E0                MOVX    A,@DPTR
+0004 30E319            JNB     ACC.3,?C0052
+                                           ; SOURCE LINE # 524
+                                           ; SOURCE LINE # 525
+0007 900000      E     MOV     DPTR,#PM1DI
+000A E0                MOVX    A,@DPTR
+000B F500        E     MOV     PM1Cmd,A
+                                           ; SOURCE LINE # 526
+000D E4                CLR     A
+000E F500        E     MOV     PM1Step,A
+                                           ; SOURCE LINE # 535
+0010 E500        E     MOV     A,PM1Cmd
+0012 C4                SWAP    A
+0013 540F              ANL     A,#0FH
+0015 25E0              ADD     A,ACC
+0017 2400        R     ADD     A,#LOW Port66_Table
+0019 F582              MOV     DPL,A
+001B E4                CLR     A
+001C 3400        R     ADDC    A,#HIGH Port66_Table
+C51 COMPILER V7.50   CORE_ACPI                                                             09/16/2020 21:10:03 PAGE 23  
+
+                                           ; SOURCE LINE # 537
+001E 8017              SJMP    ?C0062
+0020         ?C0052:
+                                           ; SOURCE LINE # 539
+                                           ; SOURCE LINE # 541
+0020 900000      E     MOV     DPTR,#PM1DI
+0023 E0                MOVX    A,@DPTR
+0024 F500        E     MOV     PM1Data,A
+                                           ; SOURCE LINE # 542
+0026 E500        E     MOV     A,PM1Step
+0028 6015              JZ      ?C0056
+                                           ; SOURCE LINE # 543
+                                           ; SOURCE LINE # 551
+002A E500        E     MOV     A,PM1Step
+002C 5407              ANL     A,#07H
+002E 25E0              ADD     A,ACC
+0030 2400        R     ADD     A,#LOW Port62_Table
+0032 F582              MOV     DPL,A
+0034 E4                CLR     A
+0035 3400        R     ADDC    A,#HIGH Port62_Table
+0037         ?C0062:
+0037 120000      R     LCALL   L?0071
+003A 120000      E     LCALL   ?C?ICALL
+                                           ; SOURCE LINE # 553
+003D 800B              SJMP    ?C0049
+                                           ; SOURCE LINE # 555
+003F         ?C0056:
+                                           ; SOURCE LINE # 556
+003F E500        E     MOV     A,ECUnProcessCnt
+0041 C3                CLR     C
+0042 94FF              SUBB    A,#0FFH
+0044 5004              JNC     ?C0049
+                                           ; SOURCE LINE # 557
+                                           ; SOURCE LINE # 558
+0046 0500        E     INC     ECUnProcessCnt
+                                           ; SOURCE LINE # 559
+0048 80F5              SJMP    ?C0056
+                                           ; SOURCE LINE # 560
+                                           ; SOURCE LINE # 561
+                                           ; SOURCE LINE # 563
+004A         ?C0049:
+                                           ; SOURCE LINE # 564
+004A 900000      E     MOV     DPTR,#PM1STS
+004D E0                MOVX    A,@DPTR
+004E 30E405            JNB     ACC.4,?C0050
+0051 120000      R     LCALL   CheckBurstMode
+0054 40AA              JC      ?C0051
+0056         ?C0050:
+                                           ; SOURCE LINE # 566
+0056 D2AB              SETB    ET1
+                                           ; SOURCE LINE # 572
+0058 22                RET     
+             ; FUNCTION Service_PCI2_Main (END)
+
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    769    ----
+   CONSTANT SIZE    =     96    ----
+   XDATA SIZE       =   ----       2
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+C51 COMPILER V7.50   CORE_ACPI                                                             09/16/2020 21:10:03 PAGE 24  
+
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

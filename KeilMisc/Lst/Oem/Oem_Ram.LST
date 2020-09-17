@@ -1,0 +1,262 @@
+C51 COMPILER V7.50   OEM_RAM                                                               09/16/2020 21:10:04 PAGE 1   
+
+
+C51 COMPILER V7.50, COMPILATION OF MODULE OEM_RAM
+OBJECT MODULE PLACED IN Oem\Oem_Ram.OBJ
+COMPILER INVOKED BY: C:\Keil\C51\BIN\c51.exe Oem\Oem_Ram.c LA WL(1) CD OT(9,SIZE) NOAREGS OR INCDIR(.\Core\Include\;.\Oe
+                    -m\Include\)
+
+line level    source
+
+   1          /*-----------------------------------------------------------------------------
+   2           * Filename: OEM_RAM.C     For Chipset: ITE.IT85XX
+   3           *
+   4           * Function: Memory Definition for extern all code base reference
+   5           *
+   6           * [Memory Map Description]
+   7           *
+   8           * =Chip Internal= 0x00-0xFF
+   9           * 0x00-0xFF     For Kernel and Chip Level use
+  10           *
+  11           ***************************************************
+  12           * Chip 8500       : External ram 0x000-0x7FF
+  13           * Chip Other 85XX : External ram 0x000-0xFFF
+  14           ***************************************************
+  15           * Memory Map :
+  16           * 0x000-0x0FF   For Kernel Core/Module
+  17           * 0x100-0x1FF   OEM RAM
+  18           * 0x200-0x2FF   OEM RAM
+  19           * 0x300-0x3FF   OEM RAM
+  20           * 0x400-0x4FF   OEM RAM
+  21           * 0x500-0x5FF   OEM RAM
+  22           * 0x600-0x6FF   For ITE flash utility,EC SPI rom read write function, and ramdebug function.
+  23           * 0x700-0x7FF   For Keil C Complier and Ram Code Space (for SPI programming).
+  24           * 0x800-0x8FF   OEM RAM
+  25           * 0x800-0x9FF   OEM RAM
+  26           * 0xA00-0xAFF   OEM RAM
+  27           * 0xB00-0xBFF   OEM RAM
+  28           * 0xC00-0xCFF   OEM RAM
+  29           * 0xD00-0xDFF   OEM RAM
+  30           * 0xE00-0xEFF   OEM RAM
+  31           * 0xF00-0xFFF   OEM RAM
+  32           *
+  33           * Copyright (c) 2006-2009, ITE Tech. Inc. All Rights Reserved.
+  34           *---------------------------------------------------------------------------*/
+  35          
+  36          //-----------------------------------------------------------------------------
+  37          // Common Header Include
+  38          //-----------------------------------------------------------------------------
+  39          #include "Core_Inc.h"
+  40          #include "Oem_Inc.h"
+  41          
+  42          
+  43          
+  44          //=========================================================================================
+  45          //EC SRAM 0x0100
+  46          //=========================================================================================
+  47          //
+  48          #define SRAM_100_BASE                   0x0100
+  49          //For SMB_Scan_Center
+  50          XBYTE   SMBus1RecoverCunt                               _at_    (SRAM_100_BASE+0x00);
+  51          XBYTE   SMBus2RecoverCunt                               _at_    (SRAM_100_BASE+0x01);
+  52          XBYTE   SMBus3RecoverCunt                               _at_    (SRAM_100_BASE+0x02);
+  53          XBYTE   SMBCRC8_A                                               _at_    (SRAM_100_BASE+0x03);
+  54          XBYTE   SMBus_BusyRecover                               _at_    (SRAM_100_BASE+0x04);
+C51 COMPILER V7.50   OEM_RAM                                                               09/16/2020 21:10:04 PAGE 2   
+
+  55          
+  56          #define SMBUS_OEM_ScanCenter_BASE               0x0110
+  57          XBYTE   SMBus1index                                     _at_ (SMBUS_OEM_ScanCenter_BASE+0x00);
+  58          XBYTE   SMBus2index                                     _at_ (SMBUS_OEM_ScanCenter_BASE+0x01);
+  59          XBYTE   SMBus3index                                     _at_ (SMBUS_OEM_ScanCenter_BASE+0x02);
+  60          XBYTE   SMBus1counter                                   _at_ (SMBUS_OEM_ScanCenter_BASE+0x03);
+  61          XBYTE   SMBus2counter                                   _at_ (SMBUS_OEM_ScanCenter_BASE+0x04);
+  62          XBYTE   SMBus3counter                                   _at_ (SMBUS_OEM_ScanCenter_BASE+0x05);
+  63          XBYTE   SMBus1ByteCunt                                  _at_ (SMBUS_OEM_ScanCenter_BASE+0x06);
+  64          XBYTE   SMBus2ByteCunt                                  _at_ (SMBUS_OEM_ScanCenter_BASE+0x07);
+  65          XBYTE   SMBus3ByteCunt                                  _at_ (SMBUS_OEM_ScanCenter_BASE+0x08);
+  66          XBYTE   F_Service_SMBus1                                _at_ (SMBUS_OEM_ScanCenter_BASE+0x09);
+  67          XBYTE   F_Service_SMBus2                                _at_ (SMBUS_OEM_ScanCenter_BASE+0x0A);
+  68          XBYTE   F_Service_SMBus3                                _at_ (SMBUS_OEM_ScanCenter_BASE+0x0B);
+  69          XBYTE   SMBus1InUsing                                   _at_ (SMBUS_OEM_ScanCenter_BASE+0x0C);
+  70          XBYTE   SMBus2InUsing                                   _at_ (SMBUS_OEM_ScanCenter_BASE+0x0D);
+  71          XBYTE   SMBus3InUsing                                   _at_ (SMBUS_OEM_ScanCenter_BASE+0x0E);
+  72          XBYTE   SMBus1TableSize                         _at_ (SMBUS_OEM_ScanCenter_BASE+0x0F);
+  73          XBYTE   SMBus2TableSize                         _at_ (SMBUS_OEM_ScanCenter_BASE+0x10);
+  74          XBYTE   SMBus3TableSize                         _at_ (SMBUS_OEM_ScanCenter_BASE+0x11);
+  75          XBYTE   *SMBus1BlockPtr                                 _at_ (SMBUS_OEM_ScanCenter_BASE+0x12);  //12~13 2bytes
+  76          XBYTE   *SMBus2BlockPtr                                 _at_ (SMBUS_OEM_ScanCenter_BASE+0x14);  //14~15 2bytes
+  77          XBYTE   *SMBus3BlockPtr                                 _at_ (SMBUS_OEM_ScanCenter_BASE+0x16);  //16~17 2bytes
+  78          XBYTE   SMBusSelection                                  _at_ (SMBUS_OEM_ScanCenter_BASE+0x18);
+  79          XBYTE   SMBusXStatus                                    _at_ (SMBUS_OEM_ScanCenter_BASE+0x19);
+  80          XBYTE   SMB_BCNT                                                _at_ (SMBUS_OEM_ScanCenter_BASE+0x1A);
+  81          
+  82          
+  83          
+  84          //=========================================================================================
+  85          //EC SRAM 0x0200
+  86          //=========================================================================================
+  87          //
+  88          #define SRAM_200_BASE                   0x0200
+  89          XBYTE   LED_FLASH_CNT                           _at_ (SRAM_200_BASE+0x01);
+  90          XBYTE   LED_S0_Status                           _at_ (SRAM_200_BASE+0x03);
+  91          
+  92          //=========================================================================================
+  93          //EC SRAM 0x0300
+  94          //=========================================================================================
+  95          
+  96          #define SRAM_300_BASE           0x300
+  97          
+  98          
+  99          
+ 100          //=========================================================================================
+ 101          //EC SRAM 0x0400
+ 102          //=========================================================================================
+ 103          #define SRAM_400_BASE           0x0400
+ 104          
+ 105          
+ 106          
+ 107          
+ 108          
+ 109          //-----------------------------------------------------------------------------
+ 110          /*****************************************************************************/
+ 111          /* EXTERNAL RAM AREA      (0x0500 ~ 0x05FF) **********************************/
+ 112          /*****************************************************************************/
+ 113          /*                                      Embedded Controller RAM Space                                                           */
+ 114          //===========================================================
+ 115          //===========================================================
+ 116          #define ECSpace                 0x0500
+C51 COMPILER V7.50   OEM_RAM                                                               09/16/2020 21:10:04 PAGE 3   
+
+ 117          
+ 118          XBYTE   Code_Version                                                    _at_ (ECSpace + 0x00);
+ 119          XBYTE   Code_Beta_Version                                               _at_ (ECSpace + 0x01);
+ 120          XBYTE   DDRCTR                                                  _at_ (ECSpace + 0x04);
+ 121          XBYTE FAN_Step                                                                  _at_(ECSpace+0xE0);
+ 122          XBYTE EC_Space_AMBTemp                                                  _at_(ECSpace+0xE1);
+ 123          XBYTE FAN_INIT_STEP                                                             _at_(ECSpace+0xE2);
+ 124          
+ 125          
+ 126          
+ 127          
+ 128          
+ 129          
+ 130          
+ 131          
+ 132          //-----------------------------------------------------------------------------
+ 133          /*****************************************************************************/
+ 134          /* EXTERNAL RAM AREA      (0x0600 ~ 0x06FF) **********************************/
+ 135          /*****************************************************************************/
+ 136          //-----------------------------------------------------------------------------
+ 137          //RAMDEBUG AREA
+ 138          //-----------------------------------------------------------------------------
+ 139          
+ 140          
+ 141          //=========================================================================================
+ 142          //EC SRAM 0x0700
+ 143          // For Keil C Complier and Ram Code Space (for SPI programming).
+ 144          //=========================================================================================
+ 145          #define SRAM_700_BASE           0x0700
+ 146          //Note: Do not use it
+ 147          // For Keil C Complier and Ram Code Space (for SPI programming).
+ 148          
+ 149          //=========================================================================================
+ 150          //EC SRAM 0x800
+ 151          //=========================================================================================
+ 152          #define SRAM_800_BASE           0x0800
+ 153          
+ 154          
+ 155          //=========================================================================================
+ 156          //EC SRAM 0x0900
+ 157          //=========================================================================================
+ 158          #define SRAM_900_BASE           0x0900
+ 159          
+ 160          
+ 161          //=========================================================================================
+ 162          //EC SRAM 0x0A00
+ 163          //=========================================================================================
+ 164          #define SRAM_A00_BASE           0x0A00
+ 165          
+ 166          
+ 167          //=========================================================================================
+ 168          //EC SRAM 0x0B00
+ 169          //=========================================================================================
+ 170          #define SRAM_B00_BASE           0x0B00
+ 171          
+ 172          
+ 173          //=========================================================================================
+ 174          //EC SRAM 0x0C00
+ 175          //=========================================================================================
+ 176          #define SRAM_C00_BASE           0x0C00
+ 177          
+ 178          
+C51 COMPILER V7.50   OEM_RAM                                                               09/16/2020 21:10:04 PAGE 4   
+
+ 179          //=========================================================================================
+ 180          //EC SRAM 0x0D00
+ 181          //=========================================================================================
+ 182          #define SRAM_D00_BASE           0x0D00
+ 183          
+ 184          
+ 185          //=========================================================================================
+ 186          //EC SRAM 0x0E00
+ 187          //=========================================================================================
+ 188          #define SRAM_E00_BASE           0x0E00
+ 189          
+ 190          
+ 191          //=========================================================================================
+ 192          //EC SRAM 0x0F00
+ 193          //=========================================================================================
+ 194          #define SRAM_F00_BASE           0x0F00
+ 195          
+ 196          
+ 197          
+ 198          
+ 199          /*****************************************************************************/
+ 200          // END DEFINITION
+ 201          /*****************************************************************************/
+ 202          
+ 203          //-----------------------------------------------------------------------------
+ 204          
+ 205          
+ 206          /******************************************************************************
+ 207          
+ 208                  Define
+ 209                  Description: Battery-backed SRAM (BRAM)
+ 210                  Footnote:               192-byte in IT873X
+ 211                  
+ 212          ******************************************************************************/
+ 213          
+ 214          #define         BRAM_Basse                                      0x2280
+ 215          XBYTE   BRAM_CHECK0                             _at_ (BRAM_Basse + 0x00);
+ 216          XBYTE   BRAM_CHECK1                             _at_ (BRAM_Basse + 0x01);
+ 217          XBYTE   BRAM_CHECK2                             _at_ (BRAM_Basse + 0x02);
+ 218          
+ 219          
+ 220          //==========================================================
+ 221          
+ 222          /*****************************************************************************/
+ 223          // END DEFINITION
+ 224          /*****************************************************************************/
+ 225          
+ 226          //-----------------------------------------------------------------------------
+ 227          
+C51 COMPILER V7.50   OEM_RAM                                                               09/16/2020 21:10:04 PAGE 5   
+
+ASSEMBLY LISTING OF GENERATED OBJECT CODE
+
+
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =   ----    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

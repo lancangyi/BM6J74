@@ -1,0 +1,3513 @@
+C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 1   
+
+
+C51 COMPILER V7.50, COMPILATION OF MODULE CORE_FLASH
+OBJECT MODULE PLACED IN Core\Core_Flash.OBJ
+COMPILER INVOKED BY: C:\Keil\C51\BIN\c51.exe Core\Core_Flash.c LA WL(1) CD OT(9,SIZE) NOAREGS OR INCDIR(.\Core\Include\;
+                    -.\Oem\Include\)
+
+line level    source
+
+   1          /*-----------------------------------------------------------------------------
+   2           * TITLE: CORE_FLASH.C
+   3           *
+   4           * Copyright (c) ITE INC. All Rights Reserved.
+   5           *
+   6           *---------------------------------------------------------------------------*/
+   7           
+   8          #include "Core_Inc.h"
+   9          #include "Oem_Inc.h"
+  10          
+  11          //-----------------------------------------------------------------------------
+  12          // The function start address always at 0xFE00 (refer to link file)
+  13          //-----------------------------------------------------------------------------
+  14          void FuncAt_0xFE00(void)
+  15          {
+  16   1          _nop_();
+  17   1          _nop_();
+  18   1          _nop_();
+  19   1          _nop_();
+  20   1          _nop_();
+  21   1          _nop_();
+  22   1          _nop_();
+  23   1          _nop_();
+  24   1          FlashECCode();
+  25   1      }
+  26          
+  27          
+  28          //-----------------------------------------------------------------------------
+  29          // The function of EC flash
+  30          //-----------------------------------------------------------------------------
+  31          void FlashECCode(void)
+  32          {
+  33   1              _FlashCMD = 0x00;
+  34   1              _SEND = 0x00;
+  35   1      
+  36   1              PM1DO = 0x33;           // ACK
+  37   1      
+  38   1              while(1) 
+  39   1              {       
+  40   2                      #if SUPPORT_SWKBC
+                              if( IsFlag1(KBHISR,IBF) )
+                              {
+                                      _FlashCMD = KBHIDIR;
+                                      continue;
+                              }
+                              #endif
+  47   2                      if( IsFlag0(PM1STS,P_IBF) ) continue;
+  48   2                      if( IsFlag0(PM1STS,P_C_D) ) continue;
+  49   2                      _FlashCMD = PM1DI;
+  50   2      
+  51   2                      if(_SEND==1)
+  52   2                      {
+  53   3                              ECINDDR = _FlashCMD;
+  54   3                              _SEND = 0x00;
+C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 2   
+
+  55   3                              continue;
+  56   3                      }
+  57   2      
+  58   2                      if(_FlashCMD==0x01)
+  59   2                      {
+  60   3                              ECINDAR3 = 0x0F;        // Enter follow mode
+  61   3                              ECINDAR2 = 0xFF;
+  62   3                              ECINDAR1 = 0xFE;
+  63   3                              ECINDAR0 = 0x00;                // FFFFExx = 0xFF   
+  64   3                              ECINDDR = 0x00;                 // SCE# high level
+  65   3                      }
+  66   2                      else if(_FlashCMD==0x02)
+  67   2                      {                                                       // Send SPI command
+  68   3                              ECINDAR1 = 0xFD;
+  69   3                              _SEND = 1;
+  70   3                      }
+  71   2                      else if(_FlashCMD==0x03)
+  72   2                      {                                                       // write byte to spi
+  73   3                              _SEND = 1;
+  74   3                      }
+  75   2                      else if(_FlashCMD==0x04)
+  76   2                      {       
+  77   3                              PM1DO=ECINDDR;                  // Read byte from spi                   
+  78   3                      }
+  79   2                      else if(_FlashCMD==0x05)
+  80   2                      {       
+  81   3                              ECINDAR3 = 0x00;        //Exit follow mode
+  82   3                              ECINDAR2 = 0x00;
+  83   3                      }
+  84   2                      else if(_FlashCMD==0xFC)
+  85   2                      {       
+  86   3                              ExitRamCodeCommand=0xAA;
+  87   3                              break;
+  88   3                      }
+  89   2                      else if(_FlashCMD==0xFD)
+  90   2                      {
+  91   3                              WDTCON |= 0x01;     /* WDTRST = 1 Reset watch dog timer.*/
+  92   3                              WDTCON |= 0x02;     /* WDTEN  = 1 Enable watch dog.     */
+  93   3                      while(1);                               // Wait for watch dog time-out                          
+  94   3                      }
+  95   2                      else if(_FlashCMD==0xFE)
+  96   2                      {       
+  97   3                              //BRAM[63]=0x55;
+  98   3                              WDTCON |= 0x01;     /* WDTRST = 1 Reset watch dog timer.*/
+  99   3                              WDTCON |= 0x02;     /* WDTEN  = 1 Enable watch dog.     */
+ 100   3                      while(1);                               // Wait for watch dog time-out
+ 101   3                      }
+ 102   2              }
+ 103   1              main();
+ 104   1      }
+ 105          
+ 106          
+ 107          //-----------------------------------------------------------------------------
+ 108          // The function of reading SPI status ( command 0x05)
+ 109          //      After this function, spi status will save to SPIReadStatus
+ 110          //-----------------------------------------------------------------------------
+ 111          void SPI_Read_Status(void)
+ 112          {
+ 113   1              ECINDAR3 = 0x0F; 
+ 114   1              ECINDAR2 = 0xFF;
+ 115   1              ECINDAR0 = 0x00;                                // FFFFExx = 0xFF  
+ 116   1      
+C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 3   
+
+ 117   1              ECINDAR1 = 0xFE;
+ 118   1              ECINDDR = 0xFF;                                 // SCE# high level
+ 119   1              ECINDAR1 = 0xFD;
+ 120   1              ECINDDR = SPICmd_ReadStatus;    // Read status command
+ 121   1      
+ 122   1              SPIReadStatus = ECINDDR;                // Save status Register to SPIReadStatus
+ 123   1              
+ 124   1              ECINDAR3 = 0x00;                        //Exit follow mode
+ 125   1              ECINDAR2 = 0x00;
+ 126   1      }
+ 127          
+ 128          //-----------------------------------------------------------------------------
+ 129          // The function of Write SPI status ( command 0x01)
+ 130          //      After this function, the value of SPIWriteStatus will write to spi status
+ 131          //-----------------------------------------------------------------------------
+ 132          void SPI_Write_Status(void)
+ 133          {
+ 134   1              ECINDAR3 = 0x0F; 
+ 135   1              ECINDAR2 = 0xFF;
+ 136   1              ECINDAR0 = 0x00;                                // FFFFExx = 0xFF  
+ 137   1      
+ 138   1              ECINDAR1 = 0xFE;
+ 139   1              ECINDDR = 0xFF;                                 // SCE# high level
+ 140   1              ECINDAR1 = 0xFD;
+ 141   1              ECINDDR = SPICmd_ReadStatus;    // Read Status Register
+ 142   1              while(1)                                                // waiting spi free
+ 143   1              {
+ 144   2                      if((ECINDDR&SPIStatus_BUSY)==0x00)
+ 145   2              {
+ 146   3                  break;
+ 147   3              } 
+ 148   2              }                                                               
+ 149   1      
+ 150   1              ECINDAR1 = 0xFE;
+ 151   1              ECINDDR = 0xFF;                                 // SCE# high level
+ 152   1              ECINDAR1 = 0xFD;
+ 153   1              ECINDDR = SPICmd_WREN;                  // Write enable 
+ 154   1              
+ 155   1          if(SPIID==SSTID)
+ 156   1              {
+ 157   2                      ECINDAR1 = 0xFE;
+ 158   2                      ECINDDR = 0xFF;                         // SCE# high level
+ 159   2                      ECINDAR1 = 0xFD;
+ 160   2                      ECINDDR = SPICmd_EWSR;          // Enable Write Status Register
+ 161   2              }    
+ 162   1              
+ 163   1              ECINDAR1 = 0xFE;
+ 164   1              ECINDDR = 0xFF;                                 // SCE# high level
+ 165   1              ECINDAR1 = 0xFD;
+ 166   1              ECINDDR = SPICmd_WRSR;                  // Write status command
+ 167   1              ECINDDR = SPIWriteStatus;               // Write SPIWriteStatus to spi status register
+ 168   1      
+ 169   1              ECINDAR1 = 0xFE;
+ 170   1              ECINDDR = 0xFF;                                 // SCE# high level
+ 171   1              ECINDAR1 = 0xFD;
+ 172   1              ECINDDR = SPICmd_ReadStatus;    // Read Status Register
+ 173   1              while(1)                                                // waiting spi free
+ 174   1              {
+ 175   2                      if((ECINDDR&SPIStatus_BUSY)==0x00)
+ 176   2              {
+ 177   3                  break;
+ 178   3              } 
+C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 4   
+
+ 179   2              }
+ 180   1              
+ 181   1              ECINDAR3 = 0x00;                        //Exit follow mode
+ 182   1              ECINDAR2 = 0x00;
+ 183   1      }
+ 184          
+ 185          //-----------------------------------------------------------------------------
+ 186          // The function of reading SPI ID (command 0x9F)
+ 187          //      After this function, spi id will save to array SPIIDBuf[] 
+ 188          //-----------------------------------------------------------------------------
+ 189          void SPI_Read_ID(void)
+ 190          {
+ 191   1              ECINDAR3 = 0x0F; 
+ 192   1              ECINDAR2 = 0xFF;
+ 193   1              ECINDAR0 = 0x00;                                // FFFFExx = 0xFF  
+ 194   1              
+ 195   1              ECINDAR1 = 0xFE;
+ 196   1              ECINDDR = 0xFF;                                 // SCE# high level
+ 197   1              ECINDAR1 = 0xFD;
+ 198   1              ECINDDR = SPICmd_ReadStatus;    // Read Status Register
+ 199   1              while(1)                                                // waiting spi free
+ 200   1              {
+ 201   2                      if((ECINDDR&SPIStatus_BUSY)==0x00)
+ 202   2              {
+ 203   3                  break;
+ 204   3              } 
+ 205   2              }                                                               
+ 206   1      
+ 207   1              ECINDAR1 = 0xFE;
+ 208   1              ECINDDR = 0xFF;                                 // SCE# high level
+ 209   1              ECINDAR1 = 0xFD;
+ 210   1              ECINDDR = SPICmd_DeviceID;  // Manufacture ID command
+ 211   1              for(SPIIndex=0x00;SPIIndex<4;SPIIndex++)
+ 212   1              {
+ 213   2                      SPIIDBuf[SPIIndex] = ECINDDR;
+ 214   2              }
+ 215   1              SPIID = SPIIDBuf[0];    
+ 216   1      
+ 217   1              ECINDAR1 = 0xFE;
+ 218   1              ECINDDR = 0xFF;                                 // SCE# high level
+ 219   1              ECINDAR1 = 0xFD;
+ 220   1              ECINDDR = SPICmd_ReadStatus;    // Read Status Register
+ 221   1      
+ 222   1              while(1)                                                // waiting spi free
+ 223   1              {
+ 224   2                      if((ECINDDR&SPIStatus_BUSY)==0x00)
+ 225   2              {
+ 226   3                  break;
+ 227   3              } 
+ 228   2              }
+ 229   1              ECINDAR3 = 0x00;        //Exit follow mode
+ 230   1              ECINDAR2 = 0x00;
+ 231   1      }
+ 232          
+ 233          //-----------------------------------------------------------------------------
+ 234          // The function of reading SPI ID (command 0xAB)
+ 235          //      After this function, spi id will save to array SPIIDBuf[] 
+ 236          //-----------------------------------------------------------------------------
+ 237          void SPI_Read_ID_CmdAB(void)
+ 238          {
+ 239   1              ECINDAR3 = 0x0F; 
+ 240   1              ECINDAR2 = 0xFF;
+C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 5   
+
+ 241   1              ECINDAR0 = 0x00;                                // FFFFExx = 0xFF  
+ 242   1              
+ 243   1              ECINDAR1 = 0xFE;
+ 244   1              ECINDDR = 0xFF;                                 // SCE# high level
+ 245   1              ECINDAR1 = 0xFD;
+ 246   1              ECINDDR = SPICmd_ReadStatus;    // Read Status Register
+ 247   1              while(1)                                                // waiting spi free
+ 248   1              {
+ 249   2                      if((ECINDDR&SPIStatus_BUSY)==0x00)
+ 250   2              {
+ 251   3                  break;
+ 252   3              } 
+ 253   2              }                                                               
+ 254   1      
+ 255   1              ECINDAR1 = 0xFE;
+ 256   1              ECINDDR = 0xFF;                                 // SCE# high level
+ 257   1              ECINDAR1 = 0xFD;
+ 258   1              ECINDDR = SPICmd_RDID;              // Read ID command
+ 259   1          ECINDDR = 0x00;                         // Read ID command addr2
+ 260   1          ECINDDR = 0x00;                         // Read ID command addr1
+ 261   1          ECINDDR = 0x00;                         // Read ID command addr0
+ 262   1          
+ 263   1              for(SPIIndex=0x00;SPIIndex<4;SPIIndex++)
+ 264   1              {
+ 265   2                      SPIIDBuf[SPIIndex] = ECINDDR; 
+ 266   2              }
+ 267   1              SPIID = SPIIDBuf[0];    
+ 268   1      
+ 269   1              ECINDAR1 = 0xFE;
+ 270   1              ECINDDR = 0xFF;                                 // SCE# high level
+ 271   1              ECINDAR1 = 0xFD;
+ 272   1              ECINDDR = SPICmd_ReadStatus;    // Read Status Register
+ 273   1      
+ 274   1              while(1)                                                // waiting spi free
+ 275   1              {
+ 276   2                      if((ECINDDR&SPIStatus_BUSY)==0x00)
+ 277   2              {
+ 278   3                  break;
+ 279   3              } 
+ 280   2              }
+ 281   1              ECINDAR3 = 0x00;        //Exit follow mode
+ 282   1              ECINDAR2 = 0x00;
+ 283   1      }
+ 284          
+ 285          //-----------------------------------------------------------------------------
+ 286          // The function of Erasing SPI
+ 287          //-----------------------------------------------------------------------------
+ 288          void SPI_Erase(void)
+ 289          {
+ 290   1              ECINDAR3 = 0x0F; 
+ 291   1              ECINDAR2 = 0xFF;
+ 292   1              ECINDAR0 = 0x00;                                // FFFFExx = 0xFF  
+ 293   1              
+ 294   1              ECINDAR1 = 0xFE;
+ 295   1              ECINDDR = 0xFF;                                 // SCE# high level
+ 296   1              ECINDAR1 = 0xFD;
+ 297   1              ECINDDR = SPICmd_ReadStatus;    // Read Status Register
+ 298   1              while(1)                                                // waiting spi free
+ 299   1              {
+ 300   2                      if((ECINDDR&(SPIStatus_BUSY+SPIStatus_WEL))==SPIStatus_WriteEnable)
+ 301   2              {
+ 302   3                  break;
+C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 6   
+
+ 303   3              } 
+ 304   2              }                                                               
+ 305   1      
+ 306   1              ECINDAR1 = 0xFE;
+ 307   1              ECINDDR = 0xFF;                                 // SCE# high level
+ 308   1              ECINDAR1 = 0xFD;
+ 309   1              ECINDDR = SPIAEraseCmd;                 // Send erase command
+ 310   1              for(SPIIndex=0x00;SPIIndex<3;SPIIndex++)
+ 311   1              {
+ 312   2                      ECINDDR = SPIAddrCycle[SPIIndex];
+ 313   2              }                                                               // Send address cycle
+ 314   1      
+ 315   1              ECINDAR1 = 0xFE;
+ 316   1              ECINDDR = 0xFF;                                 // SCE# high level
+ 317   1      
+ 318   1              ECINDAR1 = 0xFD;
+ 319   1              ECINDDR = SPICmd_ReadStatus;    // Read Status Register
+ 320   1      
+ 321   1              while(1)                                                // waiting spi free
+ 322   1              {
+ 323   2                      if((ECINDDR&SPIStatus_BUSY)==0x00)
+ 324   2              {
+ 325   3                  break;
+ 326   3              } 
+ 327   2              }
+ 328   1              ECINDAR3 = 0x00;                        //Exit follow mode
+ 329   1              ECINDAR2 = 0x00;
+ 330   1      }
+ 331          
+ 332          //-----------------------------------------------------------------------------
+ 333          // The function of SPI write enable
+ 334          //-----------------------------------------------------------------------------
+ 335          void SPI_Write_Enable(void)
+ 336          {
+ 337   1              ECINDAR3 = 0x0F; 
+ 338   1              ECINDAR2 = 0xFF;
+ 339   1              ECINDAR0 = 0x00;                                // FFFFExx = 0xFF  
+ 340   1              
+ 341   1              ECINDAR1 = 0xFE;
+ 342   1              ECINDDR = 0xFF;                                 // SCE# high level
+ 343   1              ECINDAR1 = 0xFD;
+ 344   1              ECINDDR = SPICmd_ReadStatus;    // Read Status Register
+ 345   1              while(1)                                                // waiting spi free
+ 346   1              {
+ 347   2                      if((ECINDDR&SPIStatus_BUSY)==0x00)
+ 348   2              {
+ 349   3                  break;
+ 350   3              } 
+ 351   2              }                                                               
+ 352   1      
+ 353   1              ECINDAR1 = 0xFE;
+ 354   1              ECINDDR = 0xFF;                                 // SCE# high level
+ 355   1              ECINDAR1 = 0xFD;
+ 356   1              ECINDDR = SPICmd_WREN;                  // Write enable 
+ 357   1              
+ 358   1          if(SPIID==SSTID)
+ 359   1          {
+ 360   2              ECINDAR1 = 0xFE;
+ 361   2              ECINDDR = 0xFF;                         // SCE# high level
+ 362   2              ECINDAR1 = 0xFD;
+ 363   2              ECINDDR = SPICmd_EWSR;          // Enable Write Status Register
+ 364   2          }
+C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 7   
+
+ 365   1          
+ 366   1              ECINDAR1 = 0xFE;
+ 367   1              ECINDDR = 0xFF;                                 // SCE# high level
+ 368   1              ECINDAR1 = 0xFD;
+ 369   1              ECINDDR = SPICmd_ReadStatus;    // Read Status Register
+ 370   1              while(1)                                                // waiting spi free
+ 371   1              {
+ 372   2                      if((ECINDDR&(SPIStatus_WEL+SPIStatus_BUSY))==0x02) // Check write enable and spi not busy
+ 373   2              {
+ 374   3                  break;
+ 375   3              } 
+ 376   2              }
+ 377   1      
+ 378   1              ECINDAR3 = 0x00;                        //Exit follow mode
+ 379   1              ECINDAR2 = 0x00;
+ 380   1      }
+ 381          
+ 382          //-----------------------------------------------------------------------------
+ 383          // The function of SPI write disable
+ 384          //-----------------------------------------------------------------------------
+ 385          void SPI_Write_Disable(void)
+ 386          {
+ 387   1              ECINDAR3 = 0x0F; 
+ 388   1              ECINDAR2 = 0xFF;
+ 389   1              ECINDAR0 = 0x00;                                // FFFFExx = 0xFF  
+ 390   1              
+ 391   1              ECINDAR1 = 0xFE;
+ 392   1              ECINDDR = 0xFF;                                 // SCE# high level
+ 393   1              ECINDAR1 = 0xFD;
+ 394   1              ECINDDR = SPICmd_ReadStatus;    // Read Status Register
+ 395   1              while(1)                                                // waiting spi free
+ 396   1              {
+ 397   2                      if((ECINDDR&SPIStatus_BUSY)==0x00)
+ 398   2              {
+ 399   3                  break;
+ 400   3              } 
+ 401   2              }                                                               
+ 402   1      
+ 403   1              ECINDAR1 = 0xFE;
+ 404   1              ECINDDR = 0xFF;                                 // SCE# high level
+ 405   1              ECINDAR1 = 0xFD;
+ 406   1              ECINDDR = SPICmd_WRDI;                  // Write disable        
+ 407   1      
+ 408   1              ECINDAR1 = 0xFE;
+ 409   1              ECINDDR = 0xFF;                                 // SCE# high level
+ 410   1              ECINDAR1 = 0xFD;
+ 411   1              ECINDDR = SPICmd_ReadStatus;    // Read Status Register
+ 412   1              while(1)                                                // waiting spi free
+ 413   1              {
+ 414   2                      if((ECINDDR&(SPIStatus_WEL+SPIStatus_BUSY))==0x00) // Check write disable and spi not busy
+ 415   2              {
+ 416   3                  break;
+ 417   3              } 
+ 418   2              }
+ 419   1      
+ 420   1              ECINDAR3 = 0x00;                        //Exit follow mode
+ 421   1              ECINDAR2 = 0x00;
+ 422   1      }
+ 423          
+ 424          //-----------------------------------------------------------------------------
+ 425          // The function of other SPI write 256 bytes
+ 426          //-----------------------------------------------------------------------------
+C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 8   
+
+ 427          void Other_SPI_Write_256Bytes(void)
+ 428          {
+ 429   1              ECINDAR3 = 0x0F; 
+ 430   1              ECINDAR2 = 0xFF;
+ 431   1              ECINDAR0 = 0x00;                                // FFFFExx = 0xFF  
+ 432   1              
+ 433   1              ECINDAR1 = 0xFE;
+ 434   1              ECINDDR = 0xFF;                                 // SCE# high level
+ 435   1              ECINDAR1 = 0xFD;
+ 436   1              ECINDDR = SPICmd_ReadStatus;    // Read Status Register
+ 437   1              while(1)                                                // waiting spi free
+ 438   1              {
+ 439   2                      if((ECINDDR&SPIStatus_BUSY)==0x00)
+ 440   2              {
+ 441   3                  break;
+ 442   3              } 
+ 443   2              }                                                               
+ 444   1      
+ 445   1              ECINDAR1 = 0xFE;
+ 446   1              ECINDDR = 0xFF;                             // SCE# high level
+ 447   1              ECINDAR1 = 0xFD;
+ 448   1          ECINDDR = SPICmd_BYTEProgram;   // Send Program One Data Byte command
+ 449   1      
+ 450   1              ECINDDR = SPIAddrCycle[0];          // For 256 bytes function limite
+ 451   1              ECINDDR = SPIAddrCycle[1];
+ 452   1              ECINDDR = SPIAddrCycle[2];
+ 453   1              
+ 454   1              SPIIndex = 0x00;
+ 455   1              do
+ 456   1              {
+ 457   2                      ECINDDR = *SPIDataPointer;
+ 458   2                      SPIIndex++;
+ 459   2                      SPIDataPointerLowByte++;
+ 460   2              }while(SPIIndex!=0x00);             // Send 256 bytes
+ 461   1      
+ 462   1              ECINDAR1 = 0xFE;
+ 463   1              ECINDDR = 0xFF;                                 // SCE# high level
+ 464   1              ECINDAR1 = 0xFD;
+ 465   1              ECINDDR = SPICmd_ReadStatus;    // Read Status Register
+ 466   1              while(1)                                                // waiting spi free
+ 467   1              {
+ 468   2                      if((ECINDDR&SPIStatus_BUSY)==0x00)
+ 469   2              {
+ 470   3                  break;
+ 471   3              } 
+ 472   2              }       
+ 473   1      
+ 474   1              ECINDAR3 = 0x00;                        // Exit follow mode
+ 475   1              ECINDAR2 = 0x00;                                // For 256 bytes function limite
+ 476   1      }
+ 477          
+ 478          //-----------------------------------------------------------------------------
+ 479          // The function of SST SPI write 256 bytes (for Word AAI command)
+ 480          //-----------------------------------------------------------------------------
+ 481          void SST_SPI_Write_256Bytes(void)
+ 482          {
+ 483   1              ECINDAR3 = 0x0F; 
+ 484   1              ECINDAR2 = 0xFF;
+ 485   1              ECINDAR0 = 0x00;                                // FFFFExx = 0xFF  
+ 486   1              
+ 487   1              ECINDAR1 = 0xFE;
+ 488   1              ECINDDR = 0xFF;                                 // SCE# high level
+C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 9   
+
+ 489   1              ECINDAR1 = 0xFD;
+ 490   1              ECINDDR = SPICmd_ReadStatus;    // Read Status Register
+ 491   1              while(1)                                                // waiting spi free
+ 492   1              {
+ 493   2                      if((ECINDDR&SPIStatus_BUSY)==0x00)
+ 494   2              {
+ 495   3                  break;
+ 496   3              } 
+ 497   2              }                                                               
+ 498   1      
+ 499   1              ECINDAR1 = 0xFE;
+ 500   1              ECINDDR = 0xFF;                             // SCE# high level
+ 501   1              ECINDAR1 = 0xFD;
+ 502   1          ECINDDR = SPICmd_AAIWordProgram;    // Auto Address Increment Programming
+ 503   1      
+ 504   1              ECINDDR = SPIAddrCycle[0];          // For 256 bytes function limite
+ 505   1              ECINDDR = SPIAddrCycle[1];
+ 506   1              ECINDDR = SPIAddrCycle[2];
+ 507   1              
+ 508   1              SPIIndex = 0x00;
+ 509   1              do
+ 510   1              { 
+ 511   2                      ECINDDR = *SPIDataPointer;
+ 512   2                      SPIIndex++;
+ 513   2                      SPIDataPointerLowByte++;
+ 514   2      
+ 515   2                  if((SPIIndex%2)==0x00)
+ 516   2                  {
+ 517   3                          ECINDAR1 = 0xFE;
+ 518   3                          ECINDDR = 0xFF;                                     // SCE# high level
+ 519   3                          ECINDAR1 = 0xFD;
+ 520   3                          ECINDDR = SPICmd_ReadStatus;        // Read Status Register
+ 521   3                          while(1)                                            // waiting spi free
+ 522   3                          {
+ 523   4                                  if((ECINDDR&SPIStatus_BUSY)==0x00)
+ 524   4                          {
+ 525   5                          break;
+ 526   5                      } 
+ 527   4                          }   
+ 528   3                      
+ 529   3                  if(SPIIndex!=0x00)
+ 530   3                  {
+ 531   4                              ECINDAR1 = 0xFE;
+ 532   4                              ECINDDR = 0xFF;                                             // SCE# high level
+ 533   4                              ECINDAR1 = 0xFD;
+ 534   4                              ECINDDR = SPICmd_AAIWordProgram;                // Auto Address Increment Programming
+ 535   4                  }
+ 536   3                  }
+ 537   2              }while(SPIIndex!=0x00);                                 // Send 256 bytes
+ 538   1      
+ 539   1              ECINDAR1 = 0xFE;
+ 540   1              ECINDDR = 0xFF;                             // SCE# high level
+ 541   1              ECINDAR1 = 0xFD;
+ 542   1          ECINDDR = SPICmd_WRDI;          // Write disable
+ 543   1      
+ 544   1          WNCKR = 0x00;                   // Delay 15.26 us
+ 545   1          WNCKR = 0x00;                   // Delay 15.26 us
+ 546   1          WNCKR = 0x00;                   // Delay 15.26 us
+ 547   1          WNCKR = 0x00;                   // Delay 15.26 us
+ 548   1      
+ 549   1              ECINDAR3 = 0x00;                        // Exit follow mode
+ 550   1              ECINDAR2 = 0x00;                                // For 256 bytes function limite
+C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 10  
+
+ 551   1      }
+ 552          
+ 553          //-----------------------------------------------------------------------------
+ 554          // The function of old SST SPI write 256 bytes
+ 555          //-----------------------------------------------------------------------------
+ 556          void Old_SST_SPI_Write_256Bytes(void)
+ 557          {
+ 558   1              ECINDAR3 = 0x0F; 
+ 559   1              ECINDAR2 = 0xFF;
+ 560   1              ECINDAR0 = 0x00;                                // FFFFExx = 0xFF  
+ 561   1              
+ 562   1              ECINDAR1 = 0xFE;
+ 563   1              ECINDDR = 0xFF;                                 // SCE# high level
+ 564   1              ECINDAR1 = 0xFD;
+ 565   1              ECINDDR = SPICmd_ReadStatus;    // Read Status Register
+ 566   1              while(1)                                                // waiting spi free
+ 567   1              {
+ 568   2                      if((ECINDDR&SPIStatus_BUSY)==0x00)
+ 569   2              {
+ 570   3                  break;
+ 571   3              } 
+ 572   2              }                                                               
+ 573   1      
+ 574   1              ECINDAR1 = 0xFE;
+ 575   1              ECINDDR = 0xFF;                             // SCE# high level
+ 576   1              ECINDAR1 = 0xFD;
+ 577   1          ECINDDR = SPICmd_AAIProgram;    // Auto Address Increment Programming
+ 578   1      
+ 579   1              ECINDDR = SPIAddrCycle[0];          // For 256 bytes function limite
+ 580   1              ECINDDR = SPIAddrCycle[1];
+ 581   1              ECINDDR = SPIAddrCycle[2];
+ 582   1              
+ 583   1              SPIIndex = 0x00;
+ 584   1              do
+ 585   1              {
+ 586   2                      ECINDDR = *SPIDataPointer;
+ 587   2                      SPIIndex++;
+ 588   2                      SPIDataPointerLowByte++;
+ 589   2      
+ 590   2                  ECINDAR1 = 0xFE;
+ 591   2                  ECINDDR = 0xFF;                                     // SCE# high level
+ 592   2                  ECINDAR1 = 0xFD;
+ 593   2                  ECINDDR = SPICmd_ReadStatus;        // Read Status Register
+ 594   2                  while(1)                                            // waiting spi free
+ 595   2                  {
+ 596   3                          if((ECINDDR&SPIStatus_BUSY)==0x00)
+ 597   3                  {
+ 598   4                      break;
+ 599   4                  } 
+ 600   3                  }   
+ 601   2      
+ 602   2              if(SPIIndex!=0x00)
+ 603   2              {
+ 604   3                      ECINDAR1 = 0xFE;
+ 605   3                      ECINDDR = 0xFF;                     // SCE# high level
+ 606   3                      ECINDAR1 = 0xFD;       
+ 607   3                  ECINDDR = SPICmd_AAIProgram;    // Auto Address Increment Programming
+ 608   3              }
+ 609   2              }while(SPIIndex!=0x00);             // Send 256 bytes
+ 610   1      
+ 611   1              ECINDAR1 = 0xFE;
+ 612   1              ECINDDR = 0xFF;                             // SCE# high level
+C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 11  
+
+ 613   1              ECINDAR1 = 0xFD;
+ 614   1          ECINDDR = SPICmd_WRDI;          // Write disable
+ 615   1      
+ 616   1      
+ 617   1          WNCKR = 0x00;                   // Delay 15.26 us
+ 618   1          WNCKR = 0x00;                   // Delay 15.26 us
+ 619   1          WNCKR = 0x00;                   // Delay 15.26 us
+ 620   1          WNCKR = 0x00;                   // Delay 15.26 us
+ 621   1              //ECINDAR1 = 0xFE;
+ 622   1              //ECINDDR = 0xFF;                                       // SCE# high level
+ 623   1              //ECINDAR1 = 0xFD;
+ 624   1              //ECINDDR = SPICmd_ReadStatus;  // Read Status Register
+ 625   1              //while(1)                                              // waiting spi free
+ 626   1              //{
+ 627   1              //      if((ECINDDR&(SPIStatus_BUSY+SSTSPIStatus_AAI))==0x00)
+ 628   1          //    {
+ 629   1          //        break;
+ 630   1          //    } 
+ 631   1              //}     
+ 632   1      
+ 633   1              ECINDAR3 = 0x00;                        // Exit follow mode
+ 634   1              ECINDAR2 = 0x00;                                // For 256 bytes function limite
+ 635   1      }
+ 636          
+ 637          
+ 638          
+ 639          
+ 640          
+ 641          
+ 642          //-----------------------------------------------------------------------------
+ 643          // The function of SPI write 256 bytes
+ 644          //-----------------------------------------------------------------------------
+ 645          void SPI_Write_256Bytes(void)
+ 646          {
+ 647   1          if(SPIID==SSTID)
+ 648   1          {
+ 649   2              if(SSTDeviceID==SSTID_Old) 
+ 650   2              {
+ 651   3                  LoadSPIFucnToRam(Old_SST_SPI_Write_256Bytes);   // Load function to ram
+ 652   3              }
+ 653   2              else
+ 654   2              {
+ 655   3                      LoadSPIFucnToRam(SST_SPI_Write_256Bytes);       // Load function to ram
+ 656   3              }
+ 657   2          }
+ 658   1          else
+ 659   1          {
+ 660   2                  LoadSPIFucnToRam(Other_SPI_Write_256Bytes); // Load function to ram
+ 661   2          }  
+ 662   1      }
+ 663          
+ 664          
+ 665          
+ 666          
+ 667          //-----------------------------------------------------------------------------
+ 668          // The function of SPI read 256 bytes
+ 669          //-----------------------------------------------------------------------------
+ 670          void SPI_Read_256Bytes(void)
+ 671          {
+ 672   1              ECINDAR3 = 0x0F; 
+ 673   1              ECINDAR2 = 0xFF;
+ 674   1              ECINDAR0 = 0x00;                                // FFFFExx = 0xFF  
+C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 12  
+
+ 675   1              
+ 676   1              ECINDAR1 = 0xFE;
+ 677   1              ECINDDR = 0xFF;                                 // SCE# high level
+ 678   1              ECINDAR1 = 0xFD;
+ 679   1              ECINDDR = SPICmd_ReadStatus;    // Read Status Register
+ 680   1              while(1)                                                // waiting spi free
+ 681   1              {
+ 682   2                      if((ECINDDR&SPIStatus_BUSY)==0x00)
+ 683   2              {
+ 684   3                  break;
+ 685   3              } 
+ 686   2              }                                                               
+ 687   1      
+ 688   1              ECINDAR1 = 0xFE;
+ 689   1              ECINDDR = 0xFF;                                         // SCE# high level
+ 690   1              ECINDAR1 = 0xFD;
+ 691   1              ECINDDR = SPICmd_HighSpeedRead;         // High-Speed Read
+ 692   1      
+ 693   1              ECINDDR = SPIAddrCycle[0];                      // For 256 bytes function limite
+ 694   1              ECINDDR = SPIAddrCycle[1];
+ 695   1              ECINDDR = SPIAddrCycle[2];
+ 696   1              ECINDDR = 0x00;                                         // dummy byte
+ 697   1              
+ 698   1              SPIIndex = 0x00;
+ 699   1              do
+ 700   1              {
+ 701   2                      *SPIDataPointer = ECINDDR;;
+ 702   2                      SPIIndex++;
+ 703   2                      SPIDataPointerLowByte++;
+ 704   2              }while(SPIIndex!=0x00);                                 // Send 256 bytes
+ 705   1      
+ 706   1              ECINDAR1 = 0xFE;
+ 707   1              ECINDDR = 0xFF;                                 // SCE# high level
+ 708   1              ECINDAR1 = 0xFD;
+ 709   1              ECINDDR = SPICmd_ReadStatus;    // Read Status Register
+ 710   1              while(1)                                                // waiting spi free
+ 711   1              {
+ 712   2                      if((ECINDDR&SPIStatus_BUSY)==0x00)
+ 713   2              {
+ 714   3                  break;
+ 715   3              } 
+ 716   2              }       
+ 717   1      
+ 718   1              ECINDAR3 = 0x00;                        // Exit follow mode
+ 719   1              ECINDAR2 = 0x00;                                // For 256 bytes function limite
+ 720   1      }
+ 721          
+ 722          
+ 723          
+ 724          
+ 725          
+ 726          //-----------------------------------------------------------------------------
+ 727          // The function of loading function to external ram 0x600 ~ 0x6FF
+ 728          //                                                                              LoadSPIFucnToRam_Address in Core_Flash.h
+ 729          //-----------------------------------------------------------------------------
+ 730          void LoadSPIFucnToRam(FUNCT_PTR_V_V funcpoint)
+ 731          {
+ 732   1              Tmp_XPntr = LoadSPIFucnToRam_Address;
+ 733   1              Tmp_code_pointer = funcpoint;
+ 734   1      
+ 735   1              _R2= 0x00;
+ 736   1              do
+C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 13  
+
+ 737   1              {
+ 738   2                      *Tmp_XPntr = *Tmp_code_pointer;
+ 739   2                      Tmp_XPntr++;
+ 740   2                      Tmp_code_pointer++;
+ 741   2                      _R2++;
+ 742   2              }while(_R2!=0x00);
+ 743   1      
+ 744   1      }
+ 745          
+ 746          //-----------------------------------------------------------------------------
+ 747          // The function for ITE flash utility
+ 748          //-----------------------------------------------------------------------------
+ 749          #pragma ot(7, SIZE)
+ 750          void ITE_Flash_Utility(void)
+ 751          {
+ 752   1              DisableAllInterrupt();                          // Disable all interrupt 
+ 753   1              LoadSPIFucnToRam(FlashECCode);          // Load function to ram
+ 754   1              SET_MASK(FBCFG,SSMC);                   // enable scatch ROM
+ 755   1              FuncAt_0xFE00();                                        // do function in extern ram 0x600
+ 756   1      }
+ 757          
+ 758          
+ 759          //*****************************************************************************
+ 760          // OEM FUNCTION CALL
+ 761          //*****************************************************************************
+ 762          //-----------------------------------------------------------------------------
+ 763          // The function for oem code write spi status
+ 764          //-----------------------------------------------------------------------------
+ 765          #pragma ot(7, SIZE)
+ 766          void Do_SPI_Write_Status(BYTE statusvalue)
+ 767          {
+ 768   1              SPIWriteStatus = statusvalue;
+ 769   1              
+ 770   1              DisableAllInterrupt();                          // Disable all interrupt 
+ 771   1              LoadSPIFucnToRam(SPI_Write_Status);     // Load function to ram
+ 772   1              SET_MASK(FBCFG,SSMC);                   // enable scatch ROM
+ 773   1              FuncAt_0xFE00();                                        // do function in extern ram 0x600
+ 774   1              EnableAllInterrupt();                           // Enable all interrupt 
+ 775   1              CLEAR_MASK(FBCFG,SSMC);                 // disable scatch ROM
+ 776   1      }
+ 777          
+ 778          //-----------------------------------------------------------------------------
+ 779          // The function for oem code read spi status
+ 780          //              Note : SPI status always save to SPIReadStatus
+ 781          //-----------------------------------------------------------------------------
+ 782          #pragma ot(7, SIZE)
+ 783          void Do_SPI_Read_Status(void)
+ 784          {
+ 785   1              DisableAllInterrupt();                          // Disable all interrupt 
+ 786   1              LoadSPIFucnToRam(SPI_Read_Status);      // Load function to ram
+ 787   1              SET_MASK(FBCFG,SSMC);                   // enable scatch ROM
+ 788   1              FuncAt_0xFE00();                                        // do function in extern ram 0x600
+ 789   1              EnableAllInterrupt();                           // Enable all interrupt 
+ 790   1              CLEAR_MASK(FBCFG,SSMC);                 // disable scatch ROM
+ 791   1      }
+ 792          
+ 793          //-----------------------------------------------------------------------------
+ 794          // The function for oem code read spi ID (command 0x9F)   
+ 795          //              Note : SPI ID always save to array SPIIDBuf[]
+ 796          //-----------------------------------------------------------------------------
+ 797          #pragma ot(7, SIZE)
+ 798          void Do_SPI_Read_ID(void)
+C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 14  
+
+ 799          {
+ 800   1              DisableAllInterrupt();                  // Disable all interrupt 
+ 801   1              LoadSPIFucnToRam(SPI_Read_ID);  // Load function to ram
+ 802   1              SET_MASK(FBCFG,SSMC);           // enable scatch ROM
+ 803   1              FuncAt_0xFE00();                                // do function in extern ram 0x600
+ 804   1              EnableAllInterrupt();               // Enable all interrupt 
+ 805   1              CLEAR_MASK(FBCFG,SSMC);         // disable scatch ROM
+ 806   1      }
+ 807          
+ 808          //-----------------------------------------------------------------------------
+ 809          // The function for oem code read spi ID (command 0xAB)
+ 810          //              Note : SPI ID always save to array SPIIDBuf[]
+ 811          //-----------------------------------------------------------------------------
+ 812          #pragma ot(7, SIZE)
+ 813          void Do_SPI_Read_ID_CmdAB(void)
+ 814          {
+ 815   1              DisableAllInterrupt();                  // Disable all interrupt 
+ 816   1              LoadSPIFucnToRam(SPI_Read_ID_CmdAB);    // Load function to ram
+ 817   1              SET_MASK(FBCFG,SSMC);           // enable scatch ROM
+ 818   1              FuncAt_0xFE00();                                // do function in extern ram 0x600
+ 819   1              EnableAllInterrupt();               // Enable all interrupt 
+ 820   1              CLEAR_MASK(FBCFG,SSMC);         // disable scatch ROM
+ 821   1      }
+ 822          
+ 823          //-----------------------------------------------------------------------------
+ 824          // The function for oem code erase spi
+ 825          //              Input : 1 EraseCmd --> Only support SPICmd_Erase4KByte, 
+ 826          //                                                              SPICmd_Erase32KByte, and SPICmd_Erase64KByte.
+ 827          //                              2 Addr2    --> A23 ~ A16
+ 828          //                              3 Addr1    --> A15 ~ A8
+ 829          //                              4 Addr0    --> A7  ~ A0
+ 830          //-----------------------------------------------------------------------------
+ 831          #pragma ot(7, SIZE)
+ 832          void Do_SPI_Erase(BYTE EraseCmd, BYTE Addr2, BYTE Addr1, BYTE Addr0)
+ 833          {
+ 834   1              SPIAEraseCmd = EraseCmd;
+ 835   1              SPIAddrCycle[0] = Addr2;
+ 836   1              SPIAddrCycle[1] = Addr1;
+ 837   1              SPIAddrCycle[2] = Addr0;
+ 838   1                              
+ 839   1              DisableAllInterrupt();                  // Disable all interrupt 
+ 840   1              LoadSPIFucnToRam(SPI_Erase);    // Load function to ram
+ 841   1              SET_MASK(FBCFG,SSMC);           // enable scatch ROM
+ 842   1              FuncAt_0xFE00();                                // do function in extern ram 0x600
+ 843   1              EnableAllInterrupt();               // Enable all interrupt 
+ 844   1              CLEAR_MASK(FBCFG,SSMC);         // disable scatch ROM
+ 845   1      }
+ 846          
+ 847          //-----------------------------------------------------------------------------
+ 848          // The function for oem code write spi 256 bytes
+ 849          //              Input : 1 DataPointer --> Pointe to external memory
+ 850          //                              2 Addr2    --> A23 ~ A16
+ 851          //                              3 Addr1    --> A15 ~ A8
+ 852          //                              4 Addr0    --> A7  ~ A0
+ 853          //-----------------------------------------------------------------------------
+ 854          #pragma ot(7, SIZE)
+ 855          void Do_SPI_Write_256Bytes(XBYTE *DataPointer, BYTE Addr2, BYTE Addr1, BYTE Addr0)
+ 856          {
+ 857   1              SPIDataPointer = DataPointer;
+ 858   1              SPIAddrCycle[0] = Addr2;
+ 859   1              SPIAddrCycle[1] = Addr1;
+ 860   1              SPIAddrCycle[2] = Addr0;
+C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 15  
+
+ 861   1                              
+ 862   1              DisableAllInterrupt();                          // Disable all interrupt 
+ 863   1              SPI_Write_256Bytes();               // Load function to ram
+ 864   1              SET_MASK(FBCFG,SSMC);                   // enable scatch ROM
+ 865   1              FuncAt_0xFE00();                                        // do function in extern ram 0x600
+ 866   1              EnableAllInterrupt();                           // Enable all interrupt 
+ 867   1              CLEAR_MASK(FBCFG,SSMC);                 // disable scatch ROM
+ 868   1      }
+ 869          
+ 870          //-----------------------------------------------------------------------------
+ 871          // The function for oem code read spi 256 bytes to external memory
+ 872          //              Input : 1 DataPointer --> Pointe to external memory
+ 873          //                              2 Addr2    --> A23 ~ A16
+ 874          //                              3 Addr1    --> A15 ~ A8
+ 875          //                              4 Addr0    --> A7  ~ A0
+ 876          //-----------------------------------------------------------------------------
+ 877          #pragma ot(7, SIZE)
+ 878          void Do_SPI_Read_256Bytes(XBYTE *DataPointer, BYTE Addr2, BYTE Addr1, BYTE Addr0)
+ 879          {
+ 880   1              SPIDataPointer = DataPointer;
+ 881   1              SPIAddrCycle[0] = Addr2;
+ 882   1              SPIAddrCycle[1] = Addr1;
+ 883   1              SPIAddrCycle[2] = Addr0;
+ 884   1                              
+ 885   1              DisableAllInterrupt();                          // Disable all interrupt 
+ 886   1              LoadSPIFucnToRam(SPI_Read_256Bytes);    // Load function to ram
+ 887   1              SET_MASK(FBCFG,SSMC);                   // enable scatch ROM
+ 888   1              FuncAt_0xFE00();                                        // do function in extern ram 0x600
+ 889   1              EnableAllInterrupt();                           // Enable all interrupt 
+ 890   1              CLEAR_MASK(FBCFG,SSMC);                 // disable scatch ROM
+ 891   1      }
+ 892          
+ 893          
+ 894          
+ 895          //-----------------------------------------------------------------------------
+ 896          // The function for oem code spi write enable
+ 897          //-----------------------------------------------------------------------------
+ 898          #pragma ot(7, SIZE)
+ 899          void Do_SPI_Write_Enable(void)
+ 900          {
+ 901   1              DisableAllInterrupt();                          // Disable all interrupt 
+ 902   1              LoadSPIFucnToRam(SPI_Write_Enable);     // Load function to ram
+ 903   1              SET_MASK(FBCFG,SSMC);                   // enable scatch ROM
+ 904   1              FuncAt_0xFE00();                                        // do function in extern ram 0x600
+ 905   1              EnableAllInterrupt();                           // Enable all interrupt 
+ 906   1              CLEAR_MASK(FBCFG,SSMC);                 // disable scatch ROM
+ 907   1      }
+ 908          
+ 909          //-----------------------------------------------------------------------------
+ 910          // The function for oem code spi write disable
+ 911          //-----------------------------------------------------------------------------
+ 912          #pragma ot(7, SIZE)
+ 913          void Do_SPI_Write_Disable(void)
+ 914          {
+ 915   1              DisableAllInterrupt();                          // Disable all interrupt 
+ 916   1              LoadSPIFucnToRam(SPI_Write_Disable);    // Load function to ram
+ 917   1              SET_MASK(FBCFG,SSMC);                   // enable scatch ROM
+ 918   1              FuncAt_0xFE00();                                        // do function in extern ram 0x600
+ 919   1              EnableAllInterrupt();                           // Enable all interrupt 
+ 920   1              CLEAR_MASK(FBCFG,SSMC);                 // disable scatch ROM
+ 921   1      }
+ 922          
+C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 16  
+
+ 923          
+ 924          
+ 925          
+ 926          //-----------------------------------------------------------------------------
+ 927          //                              2 Addr2    --> A23 ~ A16
+ 928          //                              3 Addr1    --> A15 ~ A8
+ 929          //                              4 Addr0    --> A7  ~ A0
+ 930          //-----------------------------------------------------------------------------
+ 931          //----------------------------------------------------------------------------
+ 932          // The example of reading SPI ROM 0x010000 ~ 0x0100FF to external ram 0x200 ~ 0x2FF
+ 933          //----------------------------------------------------------------------------
+ 934          
+ 935          void OEM_Read_SPI_256Bytes(BYTE Addr2, BYTE Addr1, BYTE Addr0)
+ 936          {
+ 937   1              Do_SPI_Read_256Bytes(0x800,Addr2,Addr1,Addr0);
+ 938   1              //Note: 0x800 is buffer Ram address
+ 939   1      }
+ 940          
+ 941          
+ 942          //----------------------------------------------------------------------------
+ 943          // The example of writing external ram 0x200 ~ 0x2FF to SPI ROM 0x010000 ~ 0x0100FF
+ 944          //----------------------------------------------------------------------------
+ 945          void OEM_Write_SPI_256Bytes(BYTE Addr2, BYTE Addr1, BYTE Addr0)
+ 946          {
+ 947   1              Do_SPI_Write_Status(SPIStatus_UnlockAll);
+ 948   1              Do_SPI_Write_Enable();
+ 949   1              Do_SPI_Erase(SPICmd_Erase4KByte,Addr2,Addr1,Addr0);
+ 950   1              Do_SPI_Write_Enable();
+ 951   1              Do_SPI_Write_256Bytes(0x800,Addr2,Addr1,Addr0);
+ 952   1              Do_SPI_Write_Disable();
+ 953   1      }
+ 954          
+ 955          
+ 956          //-----------------------------------------------------------------------------
+ 957          // The function of DMA for scratch sram
+ 958          //
+ 959          //-----------------------------------------------------------------------------
+ 960          const sDMAScratchSRAM code asDMAScratchSRAM[]=
+ 961          {
+ 962              { &SCAR1H, &SCAR1M, &SCAR1L },  //1024bytes(externl ram 0x800~BFF)
+ 963              { &SCAR2H, &SCAR2M, &SCAR2L },  // 512bytes(externl ram 0xC00~DFF)
+ 964              { &SCAR3H, &SCAR3M, &SCAR3L },  // 256bytes(externl ram 0xE00~EFF)
+ 965              { &SCAR4H, &SCAR4M, &SCAR4L }   // 256bytes(externl ram 0xF00~FFF)
+ 966          
+ 967          };
+ 968          
+ 969          //-----------------------------------------------------------------------------
+ 970          void  CacheDma( BYTE sramnum, WORD addr )
+ 971          {
+ 972   1              *asDMAScratchSRAM[sramnum].scarh = 0x80;
+ 973   1              
+ 974   1              /* high byte of function address.   */
+ 975   1              *asDMAScratchSRAM[sramnum].scarm = (WORD) addr >> 8;
+ 976   1              //*asDMAScratchSRAM[sramnum].scarm = 0xFE;      //For Test
+ 977   1              
+ 978   1              /* low byte of function address.    */
+ 979   1              *asDMAScratchSRAM[sramnum].scarl = (WORD) addr & 0xff;
+ 980   1              //*asDMAScratchSRAM[sramnum].scarl = 0x00;      //For Test
+ 981   1              
+ 982   1              /* start cache dma                  */
+ 983   1              *asDMAScratchSRAM[sramnum].scarh = 0x00;
+ 984   1      
+C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 17  
+
+ 985   1      }
+ 986          
+ 987          //----------------------------------------------------------------------------
+ 988          // Read SPI use EC-Indirect fast read
+ 989          //----------------------------------------------------------------------------
+ 990          BYTE EC_Indirect_Read_SPI(BYTE Addr2, BYTE Addr1, BYTE Addr0)
+ 991          {
+ 992   1              BYTE itemp, SPI_Data;
+ 993   1              itemp = ECINDAR3;       //save ECINDAR3
+ 994   1              ECINDAR3 = 0;
+ 995   1              ECINDAR2 = Addr2;       //High Byte
+ 996   1              ECINDAR1 = Addr1;       //Middle Byte
+ 997   1              ECINDAR0 = Addr0;       //Low Byte
+ 998   1              SPI_Data = ECINDDR;
+ 999   1              ECINDAR3 = itemp;       //restore ECINDAR3
+1000   1      
+1001   1              return SPI_Data;
+1002   1      }
+1003          
+1004          
+1005          #if     COMPARE_CHECKSUM
+              void CalculateChecksum(void)
+              {
+                      BYTE code * data_pntr;
+                      
+                      data_pntr = 0;
+                      Calc_Checksum=0x00;
+              
+                      while(data_pntr!=0xFFFE)        // End address ~0xFFFD
+                      {
+                              Calc_Checksum+= *data_pntr;  // To calculate checksum
+                              data_pntr++;
+              
+                      }
+                      
+                      Calc_Checksum+=0x1FE;           // address == 0xFFFE,0xFFFF
+              
+              }
+              
+              
+              WORD Get_Checksum(void)
+              {
+                      WORD code * data_pntr;
+              
+                      data_pntr = 0xFFFE;
+                      
+                      return(*data_pntr);
+              
+              }
+              
+              void ClearSRamF(void)
+              {
+                      PORT_BYTE_PNTR byte_register_pntr;
+                      byte_register_pntr=0x0F00;
+              
+                      while(byte_register_pntr<0x1000)// Clear external ram (0x000~0xFFF)
+                      {
+                          *byte_register_pntr=0;
+                          byte_register_pntr ++;
+                      }
+                              
+              }
+C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 18  
+
+              
+              #endif          //COMPARE_CHECKSUM
+C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 19  
+
+ASSEMBLY LISTING OF GENERATED OBJECT CODE
+
+
+             ; FUNCTION FuncAt_0xFE00 (BEGIN)
+                                           ; SOURCE LINE # 14
+                                           ; SOURCE LINE # 15
+                                           ; SOURCE LINE # 16
+0000 00                NOP     
+                                           ; SOURCE LINE # 17
+0001 00                NOP     
+                                           ; SOURCE LINE # 18
+0002 00                NOP     
+                                           ; SOURCE LINE # 19
+0003 00                NOP     
+                                           ; SOURCE LINE # 20
+0004 00                NOP     
+                                           ; SOURCE LINE # 21
+0005 00                NOP     
+                                           ; SOURCE LINE # 22
+0006 00                NOP     
+                                           ; SOURCE LINE # 23
+0007 00                NOP     
+                                           ; SOURCE LINE # 24
+0008 020000      R     LJMP    FlashECCode
+             ; FUNCTION FuncAt_0xFE00 (END)
+
+             ; FUNCTION FlashECCode (BEGIN)
+                                           ; SOURCE LINE # 31
+                                           ; SOURCE LINE # 32
+                                           ; SOURCE LINE # 33
+0000 E4                CLR     A
+0001 F500        E     MOV     _FlashCMD,A
+                                           ; SOURCE LINE # 34
+0003 F500        E     MOV     _SEND,A
+                                           ; SOURCE LINE # 36
+0005 900000      E     MOV     DPTR,#PM1DO
+0008 7433              MOV     A,#033H
+000A F0                MOVX    @DPTR,A
+000B         ?C0002:
+                                           ; SOURCE LINE # 38
+                                           ; SOURCE LINE # 39
+                                           ; SOURCE LINE # 47
+000B 900000      E     MOV     DPTR,#PM1STS
+000E E0                MOVX    A,@DPTR
+000F 30E1F9            JNB     ACC.1,?C0002
+0012         ?C0004:
+                                           ; SOURCE LINE # 48
+0012 900000      E     MOV     DPTR,#PM1STS
+0015 E0                MOVX    A,@DPTR
+0016 30E3F2            JNB     ACC.3,?C0002
+0019         ?C0005:
+                                           ; SOURCE LINE # 49
+0019 900000      E     MOV     DPTR,#PM1DI
+001C E0                MOVX    A,@DPTR
+001D F500        E     MOV     _FlashCMD,A
+                                           ; SOURCE LINE # 51
+001F E500        E     MOV     A,_SEND
+0021 B4010B            CJNE    A,#01H,?C0006
+                                           ; SOURCE LINE # 52
+                                           ; SOURCE LINE # 53
+0024 900000      E     MOV     DPTR,#ECINDDR
+0027 E500        E     MOV     A,_FlashCMD
+C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 20  
+
+0029 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 54
+002A E4                CLR     A
+002B F500        E     MOV     _SEND,A
+                                           ; SOURCE LINE # 55
+002D 80DC              SJMP    ?C0002
+                                           ; SOURCE LINE # 56
+002F         ?C0006:
+                                           ; SOURCE LINE # 58
+002F E500        E     MOV     A,_FlashCMD
+0031 B4011C            CJNE    A,#01H,?C0007
+                                           ; SOURCE LINE # 59
+                                           ; SOURCE LINE # 60
+0034 900000      E     MOV     DPTR,#ECINDAR3
+0037 740F              MOV     A,#0FH
+0039 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 61
+003A 900000      E     MOV     DPTR,#ECINDAR2
+003D 74FF              MOV     A,#0FFH
+003F F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 62
+0040 900000      E     MOV     DPTR,#ECINDAR1
+0043 14                DEC     A
+0044 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 63
+0045 E4                CLR     A
+0046 900000      E     MOV     DPTR,#ECINDAR0
+0049 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 64
+004A 900000      E     MOV     DPTR,#ECINDDR
+004D F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 65
+004E 80BB              SJMP    ?C0002
+0050         ?C0007:
+                                           ; SOURCE LINE # 66
+0050 E500        E     MOV     A,_FlashCMD
+0052 B40208            CJNE    A,#02H,?C0009
+                                           ; SOURCE LINE # 67
+                                           ; SOURCE LINE # 68
+0055 900000      E     MOV     DPTR,#ECINDAR1
+0058 74FD              MOV     A,#0FDH
+005A F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 69
+                                           ; SOURCE LINE # 70
+005B 8005              SJMP    ?C0149
+005D         ?C0009:
+                                           ; SOURCE LINE # 71
+005D E500        E     MOV     A,_FlashCMD
+005F B40305            CJNE    A,#03H,?C0011
+                                           ; SOURCE LINE # 72
+                                           ; SOURCE LINE # 73
+0062         ?C0149:
+0062 750001      E     MOV     _SEND,#01H
+                                           ; SOURCE LINE # 74
+0065 80A4              SJMP    ?C0002
+0067         ?C0011:
+                                           ; SOURCE LINE # 75
+0067 E500        E     MOV     A,_FlashCMD
+0069 B4040A            CJNE    A,#04H,?C0013
+                                           ; SOURCE LINE # 76
+                                           ; SOURCE LINE # 77
+006C 900000      E     MOV     DPTR,#ECINDDR
+C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 21  
+
+006F E0                MOVX    A,@DPTR
+0070 900000      E     MOV     DPTR,#PM1DO
+0073 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 78
+0074 8095              SJMP    ?C0002
+0076         ?C0013:
+                                           ; SOURCE LINE # 79
+0076 E500        E     MOV     A,_FlashCMD
+0078 B4050B            CJNE    A,#05H,?C0015
+                                           ; SOURCE LINE # 80
+                                           ; SOURCE LINE # 81
+007B E4                CLR     A
+007C 900000      E     MOV     DPTR,#ECINDAR3
+007F F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 82
+0080 900000      E     MOV     DPTR,#ECINDAR2
+0083 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 83
+0084 8085              SJMP    ?C0002
+0086         ?C0015:
+                                           ; SOURCE LINE # 84
+0086 E500        E     MOV     A,_FlashCMD
+0088 B4FC05            CJNE    A,#0FCH,?C0017
+                                           ; SOURCE LINE # 85
+                                           ; SOURCE LINE # 86
+008B 7500AA      E     MOV     ExitRamCodeCommand,#0AAH
+                                           ; SOURCE LINE # 87
+008E 801E              SJMP    ?C0003
+                                           ; SOURCE LINE # 88
+0090         ?C0017:
+                                           ; SOURCE LINE # 89
+0090 E500        E     MOV     A,_FlashCMD
+0092 B4FD08            CJNE    A,#0FDH,?C0019
+                                           ; SOURCE LINE # 90
+                                           ; SOURCE LINE # 91
+0095 43D801            ORL     WDTCON,#01H
+                                           ; SOURCE LINE # 92
+0098 43D802            ORL     WDTCON,#02H
+009B         ?C0020:
+                                           ; SOURCE LINE # 93
+009B 80FE              SJMP    ?C0020
+                                           ; SOURCE LINE # 94
+009D         ?C0019:
+                                           ; SOURCE LINE # 95
+009D E500        E     MOV     A,_FlashCMD
+009F 64FE              XRL     A,#0FEH
+00A1 6003              JZ      $ + 5H
+00A3 020000      R     LJMP    ?C0002
+                                           ; SOURCE LINE # 96
+                                           ; SOURCE LINE # 98
+00A6 43D801            ORL     WDTCON,#01H
+                                           ; SOURCE LINE # 99
+00A9 43D802            ORL     WDTCON,#02H
+00AC         ?C0024:
+                                           ; SOURCE LINE # 100
+00AC 80FE              SJMP    ?C0024
+                                           ; SOURCE LINE # 101
+                                           ; SOURCE LINE # 102
+00AE         ?C0003:
+                                           ; SOURCE LINE # 103
+00AE 020000      E     LJMP    main
+             ; FUNCTION FlashECCode (END)
+C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 22  
+
+
+             ; FUNCTION SPI_Read_Status (BEGIN)
+                                           ; SOURCE LINE # 111
+                                           ; SOURCE LINE # 112
+                                           ; SOURCE LINE # 113
+0000 900000      E     MOV     DPTR,#ECINDAR3
+0003 740F              MOV     A,#0FH
+0005 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 114
+0006 900000      E     MOV     DPTR,#ECINDAR2
+0009 74FF              MOV     A,#0FFH
+000B F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 115
+000C E4                CLR     A
+000D 900000      E     MOV     DPTR,#ECINDAR0
+0010 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 117
+0011 900000      E     MOV     DPTR,#ECINDAR1
+0014 74FE              MOV     A,#0FEH
+0016 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 118
+0017 900000      E     MOV     DPTR,#ECINDDR
+001A 04                INC     A
+001B F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 119
+001C 900000      E     MOV     DPTR,#ECINDAR1
+001F 74FD              MOV     A,#0FDH
+0021 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 120
+0022 900000      E     MOV     DPTR,#ECINDDR
+0025 7405              MOV     A,#05H
+0027 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 122
+0028 E0                MOVX    A,@DPTR
+0029 900000      E     MOV     DPTR,#SPIReadStatus
+002C F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 124
+002D E4                CLR     A
+002E 900000      E     MOV     DPTR,#ECINDAR3
+0031 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 125
+0032 900000      E     MOV     DPTR,#ECINDAR2
+0035 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 126
+0036 22                RET     
+             ; FUNCTION SPI_Read_Status (END)
+
+             ; FUNCTION SPI_Write_Status (BEGIN)
+                                           ; SOURCE LINE # 132
+                                           ; SOURCE LINE # 133
+                                           ; SOURCE LINE # 134
+0000 900000      E     MOV     DPTR,#ECINDAR3
+0003 740F              MOV     A,#0FH
+0005 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 135
+0006 900000      E     MOV     DPTR,#ECINDAR2
+0009 74FF              MOV     A,#0FFH
+000B F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 136
+000C E4                CLR     A
+000D 900000      E     MOV     DPTR,#ECINDAR0
+0010 F0                MOVX    @DPTR,A
+C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 23  
+
+                                           ; SOURCE LINE # 138
+0011 900000      E     MOV     DPTR,#ECINDAR1
+0014 74FE              MOV     A,#0FEH
+0016 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 139
+0017 900000      E     MOV     DPTR,#ECINDDR
+001A 04                INC     A
+001B F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 140
+001C 900000      E     MOV     DPTR,#ECINDAR1
+001F 74FD              MOV     A,#0FDH
+0021 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 141
+0022 900000      E     MOV     DPTR,#ECINDDR
+0025 7405              MOV     A,#05H
+0027 F0                MOVX    @DPTR,A
+0028         ?C0028:
+                                           ; SOURCE LINE # 142
+                                           ; SOURCE LINE # 143
+                                           ; SOURCE LINE # 144
+0028 900000      E     MOV     DPTR,#ECINDDR
+002B E0                MOVX    A,@DPTR
+002C 20E0F9            JB      ACC.0,?C0028
+                                           ; SOURCE LINE # 145
+                                           ; SOURCE LINE # 146
+                                           ; SOURCE LINE # 147
+                                           ; SOURCE LINE # 148
+002F         ?C0029:
+                                           ; SOURCE LINE # 150
+002F 900000      E     MOV     DPTR,#ECINDAR1
+0032 74FE              MOV     A,#0FEH
+0034 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 151
+0035 900000      E     MOV     DPTR,#ECINDDR
+0038 04                INC     A
+0039 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 152
+003A 900000      E     MOV     DPTR,#ECINDAR1
+003D 74FD              MOV     A,#0FDH
+003F F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 153
+0040 900000      E     MOV     DPTR,#ECINDDR
+0043 7406              MOV     A,#06H
+0045 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 155
+0046 900000      E     MOV     DPTR,#SPIID
+0049 E0                MOVX    A,@DPTR
+004A B4BF17            CJNE    A,#0BFH,?C0031
+                                           ; SOURCE LINE # 156
+                                           ; SOURCE LINE # 157
+004D 900000      E     MOV     DPTR,#ECINDAR1
+0050 74FE              MOV     A,#0FEH
+0052 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 158
+0053 900000      E     MOV     DPTR,#ECINDDR
+0056 04                INC     A
+0057 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 159
+0058 900000      E     MOV     DPTR,#ECINDAR1
+005B 74FD              MOV     A,#0FDH
+005D F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 160
+C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 24  
+
+005E 900000      E     MOV     DPTR,#ECINDDR
+0061 7450              MOV     A,#050H
+0063 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 161
+0064         ?C0031:
+                                           ; SOURCE LINE # 163
+0064 900000      E     MOV     DPTR,#ECINDAR1
+0067 74FE              MOV     A,#0FEH
+0069 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 164
+006A 900000      E     MOV     DPTR,#ECINDDR
+006D 04                INC     A
+006E F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 165
+006F 900000      E     MOV     DPTR,#ECINDAR1
+0072 74FD              MOV     A,#0FDH
+0074 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 166
+0075 900000      E     MOV     DPTR,#ECINDDR
+0078 7401              MOV     A,#01H
+007A F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 167
+007B 900000      E     MOV     DPTR,#SPIWriteStatus
+007E E0                MOVX    A,@DPTR
+007F 900000      E     MOV     DPTR,#ECINDDR
+0082 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 169
+0083 900000      E     MOV     DPTR,#ECINDAR1
+0086 74FE              MOV     A,#0FEH
+0088 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 170
+0089 900000      E     MOV     DPTR,#ECINDDR
+008C 04                INC     A
+008D F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 171
+008E 900000      E     MOV     DPTR,#ECINDAR1
+0091 74FD              MOV     A,#0FDH
+0093 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 172
+0094 900000      E     MOV     DPTR,#ECINDDR
+0097 7405              MOV     A,#05H
+0099 F0                MOVX    @DPTR,A
+009A         ?C0032:
+                                           ; SOURCE LINE # 173
+                                           ; SOURCE LINE # 174
+                                           ; SOURCE LINE # 175
+009A 900000      E     MOV     DPTR,#ECINDDR
+009D E0                MOVX    A,@DPTR
+009E 20E0F9            JB      ACC.0,?C0032
+                                           ; SOURCE LINE # 176
+                                           ; SOURCE LINE # 177
+                                           ; SOURCE LINE # 178
+                                           ; SOURCE LINE # 179
+00A1         ?C0033:
+                                           ; SOURCE LINE # 181
+00A1 E4                CLR     A
+00A2 900000      E     MOV     DPTR,#ECINDAR3
+00A5 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 182
+00A6 900000      E     MOV     DPTR,#ECINDAR2
+00A9 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 183
+C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 25  
+
+00AA 22                RET     
+             ; FUNCTION SPI_Write_Status (END)
+
+             ; FUNCTION SPI_Read_ID (BEGIN)
+                                           ; SOURCE LINE # 189
+                                           ; SOURCE LINE # 190
+                                           ; SOURCE LINE # 191
+0000 900000      E     MOV     DPTR,#ECINDAR3
+0003 740F              MOV     A,#0FH
+0005 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 192
+0006 900000      E     MOV     DPTR,#ECINDAR2
+0009 74FF              MOV     A,#0FFH
+000B F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 193
+000C E4                CLR     A
+000D 900000      E     MOV     DPTR,#ECINDAR0
+0010 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 195
+0011 900000      E     MOV     DPTR,#ECINDAR1
+0014 74FE              MOV     A,#0FEH
+0016 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 196
+0017 900000      E     MOV     DPTR,#ECINDDR
+001A 04                INC     A
+001B F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 197
+001C 900000      E     MOV     DPTR,#ECINDAR1
+001F 74FD              MOV     A,#0FDH
+0021 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 198
+0022 900000      E     MOV     DPTR,#ECINDDR
+0025 7405              MOV     A,#05H
+0027 F0                MOVX    @DPTR,A
+0028         ?C0036:
+                                           ; SOURCE LINE # 199
+                                           ; SOURCE LINE # 200
+                                           ; SOURCE LINE # 201
+0028 900000      E     MOV     DPTR,#ECINDDR
+002B E0                MOVX    A,@DPTR
+002C 20E0F9            JB      ACC.0,?C0036
+                                           ; SOURCE LINE # 202
+                                           ; SOURCE LINE # 203
+                                           ; SOURCE LINE # 204
+                                           ; SOURCE LINE # 205
+002F         ?C0037:
+                                           ; SOURCE LINE # 207
+002F 900000      E     MOV     DPTR,#ECINDAR1
+0032 74FE              MOV     A,#0FEH
+0034 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 208
+0035 900000      E     MOV     DPTR,#ECINDDR
+0038 04                INC     A
+0039 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 209
+003A 900000      E     MOV     DPTR,#ECINDAR1
+003D 74FD              MOV     A,#0FDH
+003F F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 210
+0040 900000      E     MOV     DPTR,#ECINDDR
+0043 749F              MOV     A,#09FH
+0045 F0                MOVX    @DPTR,A
+C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 26  
+
+                                           ; SOURCE LINE # 211
+0046 E4                CLR     A
+0047 900000      E     MOV     DPTR,#SPIIndex
+004A F0                MOVX    @DPTR,A
+004B         ?C0039:
+                                           ; SOURCE LINE # 212
+                                           ; SOURCE LINE # 213
+004B 900000      E     MOV     DPTR,#ECINDDR
+004E E0                MOVX    A,@DPTR
+004F FF                MOV     R7,A
+0050 900000      E     MOV     DPTR,#SPIIndex
+0053 E0                MOVX    A,@DPTR
+0054 2400        E     ADD     A,#LOW SPIIDBuf
+0056 F582              MOV     DPL,A
+0058 E4                CLR     A
+0059 3400        E     ADDC    A,#HIGH SPIIDBuf
+005B F583              MOV     DPH,A
+005D EF                MOV     A,R7
+005E F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 214
+005F 900000      E     MOV     DPTR,#SPIIndex
+0062 E0                MOVX    A,@DPTR
+0063 04                INC     A
+0064 F0                MOVX    @DPTR,A
+0065 E0                MOVX    A,@DPTR
+0066 B404E2            CJNE    A,#04H,?C0039
+0069         ?C0040:
+                                           ; SOURCE LINE # 215
+0069 900000      E     MOV     DPTR,#SPIIDBuf
+006C E0                MOVX    A,@DPTR
+006D 900000      E     MOV     DPTR,#SPIID
+0070 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 217
+0071 900000      E     MOV     DPTR,#ECINDAR1
+0074 74FE              MOV     A,#0FEH
+0076 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 218
+0077 900000      E     MOV     DPTR,#ECINDDR
+007A 04                INC     A
+007B F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 219
+007C 900000      E     MOV     DPTR,#ECINDAR1
+007F 74FD              MOV     A,#0FDH
+0081 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 220
+0082 900000      E     MOV     DPTR,#ECINDDR
+0085 7405              MOV     A,#05H
+0087 F0                MOVX    @DPTR,A
+0088         ?C0042:
+                                           ; SOURCE LINE # 222
+                                           ; SOURCE LINE # 223
+                                           ; SOURCE LINE # 224
+0088 900000      E     MOV     DPTR,#ECINDDR
+008B E0                MOVX    A,@DPTR
+008C 20E0F9            JB      ACC.0,?C0042
+                                           ; SOURCE LINE # 225
+                                           ; SOURCE LINE # 226
+                                           ; SOURCE LINE # 227
+                                           ; SOURCE LINE # 228
+008F         ?C0043:
+                                           ; SOURCE LINE # 229
+008F E4                CLR     A
+C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 27  
+
+0090 900000      E     MOV     DPTR,#ECINDAR3
+0093 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 230
+0094 900000      E     MOV     DPTR,#ECINDAR2
+0097 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 231
+0098 22                RET     
+             ; FUNCTION SPI_Read_ID (END)
+
+             ; FUNCTION SPI_Read_ID_CmdAB (BEGIN)
+                                           ; SOURCE LINE # 237
+                                           ; SOURCE LINE # 238
+                                           ; SOURCE LINE # 239
+0000 900000      E     MOV     DPTR,#ECINDAR3
+0003 740F              MOV     A,#0FH
+0005 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 240
+0006 900000      E     MOV     DPTR,#ECINDAR2
+0009 74FF              MOV     A,#0FFH
+000B F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 241
+000C E4                CLR     A
+000D 900000      E     MOV     DPTR,#ECINDAR0
+0010 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 243
+0011 900000      E     MOV     DPTR,#ECINDAR1
+0014 74FE              MOV     A,#0FEH
+0016 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 244
+0017 900000      E     MOV     DPTR,#ECINDDR
+001A 04                INC     A
+001B F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 245
+001C 900000      E     MOV     DPTR,#ECINDAR1
+001F 74FD              MOV     A,#0FDH
+0021 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 246
+0022 900000      E     MOV     DPTR,#ECINDDR
+0025 7405              MOV     A,#05H
+0027 F0                MOVX    @DPTR,A
+0028         ?C0046:
+                                           ; SOURCE LINE # 247
+                                           ; SOURCE LINE # 248
+                                           ; SOURCE LINE # 249
+0028 900000      E     MOV     DPTR,#ECINDDR
+002B E0                MOVX    A,@DPTR
+002C 20E0F9            JB      ACC.0,?C0046
+                                           ; SOURCE LINE # 250
+                                           ; SOURCE LINE # 251
+                                           ; SOURCE LINE # 252
+                                           ; SOURCE LINE # 253
+002F         ?C0047:
+                                           ; SOURCE LINE # 255
+002F 900000      E     MOV     DPTR,#ECINDAR1
+0032 74FE              MOV     A,#0FEH
+0034 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 256
+0035 900000      E     MOV     DPTR,#ECINDDR
+0038 04                INC     A
+0039 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 257
+003A 900000      E     MOV     DPTR,#ECINDAR1
+C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 28  
+
+003D 74FD              MOV     A,#0FDH
+003F F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 258
+0040 900000      E     MOV     DPTR,#ECINDDR
+0043 74AB              MOV     A,#0ABH
+0045 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 259
+0046 E4                CLR     A
+0047 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 260
+0048 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 261
+0049 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 263
+004A 900000      E     MOV     DPTR,#SPIIndex
+004D F0                MOVX    @DPTR,A
+004E         ?C0049:
+                                           ; SOURCE LINE # 264
+                                           ; SOURCE LINE # 265
+004E 900000      E     MOV     DPTR,#ECINDDR
+0051 E0                MOVX    A,@DPTR
+0052 FF                MOV     R7,A
+0053 900000      E     MOV     DPTR,#SPIIndex
+0056 E0                MOVX    A,@DPTR
+0057 2400        E     ADD     A,#LOW SPIIDBuf
+0059 F582              MOV     DPL,A
+005B E4                CLR     A
+005C 3400        E     ADDC    A,#HIGH SPIIDBuf
+005E F583              MOV     DPH,A
+0060 EF                MOV     A,R7
+0061 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 266
+0062 900000      E     MOV     DPTR,#SPIIndex
+0065 E0                MOVX    A,@DPTR
+0066 04                INC     A
+0067 F0                MOVX    @DPTR,A
+0068 E0                MOVX    A,@DPTR
+0069 B404E2            CJNE    A,#04H,?C0049
+006C         ?C0050:
+                                           ; SOURCE LINE # 267
+006C 900000      E     MOV     DPTR,#SPIIDBuf
+006F E0                MOVX    A,@DPTR
+0070 900000      E     MOV     DPTR,#SPIID
+0073 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 269
+0074 900000      E     MOV     DPTR,#ECINDAR1
+0077 74FE              MOV     A,#0FEH
+0079 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 270
+007A 900000      E     MOV     DPTR,#ECINDDR
+007D 04                INC     A
+007E F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 271
+007F 900000      E     MOV     DPTR,#ECINDAR1
+0082 74FD              MOV     A,#0FDH
+0084 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 272
+0085 900000      E     MOV     DPTR,#ECINDDR
+0088 7405              MOV     A,#05H
+008A F0                MOVX    @DPTR,A
+008B         ?C0052:
+                                           ; SOURCE LINE # 274
+C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 29  
+
+                                           ; SOURCE LINE # 275
+                                           ; SOURCE LINE # 276
+008B 900000      E     MOV     DPTR,#ECINDDR
+008E E0                MOVX    A,@DPTR
+008F 20E0F9            JB      ACC.0,?C0052
+                                           ; SOURCE LINE # 277
+                                           ; SOURCE LINE # 278
+                                           ; SOURCE LINE # 279
+                                           ; SOURCE LINE # 280
+0092         ?C0053:
+                                           ; SOURCE LINE # 281
+0092 E4                CLR     A
+0093 900000      E     MOV     DPTR,#ECINDAR3
+0096 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 282
+0097 900000      E     MOV     DPTR,#ECINDAR2
+009A F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 283
+009B 22                RET     
+             ; FUNCTION SPI_Read_ID_CmdAB (END)
+
+             ; FUNCTION SPI_Erase (BEGIN)
+                                           ; SOURCE LINE # 288
+                                           ; SOURCE LINE # 289
+                                           ; SOURCE LINE # 290
+0000 900000      E     MOV     DPTR,#ECINDAR3
+0003 740F              MOV     A,#0FH
+0005 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 291
+0006 900000      E     MOV     DPTR,#ECINDAR2
+0009 74FF              MOV     A,#0FFH
+000B F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 292
+000C E4                CLR     A
+000D 900000      E     MOV     DPTR,#ECINDAR0
+0010 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 294
+0011 900000      E     MOV     DPTR,#ECINDAR1
+0014 74FE              MOV     A,#0FEH
+0016 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 295
+0017 900000      E     MOV     DPTR,#ECINDDR
+001A 04                INC     A
+001B F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 296
+001C 900000      E     MOV     DPTR,#ECINDAR1
+001F 74FD              MOV     A,#0FDH
+0021 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 297
+0022 900000      E     MOV     DPTR,#ECINDDR
+0025 7405              MOV     A,#05H
+0027 F0                MOVX    @DPTR,A
+0028         ?C0056:
+                                           ; SOURCE LINE # 298
+                                           ; SOURCE LINE # 299
+                                           ; SOURCE LINE # 300
+0028 900000      E     MOV     DPTR,#ECINDDR
+002B E0                MOVX    A,@DPTR
+002C 5403              ANL     A,#03H
+002E FF                MOV     R7,A
+002F BF02F6            CJNE    R7,#02H,?C0056
+                                           ; SOURCE LINE # 301
+C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 30  
+
+                                           ; SOURCE LINE # 302
+                                           ; SOURCE LINE # 303
+                                           ; SOURCE LINE # 304
+0032         ?C0057:
+                                           ; SOURCE LINE # 306
+0032 900000      E     MOV     DPTR,#ECINDAR1
+0035 74FE              MOV     A,#0FEH
+0037 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 307
+0038 900000      E     MOV     DPTR,#ECINDDR
+003B 04                INC     A
+003C F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 308
+003D 900000      E     MOV     DPTR,#ECINDAR1
+0040 74FD              MOV     A,#0FDH
+0042 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 309
+0043 900000      E     MOV     DPTR,#SPIAEraseCmd
+0046 E0                MOVX    A,@DPTR
+0047 900000      E     MOV     DPTR,#ECINDDR
+004A F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 310
+004B E4                CLR     A
+004C 900000      E     MOV     DPTR,#SPIIndex
+004F F0                MOVX    @DPTR,A
+0050         ?C0059:
+                                           ; SOURCE LINE # 311
+                                           ; SOURCE LINE # 312
+0050 900000      E     MOV     DPTR,#SPIIndex
+0053 E0                MOVX    A,@DPTR
+0054 2400        E     ADD     A,#LOW SPIAddrCycle
+0056 F582              MOV     DPL,A
+0058 E4                CLR     A
+0059 3400        E     ADDC    A,#HIGH SPIAddrCycle
+005B F583              MOV     DPH,A
+005D E0                MOVX    A,@DPTR
+005E 900000      E     MOV     DPTR,#ECINDDR
+0061 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 313
+0062 900000      E     MOV     DPTR,#SPIIndex
+0065 E0                MOVX    A,@DPTR
+0066 04                INC     A
+0067 F0                MOVX    @DPTR,A
+0068 E0                MOVX    A,@DPTR
+0069 B403E4            CJNE    A,#03H,?C0059
+006C         ?C0060:
+                                           ; SOURCE LINE # 315
+006C 900000      E     MOV     DPTR,#ECINDAR1
+006F 74FE              MOV     A,#0FEH
+0071 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 316
+0072 900000      E     MOV     DPTR,#ECINDDR
+0075 04                INC     A
+0076 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 318
+0077 900000      E     MOV     DPTR,#ECINDAR1
+007A 74FD              MOV     A,#0FDH
+007C F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 319
+007D 900000      E     MOV     DPTR,#ECINDDR
+0080 7405              MOV     A,#05H
+0082 F0                MOVX    @DPTR,A
+C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 31  
+
+0083         ?C0062:
+                                           ; SOURCE LINE # 321
+                                           ; SOURCE LINE # 322
+                                           ; SOURCE LINE # 323
+0083 900000      E     MOV     DPTR,#ECINDDR
+0086 E0                MOVX    A,@DPTR
+0087 20E0F9            JB      ACC.0,?C0062
+                                           ; SOURCE LINE # 324
+                                           ; SOURCE LINE # 325
+                                           ; SOURCE LINE # 326
+                                           ; SOURCE LINE # 327
+008A         ?C0063:
+                                           ; SOURCE LINE # 328
+008A E4                CLR     A
+008B 900000      E     MOV     DPTR,#ECINDAR3
+008E F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 329
+008F 900000      E     MOV     DPTR,#ECINDAR2
+0092 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 330
+0093 22                RET     
+             ; FUNCTION SPI_Erase (END)
+
+             ; FUNCTION SPI_Write_Enable (BEGIN)
+                                           ; SOURCE LINE # 335
+                                           ; SOURCE LINE # 336
+                                           ; SOURCE LINE # 337
+0000 900000      E     MOV     DPTR,#ECINDAR3
+0003 740F              MOV     A,#0FH
+0005 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 338
+0006 900000      E     MOV     DPTR,#ECINDAR2
+0009 74FF              MOV     A,#0FFH
+000B F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 339
+000C E4                CLR     A
+000D 900000      E     MOV     DPTR,#ECINDAR0
+0010 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 341
+0011 900000      E     MOV     DPTR,#ECINDAR1
+0014 74FE              MOV     A,#0FEH
+0016 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 342
+0017 900000      E     MOV     DPTR,#ECINDDR
+001A 04                INC     A
+001B F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 343
+001C 900000      E     MOV     DPTR,#ECINDAR1
+001F 74FD              MOV     A,#0FDH
+0021 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 344
+0022 900000      E     MOV     DPTR,#ECINDDR
+0025 7405              MOV     A,#05H
+0027 F0                MOVX    @DPTR,A
+0028         ?C0066:
+                                           ; SOURCE LINE # 345
+                                           ; SOURCE LINE # 346
+                                           ; SOURCE LINE # 347
+0028 900000      E     MOV     DPTR,#ECINDDR
+002B E0                MOVX    A,@DPTR
+002C 20E0F9            JB      ACC.0,?C0066
+                                           ; SOURCE LINE # 348
+C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 32  
+
+                                           ; SOURCE LINE # 349
+                                           ; SOURCE LINE # 350
+                                           ; SOURCE LINE # 351
+002F         ?C0067:
+                                           ; SOURCE LINE # 353
+002F 900000      E     MOV     DPTR,#ECINDAR1
+0032 74FE              MOV     A,#0FEH
+0034 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 354
+0035 900000      E     MOV     DPTR,#ECINDDR
+0038 04                INC     A
+0039 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 355
+003A 900000      E     MOV     DPTR,#ECINDAR1
+003D 74FD              MOV     A,#0FDH
+003F F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 356
+0040 900000      E     MOV     DPTR,#ECINDDR
+0043 7406              MOV     A,#06H
+0045 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 358
+0046 900000      E     MOV     DPTR,#SPIID
+0049 E0                MOVX    A,@DPTR
+004A B4BF17            CJNE    A,#0BFH,?C0069
+                                           ; SOURCE LINE # 359
+                                           ; SOURCE LINE # 360
+004D 900000      E     MOV     DPTR,#ECINDAR1
+0050 74FE              MOV     A,#0FEH
+0052 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 361
+0053 900000      E     MOV     DPTR,#ECINDDR
+0056 04                INC     A
+0057 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 362
+0058 900000      E     MOV     DPTR,#ECINDAR1
+005B 74FD              MOV     A,#0FDH
+005D F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 363
+005E 900000      E     MOV     DPTR,#ECINDDR
+0061 7450              MOV     A,#050H
+0063 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 364
+0064         ?C0069:
+                                           ; SOURCE LINE # 366
+0064 900000      E     MOV     DPTR,#ECINDAR1
+0067 74FE              MOV     A,#0FEH
+0069 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 367
+006A 900000      E     MOV     DPTR,#ECINDDR
+006D 04                INC     A
+006E F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 368
+006F 900000      E     MOV     DPTR,#ECINDAR1
+0072 74FD              MOV     A,#0FDH
+0074 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 369
+0075 900000      E     MOV     DPTR,#ECINDDR
+0078 7405              MOV     A,#05H
+007A F0                MOVX    @DPTR,A
+007B         ?C0070:
+                                           ; SOURCE LINE # 370
+                                           ; SOURCE LINE # 371
+C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 33  
+
+                                           ; SOURCE LINE # 372
+007B 900000      E     MOV     DPTR,#ECINDDR
+007E E0                MOVX    A,@DPTR
+007F 5403              ANL     A,#03H
+0081 FF                MOV     R7,A
+0082 BF02F6            CJNE    R7,#02H,?C0070
+                                           ; SOURCE LINE # 373
+                                           ; SOURCE LINE # 374
+                                           ; SOURCE LINE # 375
+                                           ; SOURCE LINE # 376
+0085         ?C0071:
+                                           ; SOURCE LINE # 378
+0085 E4                CLR     A
+0086 900000      E     MOV     DPTR,#ECINDAR3
+0089 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 379
+008A 900000      E     MOV     DPTR,#ECINDAR2
+008D F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 380
+008E 22                RET     
+             ; FUNCTION SPI_Write_Enable (END)
+
+             ; FUNCTION SPI_Write_Disable (BEGIN)
+                                           ; SOURCE LINE # 385
+                                           ; SOURCE LINE # 386
+                                           ; SOURCE LINE # 387
+0000 900000      E     MOV     DPTR,#ECINDAR3
+0003 740F              MOV     A,#0FH
+0005 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 388
+0006 900000      E     MOV     DPTR,#ECINDAR2
+0009 74FF              MOV     A,#0FFH
+000B F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 389
+000C E4                CLR     A
+000D 900000      E     MOV     DPTR,#ECINDAR0
+0010 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 391
+0011 900000      E     MOV     DPTR,#ECINDAR1
+0014 74FE              MOV     A,#0FEH
+0016 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 392
+0017 900000      E     MOV     DPTR,#ECINDDR
+001A 04                INC     A
+001B F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 393
+001C 900000      E     MOV     DPTR,#ECINDAR1
+001F 74FD              MOV     A,#0FDH
+0021 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 394
+0022 900000      E     MOV     DPTR,#ECINDDR
+0025 7405              MOV     A,#05H
+0027 F0                MOVX    @DPTR,A
+0028         ?C0074:
+                                           ; SOURCE LINE # 395
+                                           ; SOURCE LINE # 396
+                                           ; SOURCE LINE # 397
+0028 900000      E     MOV     DPTR,#ECINDDR
+002B E0                MOVX    A,@DPTR
+002C 20E0F9            JB      ACC.0,?C0074
+                                           ; SOURCE LINE # 398
+                                           ; SOURCE LINE # 399
+C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 34  
+
+                                           ; SOURCE LINE # 400
+                                           ; SOURCE LINE # 401
+002F         ?C0075:
+                                           ; SOURCE LINE # 403
+002F 900000      E     MOV     DPTR,#ECINDAR1
+0032 74FE              MOV     A,#0FEH
+0034 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 404
+0035 900000      E     MOV     DPTR,#ECINDDR
+0038 04                INC     A
+0039 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 405
+003A 900000      E     MOV     DPTR,#ECINDAR1
+003D 74FD              MOV     A,#0FDH
+003F F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 406
+0040 900000      E     MOV     DPTR,#ECINDDR
+0043 7404              MOV     A,#04H
+0045 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 408
+0046 900000      E     MOV     DPTR,#ECINDAR1
+0049 74FE              MOV     A,#0FEH
+004B F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 409
+004C 900000      E     MOV     DPTR,#ECINDDR
+004F 04                INC     A
+0050 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 410
+0051 900000      E     MOV     DPTR,#ECINDAR1
+0054 74FD              MOV     A,#0FDH
+0056 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 411
+0057 900000      E     MOV     DPTR,#ECINDDR
+005A 7405              MOV     A,#05H
+005C F0                MOVX    @DPTR,A
+005D         ?C0077:
+                                           ; SOURCE LINE # 412
+                                           ; SOURCE LINE # 413
+                                           ; SOURCE LINE # 414
+005D 900000      E     MOV     DPTR,#ECINDDR
+0060 E0                MOVX    A,@DPTR
+0061 5403              ANL     A,#03H
+0063 70F8              JNZ     ?C0077
+                                           ; SOURCE LINE # 415
+                                           ; SOURCE LINE # 416
+                                           ; SOURCE LINE # 417
+                                           ; SOURCE LINE # 418
+0065         ?C0078:
+                                           ; SOURCE LINE # 420
+0065 E4                CLR     A
+0066 900000      E     MOV     DPTR,#ECINDAR3
+0069 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 421
+006A 900000      E     MOV     DPTR,#ECINDAR2
+006D F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 422
+006E 22                RET     
+             ; FUNCTION SPI_Write_Disable (END)
+
+             ; FUNCTION Other_SPI_Write_256Bytes (BEGIN)
+                                           ; SOURCE LINE # 427
+                                           ; SOURCE LINE # 428
+C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 35  
+
+                                           ; SOURCE LINE # 429
+0000 900000      E     MOV     DPTR,#ECINDAR3
+0003 740F              MOV     A,#0FH
+0005 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 430
+0006 900000      E     MOV     DPTR,#ECINDAR2
+0009 74FF              MOV     A,#0FFH
+000B F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 431
+000C E4                CLR     A
+000D 900000      E     MOV     DPTR,#ECINDAR0
+0010 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 433
+0011 900000      E     MOV     DPTR,#ECINDAR1
+0014 74FE              MOV     A,#0FEH
+0016 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 434
+0017 900000      E     MOV     DPTR,#ECINDDR
+001A 04                INC     A
+001B F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 435
+001C 900000      E     MOV     DPTR,#ECINDAR1
+001F 74FD              MOV     A,#0FDH
+0021 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 436
+0022 900000      E     MOV     DPTR,#ECINDDR
+0025 7405              MOV     A,#05H
+0027 F0                MOVX    @DPTR,A
+0028         ?C0081:
+                                           ; SOURCE LINE # 437
+                                           ; SOURCE LINE # 438
+                                           ; SOURCE LINE # 439
+0028 900000      E     MOV     DPTR,#ECINDDR
+002B E0                MOVX    A,@DPTR
+002C 20E0F9            JB      ACC.0,?C0081
+                                           ; SOURCE LINE # 440
+                                           ; SOURCE LINE # 441
+                                           ; SOURCE LINE # 442
+                                           ; SOURCE LINE # 443
+002F         ?C0082:
+                                           ; SOURCE LINE # 445
+002F 900000      E     MOV     DPTR,#ECINDAR1
+0032 74FE              MOV     A,#0FEH
+0034 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 446
+0035 900000      E     MOV     DPTR,#ECINDDR
+0038 04                INC     A
+0039 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 447
+003A 900000      E     MOV     DPTR,#ECINDAR1
+003D 74FD              MOV     A,#0FDH
+003F F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 448
+0040 900000      E     MOV     DPTR,#ECINDDR
+0043 7402              MOV     A,#02H
+0045 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 450
+0046 900000      E     MOV     DPTR,#SPIAddrCycle
+0049 E0                MOVX    A,@DPTR
+004A 900000      E     MOV     DPTR,#ECINDDR
+004D F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 451
+C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 36  
+
+004E 900000      E     MOV     DPTR,#SPIAddrCycle+01H
+0051 E0                MOVX    A,@DPTR
+0052 900000      E     MOV     DPTR,#ECINDDR
+0055 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 452
+0056 900000      E     MOV     DPTR,#SPIAddrCycle+02H
+0059 E0                MOVX    A,@DPTR
+005A 900000      E     MOV     DPTR,#ECINDDR
+005D F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 454
+005E E4                CLR     A
+005F 900000      E     MOV     DPTR,#SPIIndex
+0062 F0                MOVX    @DPTR,A
+0063         ?C0086:
+                                           ; SOURCE LINE # 456
+                                           ; SOURCE LINE # 457
+0063 900000      E     MOV     DPTR,#SPIDataPointer
+0066 E0                MOVX    A,@DPTR
+0067 FE                MOV     R6,A
+0068 A3                INC     DPTR
+0069 E0                MOVX    A,@DPTR
+006A F582              MOV     DPL,A
+006C 8E83              MOV     DPH,R6
+006E E0                MOVX    A,@DPTR
+006F 900000      E     MOV     DPTR,#ECINDDR
+0072 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 458
+0073 900000      E     MOV     DPTR,#SPIIndex
+0076 E0                MOVX    A,@DPTR
+0077 04                INC     A
+0078 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 459
+0079 90009C            MOV     DPTR,#09CH
+007C E0                MOVX    A,@DPTR
+007D 04                INC     A
+007E F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 460
+007F 900000      E     MOV     DPTR,#SPIIndex
+0082 E0                MOVX    A,@DPTR
+0083 70DE              JNZ     ?C0086
+                                           ; SOURCE LINE # 462
+0085 900000      E     MOV     DPTR,#ECINDAR1
+0088 74FE              MOV     A,#0FEH
+008A F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 463
+008B 900000      E     MOV     DPTR,#ECINDDR
+008E 04                INC     A
+008F F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 464
+0090 900000      E     MOV     DPTR,#ECINDAR1
+0093 74FD              MOV     A,#0FDH
+0095 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 465
+0096 900000      E     MOV     DPTR,#ECINDDR
+0099 7405              MOV     A,#05H
+009B F0                MOVX    @DPTR,A
+009C         ?C0087:
+                                           ; SOURCE LINE # 466
+                                           ; SOURCE LINE # 467
+                                           ; SOURCE LINE # 468
+009C 900000      E     MOV     DPTR,#ECINDDR
+009F E0                MOVX    A,@DPTR
+C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 37  
+
+00A0 20E0F9            JB      ACC.0,?C0087
+                                           ; SOURCE LINE # 469
+                                           ; SOURCE LINE # 470
+                                           ; SOURCE LINE # 471
+                                           ; SOURCE LINE # 472
+00A3         ?C0088:
+                                           ; SOURCE LINE # 474
+00A3 E4                CLR     A
+00A4 900000      E     MOV     DPTR,#ECINDAR3
+00A7 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 475
+00A8 900000      E     MOV     DPTR,#ECINDAR2
+00AB F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 476
+00AC 22                RET     
+             ; FUNCTION Other_SPI_Write_256Bytes (END)
+
+             ; FUNCTION SST_SPI_Write_256Bytes (BEGIN)
+                                           ; SOURCE LINE # 481
+                                           ; SOURCE LINE # 482
+                                           ; SOURCE LINE # 483
+0000 900000      E     MOV     DPTR,#ECINDAR3
+0003 740F              MOV     A,#0FH
+0005 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 484
+0006 900000      E     MOV     DPTR,#ECINDAR2
+0009 74FF              MOV     A,#0FFH
+000B F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 485
+000C E4                CLR     A
+000D 900000      E     MOV     DPTR,#ECINDAR0
+0010 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 487
+0011 900000      E     MOV     DPTR,#ECINDAR1
+0014 74FE              MOV     A,#0FEH
+0016 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 488
+0017 900000      E     MOV     DPTR,#ECINDDR
+001A 04                INC     A
+001B F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 489
+001C 900000      E     MOV     DPTR,#ECINDAR1
+001F 74FD              MOV     A,#0FDH
+0021 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 490
+0022 900000      E     MOV     DPTR,#ECINDDR
+0025 7405              MOV     A,#05H
+0027 F0                MOVX    @DPTR,A
+0028         ?C0091:
+                                           ; SOURCE LINE # 491
+                                           ; SOURCE LINE # 492
+                                           ; SOURCE LINE # 493
+0028 900000      E     MOV     DPTR,#ECINDDR
+002B E0                MOVX    A,@DPTR
+002C 20E0F9            JB      ACC.0,?C0091
+                                           ; SOURCE LINE # 494
+                                           ; SOURCE LINE # 495
+                                           ; SOURCE LINE # 496
+                                           ; SOURCE LINE # 497
+002F         ?C0092:
+                                           ; SOURCE LINE # 499
+002F 900000      E     MOV     DPTR,#ECINDAR1
+C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 38  
+
+0032 74FE              MOV     A,#0FEH
+0034 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 500
+0035 900000      E     MOV     DPTR,#ECINDDR
+0038 04                INC     A
+0039 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 501
+003A 900000      E     MOV     DPTR,#ECINDAR1
+003D 74FD              MOV     A,#0FDH
+003F F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 502
+0040 900000      E     MOV     DPTR,#ECINDDR
+0043 74AD              MOV     A,#0ADH
+0045 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 504
+0046 900000      E     MOV     DPTR,#SPIAddrCycle
+0049 E0                MOVX    A,@DPTR
+004A 900000      E     MOV     DPTR,#ECINDDR
+004D F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 505
+004E 900000      E     MOV     DPTR,#SPIAddrCycle+01H
+0051 E0                MOVX    A,@DPTR
+0052 900000      E     MOV     DPTR,#ECINDDR
+0055 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 506
+0056 900000      E     MOV     DPTR,#SPIAddrCycle+02H
+0059 E0                MOVX    A,@DPTR
+005A 900000      E     MOV     DPTR,#ECINDDR
+005D F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 508
+005E E4                CLR     A
+005F 900000      E     MOV     DPTR,#SPIIndex
+0062 F0                MOVX    @DPTR,A
+0063         ?C0096:
+                                           ; SOURCE LINE # 510
+                                           ; SOURCE LINE # 511
+0063 900000      E     MOV     DPTR,#SPIDataPointer
+0066 E0                MOVX    A,@DPTR
+0067 FE                MOV     R6,A
+0068 A3                INC     DPTR
+0069 E0                MOVX    A,@DPTR
+006A F582              MOV     DPL,A
+006C 8E83              MOV     DPH,R6
+006E E0                MOVX    A,@DPTR
+006F 900000      E     MOV     DPTR,#ECINDDR
+0072 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 512
+0073 900000      E     MOV     DPTR,#SPIIndex
+0076 E0                MOVX    A,@DPTR
+0077 04                INC     A
+0078 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 513
+0079 90009C            MOV     DPTR,#09CH
+007C E0                MOVX    A,@DPTR
+007D 04                INC     A
+007E F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 515
+007F 900000      E     MOV     DPTR,#SPIIndex
+0082 E0                MOVX    A,@DPTR
+0083 20E03B            JB      ACC.0,?C0094
+                                           ; SOURCE LINE # 516
+                                           ; SOURCE LINE # 517
+C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 39  
+
+0086 900000      E     MOV     DPTR,#ECINDAR1
+0089 74FE              MOV     A,#0FEH
+008B F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 518
+008C 900000      E     MOV     DPTR,#ECINDDR
+008F 04                INC     A
+0090 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 519
+0091 900000      E     MOV     DPTR,#ECINDAR1
+0094 74FD              MOV     A,#0FDH
+0096 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 520
+0097 900000      E     MOV     DPTR,#ECINDDR
+009A 7405              MOV     A,#05H
+009C F0                MOVX    @DPTR,A
+009D         ?C0098:
+                                           ; SOURCE LINE # 521
+                                           ; SOURCE LINE # 522
+                                           ; SOURCE LINE # 523
+009D 900000      E     MOV     DPTR,#ECINDDR
+00A0 E0                MOVX    A,@DPTR
+00A1 20E0F9            JB      ACC.0,?C0098
+                                           ; SOURCE LINE # 524
+                                           ; SOURCE LINE # 525
+                                           ; SOURCE LINE # 526
+                                           ; SOURCE LINE # 527
+00A4         ?C0099:
+                                           ; SOURCE LINE # 529
+00A4 900000      E     MOV     DPTR,#SPIIndex
+00A7 E0                MOVX    A,@DPTR
+00A8 6017              JZ      ?C0094
+                                           ; SOURCE LINE # 530
+                                           ; SOURCE LINE # 531
+00AA 900000      E     MOV     DPTR,#ECINDAR1
+00AD 74FE              MOV     A,#0FEH
+00AF F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 532
+00B0 900000      E     MOV     DPTR,#ECINDDR
+00B3 04                INC     A
+00B4 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 533
+00B5 900000      E     MOV     DPTR,#ECINDAR1
+00B8 74FD              MOV     A,#0FDH
+00BA F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 534
+00BB 900000      E     MOV     DPTR,#ECINDDR
+00BE 74AD              MOV     A,#0ADH
+00C0 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 535
+                                           ; SOURCE LINE # 536
+                                           ; SOURCE LINE # 537
+00C1         ?C0094:
+00C1 900000      E     MOV     DPTR,#SPIIndex
+00C4 E0                MOVX    A,@DPTR
+00C5 709C              JNZ     ?C0096
+                                           ; SOURCE LINE # 539
+00C7 900000      E     MOV     DPTR,#ECINDAR1
+00CA 74FE              MOV     A,#0FEH
+00CC F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 540
+00CD 900000      E     MOV     DPTR,#ECINDDR
+00D0 04                INC     A
+C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 40  
+
+00D1 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 541
+00D2 900000      E     MOV     DPTR,#ECINDAR1
+00D5 74FD              MOV     A,#0FDH
+00D7 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 542
+00D8 900000      E     MOV     DPTR,#ECINDDR
+00DB 7404              MOV     A,#04H
+00DD F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 544
+00DE E4                CLR     A
+00DF 900000      E     MOV     DPTR,#WNCKR
+00E2 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 545
+00E3 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 546
+00E4 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 547
+00E5 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 549
+00E6 900000      E     MOV     DPTR,#ECINDAR3
+00E9 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 550
+00EA 900000      E     MOV     DPTR,#ECINDAR2
+00ED F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 551
+00EE 22                RET     
+             ; FUNCTION SST_SPI_Write_256Bytes (END)
+
+             ; FUNCTION Old_SST_SPI_Write_256Bytes (BEGIN)
+                                           ; SOURCE LINE # 556
+                                           ; SOURCE LINE # 557
+                                           ; SOURCE LINE # 558
+0000 900000      E     MOV     DPTR,#ECINDAR3
+0003 740F              MOV     A,#0FH
+0005 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 559
+0006 900000      E     MOV     DPTR,#ECINDAR2
+0009 74FF              MOV     A,#0FFH
+000B F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 560
+000C E4                CLR     A
+000D 900000      E     MOV     DPTR,#ECINDAR0
+0010 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 562
+0011 900000      E     MOV     DPTR,#ECINDAR1
+0014 74FE              MOV     A,#0FEH
+0016 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 563
+0017 900000      E     MOV     DPTR,#ECINDDR
+001A 04                INC     A
+001B F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 564
+001C 900000      E     MOV     DPTR,#ECINDAR1
+001F 74FD              MOV     A,#0FDH
+0021 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 565
+0022 900000      E     MOV     DPTR,#ECINDDR
+0025 7405              MOV     A,#05H
+0027 F0                MOVX    @DPTR,A
+0028         ?C0103:
+                                           ; SOURCE LINE # 566
+C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 41  
+
+                                           ; SOURCE LINE # 567
+                                           ; SOURCE LINE # 568
+0028 900000      E     MOV     DPTR,#ECINDDR
+002B E0                MOVX    A,@DPTR
+002C 20E0F9            JB      ACC.0,?C0103
+                                           ; SOURCE LINE # 569
+                                           ; SOURCE LINE # 570
+                                           ; SOURCE LINE # 571
+                                           ; SOURCE LINE # 572
+002F         ?C0104:
+                                           ; SOURCE LINE # 574
+002F 900000      E     MOV     DPTR,#ECINDAR1
+0032 74FE              MOV     A,#0FEH
+0034 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 575
+0035 900000      E     MOV     DPTR,#ECINDDR
+0038 04                INC     A
+0039 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 576
+003A 900000      E     MOV     DPTR,#ECINDAR1
+003D 74FD              MOV     A,#0FDH
+003F F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 577
+0040 900000      E     MOV     DPTR,#ECINDDR
+0043 74AF              MOV     A,#0AFH
+0045 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 579
+0046 900000      E     MOV     DPTR,#SPIAddrCycle
+0049 E0                MOVX    A,@DPTR
+004A 900000      E     MOV     DPTR,#ECINDDR
+004D F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 580
+004E 900000      E     MOV     DPTR,#SPIAddrCycle+01H
+0051 E0                MOVX    A,@DPTR
+0052 900000      E     MOV     DPTR,#ECINDDR
+0055 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 581
+0056 900000      E     MOV     DPTR,#SPIAddrCycle+02H
+0059 E0                MOVX    A,@DPTR
+005A 900000      E     MOV     DPTR,#ECINDDR
+005D F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 583
+005E E4                CLR     A
+005F 900000      E     MOV     DPTR,#SPIIndex
+0062 F0                MOVX    @DPTR,A
+0063         ?C0108:
+                                           ; SOURCE LINE # 585
+                                           ; SOURCE LINE # 586
+0063 900000      E     MOV     DPTR,#SPIDataPointer
+0066 E0                MOVX    A,@DPTR
+0067 FE                MOV     R6,A
+0068 A3                INC     DPTR
+0069 E0                MOVX    A,@DPTR
+006A F582              MOV     DPL,A
+006C 8E83              MOV     DPH,R6
+006E E0                MOVX    A,@DPTR
+006F 900000      E     MOV     DPTR,#ECINDDR
+0072 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 587
+0073 900000      E     MOV     DPTR,#SPIIndex
+0076 E0                MOVX    A,@DPTR
+0077 04                INC     A
+C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 42  
+
+0078 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 588
+0079 90009C            MOV     DPTR,#09CH
+007C E0                MOVX    A,@DPTR
+007D 04                INC     A
+007E F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 590
+007F 900000      E     MOV     DPTR,#ECINDAR1
+0082 74FE              MOV     A,#0FEH
+0084 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 591
+0085 900000      E     MOV     DPTR,#ECINDDR
+0088 04                INC     A
+0089 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 592
+008A 900000      E     MOV     DPTR,#ECINDAR1
+008D 74FD              MOV     A,#0FDH
+008F F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 593
+0090 900000      E     MOV     DPTR,#ECINDDR
+0093 7405              MOV     A,#05H
+0095 F0                MOVX    @DPTR,A
+0096         ?C0109:
+                                           ; SOURCE LINE # 594
+                                           ; SOURCE LINE # 595
+                                           ; SOURCE LINE # 596
+0096 900000      E     MOV     DPTR,#ECINDDR
+0099 E0                MOVX    A,@DPTR
+009A 20E0F9            JB      ACC.0,?C0109
+                                           ; SOURCE LINE # 597
+                                           ; SOURCE LINE # 598
+                                           ; SOURCE LINE # 599
+                                           ; SOURCE LINE # 600
+009D         ?C0110:
+                                           ; SOURCE LINE # 602
+009D 900000      E     MOV     DPTR,#SPIIndex
+00A0 E0                MOVX    A,@DPTR
+00A1 6017              JZ      ?C0106
+                                           ; SOURCE LINE # 603
+                                           ; SOURCE LINE # 604
+00A3 900000      E     MOV     DPTR,#ECINDAR1
+00A6 74FE              MOV     A,#0FEH
+00A8 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 605
+00A9 900000      E     MOV     DPTR,#ECINDDR
+00AC 04                INC     A
+00AD F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 606
+00AE 900000      E     MOV     DPTR,#ECINDAR1
+00B1 74FD              MOV     A,#0FDH
+00B3 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 607
+00B4 900000      E     MOV     DPTR,#ECINDDR
+00B7 74AF              MOV     A,#0AFH
+00B9 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 608
+                                           ; SOURCE LINE # 609
+00BA         ?C0106:
+00BA 900000      E     MOV     DPTR,#SPIIndex
+00BD E0                MOVX    A,@DPTR
+00BE 70A3              JNZ     ?C0108
+                                           ; SOURCE LINE # 611
+C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 43  
+
+00C0 900000      E     MOV     DPTR,#ECINDAR1
+00C3 74FE              MOV     A,#0FEH
+00C5 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 612
+00C6 900000      E     MOV     DPTR,#ECINDDR
+00C9 04                INC     A
+00CA F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 613
+00CB 900000      E     MOV     DPTR,#ECINDAR1
+00CE 74FD              MOV     A,#0FDH
+00D0 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 614
+00D1 900000      E     MOV     DPTR,#ECINDDR
+00D4 7404              MOV     A,#04H
+00D6 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 617
+00D7 E4                CLR     A
+00D8 900000      E     MOV     DPTR,#WNCKR
+00DB F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 618
+00DC F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 619
+00DD F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 620
+00DE F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 633
+00DF 900000      E     MOV     DPTR,#ECINDAR3
+00E2 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 634
+00E3 900000      E     MOV     DPTR,#ECINDAR2
+00E6 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 635
+00E7 22                RET     
+             ; FUNCTION Old_SST_SPI_Write_256Bytes (END)
+
+             ; FUNCTION SPI_Write_256Bytes (BEGIN)
+                                           ; SOURCE LINE # 645
+                                           ; SOURCE LINE # 646
+                                           ; SOURCE LINE # 647
+0000 900000      E     MOV     DPTR,#SPIID
+0003 E0                MOVX    A,@DPTR
+0004 B4BF13            CJNE    A,#0BFH,?C0114
+                                           ; SOURCE LINE # 648
+                                           ; SOURCE LINE # 649
+0007 900000      E     MOV     DPTR,#SSTDeviceID
+000A E0                MOVX    A,@DPTR
+000B B40106            CJNE    A,#01H,?C0115
+                                           ; SOURCE LINE # 650
+                                           ; SOURCE LINE # 651
+000E 7E00        R     MOV     R6,#HIGH Old_SST_SPI_Write_256Bytes
+0010 7F00        R     MOV     R7,#LOW Old_SST_SPI_Write_256Bytes
+                                           ; SOURCE LINE # 652
+0012 800A              SJMP    ?C0151
+0014         ?C0115:
+                                           ; SOURCE LINE # 654
+                                           ; SOURCE LINE # 655
+0014 7E00        R     MOV     R6,#HIGH SST_SPI_Write_256Bytes
+0016 7F00        R     MOV     R7,#LOW SST_SPI_Write_256Bytes
+0018         ?C0150:
+                                           ; SOURCE LINE # 656
+                                           ; SOURCE LINE # 657
+0018 8004              SJMP    ?C0151
+C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 44  
+
+001A         ?C0114:
+                                           ; SOURCE LINE # 659
+                                           ; SOURCE LINE # 660
+001A 7E00        R     MOV     R6,#HIGH Other_SPI_Write_256Bytes
+001C 7F00        R     MOV     R7,#LOW Other_SPI_Write_256Bytes
+001E         ?C0151:
+001E 120000      R     LCALL   _LoadSPIFucnToRam
+                                           ; SOURCE LINE # 661
+                                           ; SOURCE LINE # 662
+0021         ?C0118:
+0021 22                RET     
+             ; FUNCTION SPI_Write_256Bytes (END)
+
+             ; FUNCTION SPI_Read_256Bytes (BEGIN)
+                                           ; SOURCE LINE # 670
+                                           ; SOURCE LINE # 671
+                                           ; SOURCE LINE # 672
+0000 900000      E     MOV     DPTR,#ECINDAR3
+0003 740F              MOV     A,#0FH
+0005 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 673
+0006 900000      E     MOV     DPTR,#ECINDAR2
+0009 74FF              MOV     A,#0FFH
+000B F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 674
+000C E4                CLR     A
+000D 900000      E     MOV     DPTR,#ECINDAR0
+0010 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 676
+0011 900000      E     MOV     DPTR,#ECINDAR1
+0014 74FE              MOV     A,#0FEH
+0016 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 677
+0017 900000      E     MOV     DPTR,#ECINDDR
+001A 04                INC     A
+001B F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 678
+001C 900000      E     MOV     DPTR,#ECINDAR1
+001F 74FD              MOV     A,#0FDH
+0021 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 679
+0022 900000      E     MOV     DPTR,#ECINDDR
+0025 7405              MOV     A,#05H
+0027 F0                MOVX    @DPTR,A
+0028         ?C0119:
+                                           ; SOURCE LINE # 680
+                                           ; SOURCE LINE # 681
+                                           ; SOURCE LINE # 682
+0028 900000      E     MOV     DPTR,#ECINDDR
+002B E0                MOVX    A,@DPTR
+002C 20E0F9            JB      ACC.0,?C0119
+                                           ; SOURCE LINE # 683
+                                           ; SOURCE LINE # 684
+                                           ; SOURCE LINE # 685
+                                           ; SOURCE LINE # 686
+002F         ?C0120:
+                                           ; SOURCE LINE # 688
+002F 900000      E     MOV     DPTR,#ECINDAR1
+0032 74FE              MOV     A,#0FEH
+0034 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 689
+0035 900000      E     MOV     DPTR,#ECINDDR
+C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 45  
+
+0038 04                INC     A
+0039 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 690
+003A 900000      E     MOV     DPTR,#ECINDAR1
+003D 74FD              MOV     A,#0FDH
+003F F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 691
+0040 900000      E     MOV     DPTR,#ECINDDR
+0043 740B              MOV     A,#0BH
+0045 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 693
+0046 900000      E     MOV     DPTR,#SPIAddrCycle
+0049 E0                MOVX    A,@DPTR
+004A 900000      E     MOV     DPTR,#ECINDDR
+004D F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 694
+004E 900000      E     MOV     DPTR,#SPIAddrCycle+01H
+0051 E0                MOVX    A,@DPTR
+0052 900000      E     MOV     DPTR,#ECINDDR
+0055 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 695
+0056 900000      E     MOV     DPTR,#SPIAddrCycle+02H
+0059 E0                MOVX    A,@DPTR
+005A 900000      E     MOV     DPTR,#ECINDDR
+005D F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 696
+005E E4                CLR     A
+005F F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 698
+0060 900000      E     MOV     DPTR,#SPIIndex
+0063 F0                MOVX    @DPTR,A
+0064         ?C0124:
+                                           ; SOURCE LINE # 700
+                                           ; SOURCE LINE # 701
+0064 900000      E     MOV     DPTR,#ECINDDR
+0067 E0                MOVX    A,@DPTR
+0068 FF                MOV     R7,A
+0069 900000      E     MOV     DPTR,#SPIDataPointer
+006C E0                MOVX    A,@DPTR
+006D FC                MOV     R4,A
+006E A3                INC     DPTR
+006F E0                MOVX    A,@DPTR
+0070 F582              MOV     DPL,A
+0072 8C83              MOV     DPH,R4
+0074 EF                MOV     A,R7
+0075 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 702
+0076 900000      E     MOV     DPTR,#SPIIndex
+0079 E0                MOVX    A,@DPTR
+007A 04                INC     A
+007B F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 703
+007C 90009C            MOV     DPTR,#09CH
+007F E0                MOVX    A,@DPTR
+0080 04                INC     A
+0081 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 704
+0082 900000      E     MOV     DPTR,#SPIIndex
+0085 E0                MOVX    A,@DPTR
+0086 70DC              JNZ     ?C0124
+                                           ; SOURCE LINE # 706
+0088 900000      E     MOV     DPTR,#ECINDAR1
+C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 46  
+
+008B 74FE              MOV     A,#0FEH
+008D F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 707
+008E 900000      E     MOV     DPTR,#ECINDDR
+0091 04                INC     A
+0092 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 708
+0093 900000      E     MOV     DPTR,#ECINDAR1
+0096 74FD              MOV     A,#0FDH
+0098 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 709
+0099 900000      E     MOV     DPTR,#ECINDDR
+009C 7405              MOV     A,#05H
+009E F0                MOVX    @DPTR,A
+009F         ?C0125:
+                                           ; SOURCE LINE # 710
+                                           ; SOURCE LINE # 711
+                                           ; SOURCE LINE # 712
+009F 900000      E     MOV     DPTR,#ECINDDR
+00A2 E0                MOVX    A,@DPTR
+00A3 20E0F9            JB      ACC.0,?C0125
+                                           ; SOURCE LINE # 713
+                                           ; SOURCE LINE # 714
+                                           ; SOURCE LINE # 715
+                                           ; SOURCE LINE # 716
+00A6         ?C0126:
+                                           ; SOURCE LINE # 718
+00A6 E4                CLR     A
+00A7 900000      E     MOV     DPTR,#ECINDAR3
+00AA F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 719
+00AB 900000      E     MOV     DPTR,#ECINDAR2
+00AE F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 720
+00AF 22                RET     
+             ; FUNCTION SPI_Read_256Bytes (END)
+
+             ; FUNCTION _LoadSPIFucnToRam (BEGIN)
+                                           ; SOURCE LINE # 730
+;---- Variable 'funcpoint' assigned to Register 'R6/R7' ----
+                                           ; SOURCE LINE # 731
+                                           ; SOURCE LINE # 732
+0000 7800        E     MOV     R0,#LOW Tmp_XPntr
+0002 7606              MOV     @R0,#06H
+0004 08                INC     R0
+0005 7600              MOV     @R0,#00H
+                                           ; SOURCE LINE # 733
+0007 7800        E     MOV     R0,#LOW Tmp_code_pointer
+0009 EE                MOV     A,R6
+000A F6                MOV     @R0,A
+000B 08                INC     R0
+000C EF                MOV     A,R7
+000D F6                MOV     @R0,A
+                                           ; SOURCE LINE # 735
+000E E4                CLR     A
+000F F500        E     MOV     _R2,A
+0011         ?C0131:
+                                           ; SOURCE LINE # 737
+                                           ; SOURCE LINE # 738
+0011 7800        E     MOV     R0,#LOW Tmp_code_pointer
+0013 E6                MOV     A,@R0
+0014 FE                MOV     R6,A
+C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 47  
+
+0015 08                INC     R0
+0016 E6                MOV     A,@R0
+0017 F582              MOV     DPL,A
+0019 8E83              MOV     DPH,R6
+001B E4                CLR     A
+001C 93                MOVC    A,@A+DPTR
+001D FF                MOV     R7,A
+001E 7800        E     MOV     R0,#LOW Tmp_XPntr
+0020 E6                MOV     A,@R0
+0021 FC                MOV     R4,A
+0022 08                INC     R0
+0023 E6                MOV     A,@R0
+0024 F582              MOV     DPL,A
+0026 8C83              MOV     DPH,R4
+0028 EF                MOV     A,R7
+0029 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 739
+002A 06                INC     @R0
+002B E6                MOV     A,@R0
+002C 18                DEC     R0
+002D 7001              JNZ     ?C0147
+002F 06                INC     @R0
+0030         ?C0147:
+                                           ; SOURCE LINE # 740
+0030 7800        E     MOV     R0,#LOW Tmp_code_pointer+01H
+0032 06                INC     @R0
+0033 E6                MOV     A,@R0
+0034 18                DEC     R0
+0035 7001              JNZ     ?C0148
+0037 06                INC     @R0
+0038         ?C0148:
+                                           ; SOURCE LINE # 741
+0038 0500        E     INC     _R2
+                                           ; SOURCE LINE # 742
+003A E500        E     MOV     A,_R2
+003C 70D3              JNZ     ?C0131
+                                           ; SOURCE LINE # 744
+003E 22                RET     
+             ; FUNCTION _LoadSPIFucnToRam (END)
+
+             ; FUNCTION ITE_Flash_Utility (BEGIN)
+                                           ; SOURCE LINE # 750
+                                           ; SOURCE LINE # 751
+                                           ; SOURCE LINE # 752
+0000 120000      E     LCALL   DisableAllInterrupt
+                                           ; SOURCE LINE # 753
+0003 7E00        R     MOV     R6,#HIGH FlashECCode
+0005 7F00        R     MOV     R7,#LOW FlashECCode
+0007 120000      R     LCALL   _LoadSPIFucnToRam
+                                           ; SOURCE LINE # 754
+000A 900000      E     MOV     DPTR,#FBCFG
+000D E0                MOVX    A,@DPTR
+000E 4480              ORL     A,#080H
+0010 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 755
+0011 120000      R     LCALL   FuncAt_0xFE00
+                                           ; SOURCE LINE # 756
+0014 22                RET     
+             ; FUNCTION ITE_Flash_Utility (END)
+
+             ; FUNCTION _Do_SPI_Write_Status (BEGIN)
+                                           ; SOURCE LINE # 766
+C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 48  
+
+;---- Variable 'statusvalue' assigned to Register 'R7' ----
+                                           ; SOURCE LINE # 767
+                                           ; SOURCE LINE # 768
+0000 900000      E     MOV     DPTR,#SPIWriteStatus
+0003 EF                MOV     A,R7
+0004 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 770
+0005 120000      E     LCALL   DisableAllInterrupt
+                                           ; SOURCE LINE # 771
+0008 7E00        R     MOV     R6,#HIGH SPI_Write_Status
+000A 7F00        R     MOV     R7,#LOW SPI_Write_Status
+000C 120000      R     LCALL   _LoadSPIFucnToRam
+                                           ; SOURCE LINE # 772
+000F 900000      E     MOV     DPTR,#FBCFG
+0012 E0                MOVX    A,@DPTR
+0013 4480              ORL     A,#080H
+0015 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 773
+0016 120000      R     LCALL   FuncAt_0xFE00
+                                           ; SOURCE LINE # 774
+0019 120000      E     LCALL   EnableAllInterrupt
+                                           ; SOURCE LINE # 775
+001C 900000      E     MOV     DPTR,#FBCFG
+001F E0                MOVX    A,@DPTR
+0020 547F              ANL     A,#07FH
+0022 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 776
+0023 22                RET     
+             ; FUNCTION _Do_SPI_Write_Status (END)
+
+             ; FUNCTION Do_SPI_Read_Status (BEGIN)
+                                           ; SOURCE LINE # 783
+                                           ; SOURCE LINE # 784
+                                           ; SOURCE LINE # 785
+0000 120000      E     LCALL   DisableAllInterrupt
+                                           ; SOURCE LINE # 786
+0003 7E00        R     MOV     R6,#HIGH SPI_Read_Status
+0005 7F00        R     MOV     R7,#LOW SPI_Read_Status
+0007 120000      R     LCALL   _LoadSPIFucnToRam
+                                           ; SOURCE LINE # 787
+000A 900000      E     MOV     DPTR,#FBCFG
+000D E0                MOVX    A,@DPTR
+000E 4480              ORL     A,#080H
+0010 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 788
+0011 120000      R     LCALL   FuncAt_0xFE00
+                                           ; SOURCE LINE # 789
+0014 120000      E     LCALL   EnableAllInterrupt
+                                           ; SOURCE LINE # 790
+0017 900000      E     MOV     DPTR,#FBCFG
+001A E0                MOVX    A,@DPTR
+001B 547F              ANL     A,#07FH
+001D F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 791
+001E 22                RET     
+             ; FUNCTION Do_SPI_Read_Status (END)
+
+             ; FUNCTION Do_SPI_Read_ID (BEGIN)
+                                           ; SOURCE LINE # 798
+                                           ; SOURCE LINE # 799
+                                           ; SOURCE LINE # 800
+0000 120000      E     LCALL   DisableAllInterrupt
+C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 49  
+
+                                           ; SOURCE LINE # 801
+0003 7E00        R     MOV     R6,#HIGH SPI_Read_ID
+0005 7F00        R     MOV     R7,#LOW SPI_Read_ID
+0007 120000      R     LCALL   _LoadSPIFucnToRam
+                                           ; SOURCE LINE # 802
+000A 900000      E     MOV     DPTR,#FBCFG
+000D E0                MOVX    A,@DPTR
+000E 4480              ORL     A,#080H
+0010 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 803
+0011 120000      R     LCALL   FuncAt_0xFE00
+                                           ; SOURCE LINE # 804
+0014 120000      E     LCALL   EnableAllInterrupt
+                                           ; SOURCE LINE # 805
+0017 900000      E     MOV     DPTR,#FBCFG
+001A E0                MOVX    A,@DPTR
+001B 547F              ANL     A,#07FH
+001D F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 806
+001E 22                RET     
+             ; FUNCTION Do_SPI_Read_ID (END)
+
+             ; FUNCTION Do_SPI_Read_ID_CmdAB (BEGIN)
+                                           ; SOURCE LINE # 813
+                                           ; SOURCE LINE # 814
+                                           ; SOURCE LINE # 815
+0000 120000      E     LCALL   DisableAllInterrupt
+                                           ; SOURCE LINE # 816
+0003 7E00        R     MOV     R6,#HIGH SPI_Read_ID_CmdAB
+0005 7F00        R     MOV     R7,#LOW SPI_Read_ID_CmdAB
+0007 120000      R     LCALL   _LoadSPIFucnToRam
+                                           ; SOURCE LINE # 817
+000A 900000      E     MOV     DPTR,#FBCFG
+000D E0                MOVX    A,@DPTR
+000E 4480              ORL     A,#080H
+0010 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 818
+0011 120000      R     LCALL   FuncAt_0xFE00
+                                           ; SOURCE LINE # 819
+0014 120000      E     LCALL   EnableAllInterrupt
+                                           ; SOURCE LINE # 820
+0017 900000      E     MOV     DPTR,#FBCFG
+001A E0                MOVX    A,@DPTR
+001B 547F              ANL     A,#07FH
+001D F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 821
+001E 22                RET     
+             ; FUNCTION Do_SPI_Read_ID_CmdAB (END)
+
+             ; FUNCTION _Do_SPI_Erase (BEGIN)
+                                           ; SOURCE LINE # 832
+;---- Variable 'EraseCmd' assigned to Register 'R7' ----
+;---- Variable 'Addr1' assigned to Register 'R3' ----
+;---- Variable 'Addr2' assigned to Register 'R5' ----
+                                           ; SOURCE LINE # 833
+                                           ; SOURCE LINE # 834
+0000 900000      E     MOV     DPTR,#SPIAEraseCmd
+0003 EF                MOV     A,R7
+0004 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 835
+0005 900000      E     MOV     DPTR,#SPIAddrCycle
+0008 ED                MOV     A,R5
+C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 50  
+
+0009 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 836
+000A A3                INC     DPTR
+000B EB                MOV     A,R3
+000C F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 837
+000D 900000      R     MOV     DPTR,#Addr0
+0010 E0                MOVX    A,@DPTR
+0011 900000      E     MOV     DPTR,#SPIAddrCycle+02H
+0014 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 839
+0015 120000      E     LCALL   DisableAllInterrupt
+                                           ; SOURCE LINE # 840
+0018 7E00        R     MOV     R6,#HIGH SPI_Erase
+001A 7F00        R     MOV     R7,#LOW SPI_Erase
+001C 120000      R     LCALL   _LoadSPIFucnToRam
+                                           ; SOURCE LINE # 841
+001F 900000      E     MOV     DPTR,#FBCFG
+0022 E0                MOVX    A,@DPTR
+0023 4480              ORL     A,#080H
+0025 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 842
+0026 120000      R     LCALL   FuncAt_0xFE00
+                                           ; SOURCE LINE # 843
+0029 120000      E     LCALL   EnableAllInterrupt
+                                           ; SOURCE LINE # 844
+002C 900000      E     MOV     DPTR,#FBCFG
+002F E0                MOVX    A,@DPTR
+0030 547F              ANL     A,#07FH
+0032 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 845
+0033 22                RET     
+             ; FUNCTION _Do_SPI_Erase (END)
+
+             ; FUNCTION _Do_SPI_Write_256Bytes (BEGIN)
+                                           ; SOURCE LINE # 855
+;---- Variable 'DataPointer' assigned to Register 'R6/R7' ----
+;---- Variable 'Addr1' assigned to Register 'R3' ----
+;---- Variable 'Addr2' assigned to Register 'R5' ----
+                                           ; SOURCE LINE # 856
+                                           ; SOURCE LINE # 857
+0000 900000      E     MOV     DPTR,#SPIDataPointer
+0003 EE                MOV     A,R6
+0004 F0                MOVX    @DPTR,A
+0005 A3                INC     DPTR
+0006 EF                MOV     A,R7
+0007 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 858
+0008 900000      E     MOV     DPTR,#SPIAddrCycle
+000B ED                MOV     A,R5
+000C F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 859
+000D A3                INC     DPTR
+000E EB                MOV     A,R3
+000F F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 860
+0010 900000      R     MOV     DPTR,#Addr0
+0013 E0                MOVX    A,@DPTR
+0014 900000      E     MOV     DPTR,#SPIAddrCycle+02H
+0017 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 862
+0018 120000      E     LCALL   DisableAllInterrupt
+C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 51  
+
+                                           ; SOURCE LINE # 863
+001B 120000      R     LCALL   SPI_Write_256Bytes
+                                           ; SOURCE LINE # 864
+001E 900000      E     MOV     DPTR,#FBCFG
+0021 E0                MOVX    A,@DPTR
+0022 4480              ORL     A,#080H
+0024 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 865
+0025 120000      R     LCALL   FuncAt_0xFE00
+                                           ; SOURCE LINE # 866
+0028 120000      E     LCALL   EnableAllInterrupt
+                                           ; SOURCE LINE # 867
+002B 900000      E     MOV     DPTR,#FBCFG
+002E E0                MOVX    A,@DPTR
+002F 547F              ANL     A,#07FH
+0031 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 868
+0032 22                RET     
+             ; FUNCTION _Do_SPI_Write_256Bytes (END)
+
+             ; FUNCTION _Do_SPI_Read_256Bytes (BEGIN)
+                                           ; SOURCE LINE # 878
+;---- Variable 'DataPointer' assigned to Register 'R6/R7' ----
+;---- Variable 'Addr1' assigned to Register 'R3' ----
+;---- Variable 'Addr2' assigned to Register 'R5' ----
+                                           ; SOURCE LINE # 879
+                                           ; SOURCE LINE # 880
+0000 900000      E     MOV     DPTR,#SPIDataPointer
+0003 EE                MOV     A,R6
+0004 F0                MOVX    @DPTR,A
+0005 A3                INC     DPTR
+0006 EF                MOV     A,R7
+0007 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 881
+0008 900000      E     MOV     DPTR,#SPIAddrCycle
+000B ED                MOV     A,R5
+000C F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 882
+000D A3                INC     DPTR
+000E EB                MOV     A,R3
+000F F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 883
+0010 900000      R     MOV     DPTR,#Addr0
+0013 E0                MOVX    A,@DPTR
+0014 900000      E     MOV     DPTR,#SPIAddrCycle+02H
+0017 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 885
+0018 120000      E     LCALL   DisableAllInterrupt
+                                           ; SOURCE LINE # 886
+001B 7E00        R     MOV     R6,#HIGH SPI_Read_256Bytes
+001D 7F00        R     MOV     R7,#LOW SPI_Read_256Bytes
+001F 120000      R     LCALL   _LoadSPIFucnToRam
+                                           ; SOURCE LINE # 887
+0022 900000      E     MOV     DPTR,#FBCFG
+0025 E0                MOVX    A,@DPTR
+0026 4480              ORL     A,#080H
+0028 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 888
+0029 120000      R     LCALL   FuncAt_0xFE00
+                                           ; SOURCE LINE # 889
+002C 120000      E     LCALL   EnableAllInterrupt
+                                           ; SOURCE LINE # 890
+C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 52  
+
+002F 900000      E     MOV     DPTR,#FBCFG
+0032 E0                MOVX    A,@DPTR
+0033 547F              ANL     A,#07FH
+0035 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 891
+0036 22                RET     
+             ; FUNCTION _Do_SPI_Read_256Bytes (END)
+
+             ; FUNCTION Do_SPI_Write_Enable (BEGIN)
+                                           ; SOURCE LINE # 899
+                                           ; SOURCE LINE # 900
+                                           ; SOURCE LINE # 901
+0000 120000      E     LCALL   DisableAllInterrupt
+                                           ; SOURCE LINE # 902
+0003 7E00        R     MOV     R6,#HIGH SPI_Write_Enable
+0005 7F00        R     MOV     R7,#LOW SPI_Write_Enable
+0007 120000      R     LCALL   _LoadSPIFucnToRam
+                                           ; SOURCE LINE # 903
+000A 900000      E     MOV     DPTR,#FBCFG
+000D E0                MOVX    A,@DPTR
+000E 4480              ORL     A,#080H
+0010 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 904
+0011 120000      R     LCALL   FuncAt_0xFE00
+                                           ; SOURCE LINE # 905
+0014 120000      E     LCALL   EnableAllInterrupt
+                                           ; SOURCE LINE # 906
+0017 900000      E     MOV     DPTR,#FBCFG
+001A E0                MOVX    A,@DPTR
+001B 547F              ANL     A,#07FH
+001D F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 907
+001E 22                RET     
+             ; FUNCTION Do_SPI_Write_Enable (END)
+
+             ; FUNCTION Do_SPI_Write_Disable (BEGIN)
+                                           ; SOURCE LINE # 913
+                                           ; SOURCE LINE # 914
+                                           ; SOURCE LINE # 915
+0000 120000      E     LCALL   DisableAllInterrupt
+                                           ; SOURCE LINE # 916
+0003 7E00        R     MOV     R6,#HIGH SPI_Write_Disable
+0005 7F00        R     MOV     R7,#LOW SPI_Write_Disable
+0007 120000      R     LCALL   _LoadSPIFucnToRam
+                                           ; SOURCE LINE # 917
+000A 900000      E     MOV     DPTR,#FBCFG
+000D E0                MOVX    A,@DPTR
+000E 4480              ORL     A,#080H
+0010 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 918
+0011 120000      R     LCALL   FuncAt_0xFE00
+                                           ; SOURCE LINE # 919
+0014 120000      E     LCALL   EnableAllInterrupt
+                                           ; SOURCE LINE # 920
+0017 900000      E     MOV     DPTR,#FBCFG
+001A E0                MOVX    A,@DPTR
+001B 547F              ANL     A,#07FH
+001D F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 921
+001E 22                RET     
+             ; FUNCTION Do_SPI_Write_Disable (END)
+
+C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 53  
+
+             ; FUNCTION _OEM_Read_SPI_256Bytes (BEGIN)
+                                           ; SOURCE LINE # 935
+;---- Variable 'Addr2' assigned to Register 'R7' ----
+;---- Variable 'Addr0' assigned to Register 'R6' ----
+0000 CE                XCH     A,R6
+0001 EB                MOV     A,R3
+0002 CE                XCH     A,R6
+;---- Variable 'Addr1' assigned to Register 'R4' ----
+0003 CC                XCH     A,R4
+0004 ED                MOV     A,R5
+0005 CC                XCH     A,R4
+                                           ; SOURCE LINE # 936
+                                           ; SOURCE LINE # 937
+0006 CD                XCH     A,R5
+0007 EF                MOV     A,R7
+0008 CD                XCH     A,R5
+0009 CF                XCH     A,R7
+000A EC                MOV     A,R4
+000B CF                XCH     A,R7
+000C CB                XCH     A,R3
+000D EF                MOV     A,R7
+000E CB                XCH     A,R3
+000F 900000      R     MOV     DPTR,#?_Do_SPI_Read_256Bytes?BYTE+04H
+0012 EE                MOV     A,R6
+0013 F0                MOVX    @DPTR,A
+0014 7F00              MOV     R7,#00H
+0016 7E08              MOV     R6,#08H
+0018 120000      R     LCALL   _Do_SPI_Read_256Bytes
+                                           ; SOURCE LINE # 939
+001B 22                RET     
+             ; FUNCTION _OEM_Read_SPI_256Bytes (END)
+
+             ; FUNCTION _OEM_Write_SPI_256Bytes (BEGIN)
+                                           ; SOURCE LINE # 945
+0000 900000      R     MOV     DPTR,#Addr2
+0003 EF                MOV     A,R7
+0004 F0                MOVX    @DPTR,A
+0005 A3                INC     DPTR
+0006 ED                MOV     A,R5
+0007 F0                MOVX    @DPTR,A
+0008 A3                INC     DPTR
+0009 EB                MOV     A,R3
+000A F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 946
+                                           ; SOURCE LINE # 947
+000B E4                CLR     A
+000C FF                MOV     R7,A
+000D 120000      R     LCALL   _Do_SPI_Write_Status
+                                           ; SOURCE LINE # 948
+0010 120000      R     LCALL   Do_SPI_Write_Enable
+                                           ; SOURCE LINE # 949
+0013 900000      R     MOV     DPTR,#Addr2
+0016 E0                MOVX    A,@DPTR
+0017 FD                MOV     R5,A
+0018 A3                INC     DPTR
+0019 E0                MOVX    A,@DPTR
+001A FB                MOV     R3,A
+001B A3                INC     DPTR
+001C E0                MOVX    A,@DPTR
+001D 900000      R     MOV     DPTR,#?_Do_SPI_Erase?BYTE+03H
+0020 F0                MOVX    @DPTR,A
+0021 7F20              MOV     R7,#020H
+C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 54  
+
+0023 120000      R     LCALL   _Do_SPI_Erase
+                                           ; SOURCE LINE # 950
+0026 120000      R     LCALL   Do_SPI_Write_Enable
+                                           ; SOURCE LINE # 951
+0029 900000      R     MOV     DPTR,#Addr2
+002C E0                MOVX    A,@DPTR
+002D FD                MOV     R5,A
+002E A3                INC     DPTR
+002F E0                MOVX    A,@DPTR
+0030 FB                MOV     R3,A
+0031 A3                INC     DPTR
+0032 E0                MOVX    A,@DPTR
+0033 900000      R     MOV     DPTR,#?_Do_SPI_Write_256Bytes?BYTE+04H
+0036 F0                MOVX    @DPTR,A
+0037 7F00              MOV     R7,#00H
+0039 7E08              MOV     R6,#08H
+003B 120000      R     LCALL   _Do_SPI_Write_256Bytes
+                                           ; SOURCE LINE # 952
+003E 120000      R     LCALL   Do_SPI_Write_Disable
+                                           ; SOURCE LINE # 953
+0041 22                RET     
+             ; FUNCTION _OEM_Write_SPI_256Bytes (END)
+
+             ; FUNCTION _CacheDma (BEGIN)
+                                           ; SOURCE LINE # 970
+0000 900000      R     MOV     DPTR,#addr
+0003 EC                MOV     A,R4
+0004 F0                MOVX    @DPTR,A
+0005 A3                INC     DPTR
+0006 ED                MOV     A,R5
+0007 F0                MOVX    @DPTR,A
+;---- Variable 'sramnum' assigned to Register 'R3' ----
+0008 CB                XCH     A,R3
+0009 EF                MOV     A,R7
+000A CB                XCH     A,R3
+                                           ; SOURCE LINE # 971
+                                           ; SOURCE LINE # 972
+000B EB                MOV     A,R3
+000C 75F006            MOV     B,#06H
+000F A4                MUL     AB
+0010 2400        R     ADD     A,#LOW asDMAScratchSRAM
+0012 F582              MOV     DPL,A
+0014 E4                CLR     A
+0015 3400        R     ADDC    A,#HIGH asDMAScratchSRAM
+0017 F583              MOV     DPH,A
+0019 E4                CLR     A
+001A 93                MOVC    A,@A+DPTR
+001B FE                MOV     R6,A
+001C 7401              MOV     A,#01H
+001E 93                MOVC    A,@A+DPTR
+001F F582              MOV     DPL,A
+0021 8E83              MOV     DPH,R6
+0023 7480              MOV     A,#080H
+0025 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 975
+0026 900000      R     MOV     DPTR,#addr
+0029 E0                MOVX    A,@DPTR
+002A FF                MOV     R7,A
+002B EB                MOV     A,R3
+002C 75F006            MOV     B,#06H
+002F A4                MUL     AB
+0030 2400        R     ADD     A,#LOW asDMAScratchSRAM+02H
+C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 55  
+
+0032 F582              MOV     DPL,A
+0034 E4                CLR     A
+0035 3400        R     ADDC    A,#HIGH asDMAScratchSRAM+02H
+0037 F583              MOV     DPH,A
+0039 E4                CLR     A
+003A 93                MOVC    A,@A+DPTR
+003B FC                MOV     R4,A
+003C 7401              MOV     A,#01H
+003E 93                MOVC    A,@A+DPTR
+003F F582              MOV     DPL,A
+0041 8C83              MOV     DPH,R4
+0043 EF                MOV     A,R7
+0044 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 979
+0045 900000      R     MOV     DPTR,#addr
+0048 E0                MOVX    A,@DPTR
+0049 A3                INC     DPTR
+004A E0                MOVX    A,@DPTR
+004B FF                MOV     R7,A
+004C EB                MOV     A,R3
+004D 75F006            MOV     B,#06H
+0050 A4                MUL     AB
+0051 2400        R     ADD     A,#LOW asDMAScratchSRAM+04H
+0053 F582              MOV     DPL,A
+0055 E4                CLR     A
+0056 3400        R     ADDC    A,#HIGH asDMAScratchSRAM+04H
+0058 F583              MOV     DPH,A
+005A E4                CLR     A
+005B 93                MOVC    A,@A+DPTR
+005C FC                MOV     R4,A
+005D 7401              MOV     A,#01H
+005F 93                MOVC    A,@A+DPTR
+0060 F582              MOV     DPL,A
+0062 8C83              MOV     DPH,R4
+0064 EF                MOV     A,R7
+0065 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 983
+0066 EB                MOV     A,R3
+0067 75F006            MOV     B,#06H
+006A A4                MUL     AB
+006B 2400        R     ADD     A,#LOW asDMAScratchSRAM
+006D F582              MOV     DPL,A
+006F E4                CLR     A
+0070 3400        R     ADDC    A,#HIGH asDMAScratchSRAM
+0072 F583              MOV     DPH,A
+0074 E4                CLR     A
+0075 93                MOVC    A,@A+DPTR
+0076 FE                MOV     R6,A
+0077 7401              MOV     A,#01H
+0079 93                MOVC    A,@A+DPTR
+007A F582              MOV     DPL,A
+007C 8E83              MOV     DPH,R6
+007E E4                CLR     A
+007F F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 985
+0080 22                RET     
+             ; FUNCTION _CacheDma (END)
+
+             ; FUNCTION _EC_Indirect_Read_SPI (BEGIN)
+                                           ; SOURCE LINE # 990
+;---- Variable 'Addr2' assigned to Register 'R7' ----
+;---- Variable 'Addr0' assigned to Register 'R3' ----
+C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 56  
+
+;---- Variable 'Addr1' assigned to Register 'R5' ----
+                                           ; SOURCE LINE # 991
+                                           ; SOURCE LINE # 993
+0000 900000      E     MOV     DPTR,#ECINDAR3
+0003 E0                MOVX    A,@DPTR
+0004 FE                MOV     R6,A
+;---- Variable 'itemp' assigned to Register 'R6' ----
+                                           ; SOURCE LINE # 994
+0005 E4                CLR     A
+0006 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 995
+0007 900000      E     MOV     DPTR,#ECINDAR2
+000A EF                MOV     A,R7
+000B F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 996
+000C 900000      E     MOV     DPTR,#ECINDAR1
+000F ED                MOV     A,R5
+0010 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 997
+0011 900000      E     MOV     DPTR,#ECINDAR0
+0014 EB                MOV     A,R3
+0015 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 998
+0016 900000      E     MOV     DPTR,#ECINDDR
+0019 E0                MOVX    A,@DPTR
+001A FF                MOV     R7,A
+;---- Variable 'SPI_Data' assigned to Register 'R7' ----
+                                           ; SOURCE LINE # 999
+001B 900000      E     MOV     DPTR,#ECINDAR3
+001E EE                MOV     A,R6
+001F F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 1001
+                                           ; SOURCE LINE # 1002
+0020         ?C0146:
+0020 22                RET     
+             ; FUNCTION _EC_Indirect_Read_SPI (END)
+
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =   2668    ----
+   CONSTANT SIZE    =     24    ----
+   XDATA SIZE       =   ----      19
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

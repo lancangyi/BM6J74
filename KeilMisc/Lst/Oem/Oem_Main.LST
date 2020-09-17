@@ -1,0 +1,843 @@
+C51 COMPILER V7.50   OEM_MAIN                                                              09/16/2020 21:10:04 PAGE 1   
+
+
+C51 COMPILER V7.50, COMPILATION OF MODULE OEM_MAIN
+OBJECT MODULE PLACED IN Oem\Oem_Main.OBJ
+COMPILER INVOKED BY: C:\Keil\C51\BIN\c51.exe Oem\Oem_Main.c LA WL(1) CD OT(9,SIZE) NOAREGS OR INCDIR(.\Core\Include\;.\O
+                    -em\Include\)
+
+line level    source
+
+   1          #include "Core_Inc.h"
+   2          #include "Oem_Inc.h"
+   3          
+   4          
+   5          
+   6          
+   7          #define DebugRamAddr 0x600
+   8          #define DebugRamRange 0xFF
+   9          
+  10          void RamDebug(unsigned char dbgcode)
+  11          {
+  12   1              PORT_BYTE_PNTR ClearIndex;
+  13   1              PORT_BYTE_PNTR byte_register_pntr;
+  14   1              BYTE index;
+  15   1              BYTE i;
+  16   1              
+  17   1          byte_register_pntr = DebugRamAddr+DebugRamRange;          
+  18   1          index = *byte_register_pntr;
+  19   1          *byte_register_pntr +=1;
+  20   1              
+  21   1          if ( *byte_register_pntr == DebugRamRange )
+  22   1              {
+  23   2                      *byte_register_pntr = 0;
+  24   2              ClearIndex= DebugRamAddr;
+  25   2      
+  26   2                      for (i=0x00;i<DebugRamRange;i++)
+  27   2              {
+  28   3                      *ClearIndex=0x00;
+  29   3                      ClearIndex++;
+  30   3              }
+  31   2              }
+  32   1      
+  33   1              byte_register_pntr = DebugRamAddr + index;
+  34   1          *byte_register_pntr = dbgcode;
+  35   1      }
+  36          
+  37          
+  38          void RamDebugWord(unsigned int dbgword)
+  39          {
+  40   1              BYTE    dgb_H;
+  41   1              BYTE    dgb_L;
+  42   1      
+  43   1              dgb_H = (BYTE) (dbgword >> 8) ;
+  44   1              dgb_L = (BYTE) (dbgword & 0x00FF ) ;
+  45   1      
+  46   1              RamDebug(dgb_H);
+  47   1              RamDebug(dgb_L);
+  48   1      }
+  49          
+  50          void RamDebugDword(unsigned long dbgdword)
+  51          {
+  52   1              BYTE    dgb_4;
+  53   1              BYTE    dgb_3;
+  54   1              BYTE    dgb_2;
+C51 COMPILER V7.50   OEM_MAIN                                                              09/16/2020 21:10:04 PAGE 2   
+
+  55   1              BYTE    dgb_1;
+  56   1      
+  57   1              dgb_4 = (BYTE) (dbgdword >> 24) ;
+  58   1              dgb_3 = (BYTE) (dbgdword >> 16) ;
+  59   1              dgb_2 = (BYTE) (dbgdword >> 8) ;
+  60   1              dgb_1 = (BYTE) (dbgdword & 0x00FF ) ;
+  61   1      
+  62   1              RamDebug(dgb_4);
+  63   1              RamDebug(dgb_3);
+  64   1              RamDebug(dgb_2);
+  65   1              RamDebug(dgb_1);
+  66   1      }
+  67          
+  68          
+  69          //-----------------------------------------------------------------------------
+  70          // Oem 1ms Events/Hook Here
+  71          //-----------------------------------------------------------------------------
+  72          void Oem_Hook_1MS_Event(void)
+  73          {
+  74   1              #if SUPPORT_Hook_1ms_Timer
+  75   1                      #if SMBusServiceCenterFunc
+                              SMBusCenter();
+                              #endif
+  78   1              #endif  
+  79   1              //J74_001++>>
+  80   1              Index_07H = 0x07;
+  81   1              SET_BIT(GP36_SEL_REG,6);                //Set GP36
+  82   1              SET_BIT(GP3X_FUNC_REG,6);               //Set GP36 simple IO function
+  83   1              SET_BIT(GP3X_IOMODE_REG,6);     //Set GP36 output
+  84   1              SET_BIT(GP45_PULLUP_REG,5);             // Set GP44 PULL-UP (GPIO Pin Set 4 Pin Internal Pull-up Enable Registers)
+  85   1                      
+  86   1              SET_BIT(GP14_SEL_REG,4);                //Set GP14
+  87   1              SET_BIT(GP1X_IOMODE_REG,4);     //Set GP14 output
+  88   1              SET_BIT(GP1X_FUNC_REG,4);               //Set GP14 simple IO function   
+  89   1                      
+  90   1              SET_BIT(GP37_SEL_REG,7);                //Set GP37
+  91   1              SET_BIT(GP3X_IOMODE_REG,7);     //Set GP37 output
+  92   1              SET_BIT(GP3X_FUNC_REG,7);               //Set GP37 simple IO function
+  93   1                      
+  94   1              SET_BIT(GP24_SEL_REG,4);                //Set GP24
+  95   1              SET_BIT(GP2X_IOMODE_REG,4);     //Set GP24 output
+  96   1              SET_BIT(GP2X_FUNC_REG,4);               //Set GP24 simple IO function
+  97   1              Index_07H = 0x00;
+  98   1         /* if(STATE_PM_SLP_S3()&&(DDRSIGN==0))
+  99   1          {
+ 100   1                  GP36_HI();  
+ 101   1                      GP14_HI();
+ 102   1                  GP37_HI();
+ 103   1                      GP24_HI(); 
+ 104   1          }
+ 105   1              else if((!STATE_PM_SLP_S3())&&(STATE_PM_SLP_S4()))
+ 106   1              {
+ 107   1                  DDRSIGN=1;
+ 108   1                      GP36_LO();      
+ 109   1                      GP14_LO();
+ 110   1                      GP37_LO();
+ 111   1                  GP24_LO();
+ 112   1              }
+ 113   1              else if((!STATE_PM_SLP_S3())&&(!STATE_PM_SLP_S4()))
+ 114   1              {
+ 115   1                  DDRSIGN=0;
+ 116   1                      GP36_LO();      
+C51 COMPILER V7.50   OEM_MAIN                                                              09/16/2020 21:10:04 PAGE 3   
+
+ 117   1                      GP14_LO();
+ 118   1                  GP37_LO();
+ 119   1                  GP24_LO();
+ 120   1              }*/
+ 121   1      
+ 122   1              if(!STATE_PM_SLP_S4())
+ 123   1          {
+ 124   2                  GP36_HI();  
+ 125   2                      GP14_HI();
+ 126   2                  GP37_HI();
+ 127   2                      GP24_HI(); 
+ 128   2          }
+ 129   1              else if(!STATE_PM_SLP_S3())
+ 130   1              {
+ 131   2                      GP36_LO();      
+ 132   2                      GP14_LO();
+ 133   2                      GP37_LO();
+ 134   2                  GP24_LO();
+ 135   2              }
+ 136   1              
+ 137   1      
+ 138   1              
+ 139   1         //J74_001++<<
+ 140   1      
+ 141   1      }
+ 142          
+ 143          
+ 144          
+ 145          //-----------------------------------------------------------------------------
+ 146          // Oem 5ms Events/Hook Here
+ 147          //-----------------------------------------------------------------------------
+ 148          void Oem_Hook_5MS_Event(void)
+ 149          {
+ 150   1      
+ 151   1              Check_Power_State();
+ 152   1              Service_EventCenter();
+ 153   1      
+ 154   1      }
+ 155          
+ 156          //-----------------------------------------------------------------------------
+ 157          // Oem 10ms Events/Hook Here
+ 158          //-----------------------------------------------------------------------------
+ 159          void Oem_Hook_10MS_Event(void)
+ 160          {
+ 161   1      
+ 162   1      }
+ 163          
+ 164          //-----------------------------------------------------------------------------
+ 165          // Oem 50ms Events/Hook Here
+ 166          //-----------------------------------------------------------------------------
+ 167          void Oem_Hook_50MS_EventA(void)
+ 168          {
+ 169   1      
+ 170   1      
+ 171   1      }
+ 172          
+ 173          void Oem_Hook_50MS_EventB(void)
+ 174          {       
+ 175   1              
+ 176   1      }
+ 177          
+ 178          void Oem_Hook_50MS_EventC(void)
+C51 COMPILER V7.50   OEM_MAIN                                                              09/16/2020 21:10:04 PAGE 4   
+
+ 179          {
+ 180   1      
+ 181   1      }
+ 182          
+ 183          //-----------------------------------------------------------------------------
+ 184          // Oem 100ms Events/Hook Here
+ 185          //-----------------------------------------------------------------------------
+ 186          void Oem_Hook_100MS_EventA(void)
+ 187          {
+ 188   1              if(SystemIsS0)
+ 189   1          {
+ 190   2             //EC_start();
+ 191   2          }
+ 192   1              else
+ 193   1              {
+ 194   2                      EC_stop();
+ 195   2              }
+ 196   1              
+ 197   1      }
+ 198          
+ 199          void Oem_Hook_100MS_EventB(void)
+ 200          {
+ 201   1      
+ 202   1      }
+ 203          
+ 204          void Oem_Hook_100MS_EventC(void)
+ 205          {
+ 206   1      
+ 207   1      }
+ 208          
+ 209          //-----------------------------------------------------------------------------
+ 210          // Oem 125ms Events/Hook Here
+ 211          //-----------------------------------------------------------------------------
+ 212          void Oem_Hook_125MS_Event(void)
+ 213          {
+ 214   1      
+ 215   1      }
+ 216          
+ 217          //-----------------------------------------------------------------------------
+ 218          // Oem 250ms Events/Hook Here
+ 219          //-----------------------------------------------------------------------------
+ 220          void Oem_Hook_250MS_Event(void)
+ 221          {
+ 222   1      
+ 223   1      
+ 224   1      }
+ 225          
+ 226          //-----------------------------------------------------------------------------
+ 227          // Oem 500ms Events/Hook Here
+ 228          //-----------------------------------------------------------------------------
+ 229          void Oem_Hook_500MS_EventA(void)
+ 230          {
+ 231   1      
+ 232   1      }
+ 233          
+ 234          void Oem_Hook_500MS_EventB(void)
+ 235          {
+ 236   1      
+ 237   1      }
+ 238          
+ 239          void Oem_Hook_500MS_EventC(void)
+ 240          {
+C51 COMPILER V7.50   OEM_MAIN                                                              09/16/2020 21:10:04 PAGE 5   
+
+ 241   1      
+ 242   1      
+ 243   1      }
+ 244          
+ 245          //-----------------------------------------------------------------------------
+ 246          // Oem 1s Events/Hook Here
+ 247          //-----------------------------------------------------------------------------
+ 248          void Oem_Hook_1S_EventA(void)
+ 249          {
+ 250   1              ProcessLED();
+ 251   1      }
+ 252          
+ 253          void Oem_Hook_1S_EventB(void)
+ 254          {
+ 255   1      
+ 256   1      }
+ 257          
+ 258          void Oem_Hook_1S_EventC(void)
+ 259          {
+ 260   1      
+ 261   1      }
+ 262          
+ 263          //-----------------------------------------------------------------------------
+ 264          // Oem 1min Events/Hook Here
+ 265          //-----------------------------------------------------------------------------
+ 266          void Oem_Hook_1Min_Event(void)
+ 267          {
+ 268   1      
+ 269   1      }
+ 270          //-----------------------------------------------------------------------------
+ 271          // End of Handle Timer Events
+ 272          //-----------------------------------------------------------------------------
+ 273          
+ 274          void Oem_Main_Test_Func(void)
+ 275          {
+ 276   1              // do nothing
+ 277   1      }
+ 278          
+ 279          
+ 280          void CheckResetSource(void)
+ 281          {
+ 282   1      
+ 283   1      }
+ 284          
+ 285          
+ 286          void Delay15US(XWORD dly_count)
+ 287          {
+ 288   1          
+ 289   1          //delay
+ 290   1          while(dly_count > 0)
+ 291   1          {
+ 292   2              WNCKR = 0;      
+ 293   2              dly_count--;
+ 294   2          }    
+ 295   1          
+ 296   1      }
+C51 COMPILER V7.50   OEM_MAIN                                                              09/16/2020 21:10:04 PAGE 6   
+
+ASSEMBLY LISTING OF GENERATED OBJECT CODE
+
+
+             ; FUNCTION Com0028 (BEGIN)
+0000         L?0041:
+0000 EF                MOV     A,R7
+0001 F0                MOVX    @DPTR,A
+0002         L?0042:
+0002 900000      R     MOV     DPTR,#dbgdword
+0005 020000      E     LJMP    ?C?LLDXDATA
+             ; FUNCTION Com0028 (END)
+
+             ; FUNCTION _RamDebug (BEGIN)
+                                           ; SOURCE LINE # 10
+;---- Variable 'dbgcode' assigned to Register 'R7' ----
+                                           ; SOURCE LINE # 11
+                                           ; SOURCE LINE # 17
+;---- Variable 'byte_register_pntr' assigned to Register 'R4/R5' ----
+0000 7DFF              MOV     R5,#0FFH
+0002 7C06              MOV     R4,#06H
+                                           ; SOURCE LINE # 18
+0004 8D82              MOV     DPL,R5
+0006 8C83              MOV     DPH,R4
+0008 E0                MOVX    A,@DPTR
+;---- Variable 'index' assigned to Register 'R1' ----
+0009 F9                MOV     R1,A
+                                           ; SOURCE LINE # 19
+000A E0                MOVX    A,@DPTR
+000B 04                INC     A
+000C F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 21
+000D E0                MOVX    A,@DPTR
+000E B4FF27            CJNE    A,#0FFH,?C0001
+                                           ; SOURCE LINE # 22
+                                           ; SOURCE LINE # 23
+0011 E4                CLR     A
+0012 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 24
+0013 900000      R     MOV     DPTR,#ClearIndex
+0016 7406              MOV     A,#06H
+0018 F0                MOVX    @DPTR,A
+0019 A3                INC     DPTR
+001A E4                CLR     A
+001B F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 26
+;---- Variable 'i' assigned to Register 'R6' ----
+001C FE                MOV     R6,A
+001D         ?C0002:
+                                           ; SOURCE LINE # 27
+                                           ; SOURCE LINE # 28
+001D 900000      R     MOV     DPTR,#ClearIndex
+0020 E0                MOVX    A,@DPTR
+0021 FA                MOV     R2,A
+0022 A3                INC     DPTR
+0023 E0                MOVX    A,@DPTR
+0024 F582              MOV     DPL,A
+0026 8A83              MOV     DPH,R2
+0028 E4                CLR     A
+0029 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 29
+002A 900000      R     MOV     DPTR,#ClearIndex
+002D 75F001            MOV     B,#01H
+C51 COMPILER V7.50   OEM_MAIN                                                              09/16/2020 21:10:04 PAGE 7   
+
+0030 120000      E     LCALL   ?C?IILDX
+                                           ; SOURCE LINE # 30
+0033 0E                INC     R6
+0034 EE                MOV     A,R6
+0035 B4FFE5            CJNE    A,#0FFH,?C0002
+                                           ; SOURCE LINE # 31
+0038         ?C0001:
+                                           ; SOURCE LINE # 33
+0038 CE                XCH     A,R6
+0039 E9                MOV     A,R1
+003A CE                XCH     A,R6
+003B E9                MOV     A,R1
+003C 2400              ADD     A,#00H
+003E FD                MOV     R5,A
+003F E4                CLR     A
+0040 3406              ADDC    A,#06H
+                                           ; SOURCE LINE # 34
+0042 8D82              MOV     DPL,R5
+0044 F583              MOV     DPH,A
+0046 EF                MOV     A,R7
+0047 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 35
+0048 22                RET     
+             ; FUNCTION _RamDebug (END)
+
+             ; FUNCTION _RamDebugWord (BEGIN)
+                                           ; SOURCE LINE # 38
+;---- Variable 'dbgword' assigned to Register 'R4/R5' ----
+0000 CD                XCH     A,R5
+0001 EF                MOV     A,R7
+0002 CD                XCH     A,R5
+0003 CC                XCH     A,R4
+0004 EE                MOV     A,R6
+0005 CC                XCH     A,R4
+                                           ; SOURCE LINE # 39
+                                           ; SOURCE LINE # 43
+0006 EC                MOV     A,R4
+0007 FF                MOV     R7,A
+;---- Variable 'dgb_H' assigned to Register 'R7' ----
+                                           ; SOURCE LINE # 44
+0008 ED                MOV     A,R5
+;---- Variable 'dgb_L' assigned to Register 'R3' ----
+0009 FB                MOV     R3,A
+                                           ; SOURCE LINE # 46
+000A 120000      R     LCALL   _RamDebug
+                                           ; SOURCE LINE # 47
+000D CF                XCH     A,R7
+000E EB                MOV     A,R3
+000F CF                XCH     A,R7
+0010 020000      R     LJMP    _RamDebug
+             ; FUNCTION _RamDebugWord (END)
+
+             ; FUNCTION _RamDebugDword (BEGIN)
+                                           ; SOURCE LINE # 50
+0000 900000      R     MOV     DPTR,#dbgdword
+0003 120000      E     LCALL   ?C?LSTXDATA
+                                           ; SOURCE LINE # 51
+                                           ; SOURCE LINE # 57
+0006 120000      R     LCALL   L?0042
+0009 7818              MOV     R0,#018H
+000B 120000      E     LCALL   ?C?ULSHR
+;---- Variable 'dgb_4' assigned to Register 'R2' ----
+C51 COMPILER V7.50   OEM_MAIN                                                              09/16/2020 21:10:04 PAGE 8   
+
+000E CA                XCH     A,R2
+000F EF                MOV     A,R7
+0010 CA                XCH     A,R2
+                                           ; SOURCE LINE # 58
+0011 120000      R     LCALL   L?0042
+0014 7810              MOV     R0,#010H
+0016 120000      E     LCALL   ?C?ULSHR
+0019 900000      R     MOV     DPTR,#dgb_3
+                                           ; SOURCE LINE # 59
+001C 120000      R     LCALL   L?0041
+001F 7808              MOV     R0,#08H
+0021 120000      E     LCALL   ?C?ULSHR
+0024 900000      R     MOV     DPTR,#dgb_2
+                                           ; SOURCE LINE # 60
+0027 120000      R     LCALL   L?0041
+002A E4                CLR     A
+;---- Variable 'dgb_1' assigned to Register 'R3' ----
+002B CB                XCH     A,R3
+002C EF                MOV     A,R7
+002D CB                XCH     A,R3
+                                           ; SOURCE LINE # 62
+002E CF                XCH     A,R7
+002F EA                MOV     A,R2
+0030 CF                XCH     A,R7
+0031 120000      R     LCALL   _RamDebug
+                                           ; SOURCE LINE # 63
+0034 900000      R     MOV     DPTR,#dgb_3
+0037 E0                MOVX    A,@DPTR
+0038 FF                MOV     R7,A
+0039 120000      R     LCALL   _RamDebug
+                                           ; SOURCE LINE # 64
+003C 900000      R     MOV     DPTR,#dgb_2
+003F E0                MOVX    A,@DPTR
+0040 FF                MOV     R7,A
+0041 120000      R     LCALL   _RamDebug
+                                           ; SOURCE LINE # 65
+0044 CF                XCH     A,R7
+0045 EB                MOV     A,R3
+0046 CF                XCH     A,R7
+0047 020000      R     LJMP    _RamDebug
+             ; FUNCTION _RamDebugDword (END)
+
+             ; FUNCTION Oem_Hook_1MS_Event (BEGIN)
+                                           ; SOURCE LINE # 72
+                                           ; SOURCE LINE # 73
+                                           ; SOURCE LINE # 80
+0000 900000      E     MOV     DPTR,#Index_07H
+0003 7407              MOV     A,#07H
+0005 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 81
+0006 900000      E     MOV     DPTR,#Index_27H
+0009 E0                MOVX    A,@DPTR
+000A 4440              ORL     A,#040H
+000C F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 82
+000D 900000      E     MOV     DPTR,#Index_C2H
+0010 E0                MOVX    A,@DPTR
+0011 4440              ORL     A,#040H
+0013 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 83
+0014 900000      E     MOV     DPTR,#Index_CAH
+0017 E0                MOVX    A,@DPTR
+C51 COMPILER V7.50   OEM_MAIN                                                              09/16/2020 21:10:04 PAGE 9   
+
+0018 4440              ORL     A,#040H
+001A F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 84
+001B 900000      E     MOV     DPTR,#Index_BBH
+001E E0                MOVX    A,@DPTR
+001F 4420              ORL     A,#020H
+0021 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 86
+0022 900000      E     MOV     DPTR,#Index_25H
+0025 E0                MOVX    A,@DPTR
+0026 4410              ORL     A,#010H
+0028 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 87
+0029 900000      E     MOV     DPTR,#Index_C8H
+002C E0                MOVX    A,@DPTR
+002D 4410              ORL     A,#010H
+002F F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 88
+0030 900000      E     MOV     DPTR,#Index_C0H
+0033 E0                MOVX    A,@DPTR
+0034 4410              ORL     A,#010H
+0036 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 90
+0037 900000      E     MOV     DPTR,#Index_27H
+003A E0                MOVX    A,@DPTR
+003B 4480              ORL     A,#080H
+003D F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 91
+003E 900000      E     MOV     DPTR,#Index_CAH
+0041 E0                MOVX    A,@DPTR
+0042 4480              ORL     A,#080H
+0044 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 92
+0045 900000      E     MOV     DPTR,#Index_C2H
+0048 E0                MOVX    A,@DPTR
+0049 4480              ORL     A,#080H
+004B F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 94
+004C 900000      E     MOV     DPTR,#Index_26H
+004F E0                MOVX    A,@DPTR
+0050 4410              ORL     A,#010H
+0052 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 95
+0053 900000      E     MOV     DPTR,#Index_C9H
+0056 E0                MOVX    A,@DPTR
+0057 4410              ORL     A,#010H
+0059 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 96
+005A 900000      E     MOV     DPTR,#Index_C1H
+005D E0                MOVX    A,@DPTR
+005E 4410              ORL     A,#010H
+0060 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 97
+0061 E4                CLR     A
+0062 900000      E     MOV     DPTR,#Index_07H
+0065 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 122
+0066 900000      E     MOV     DPTR,#GPIO_5x
+0069 E0                MOVX    A,@DPTR
+006A 30E303            JNB     ACC.3,?C0009
+006D D3                SETB    C
+006E 8001              SJMP    ?C0010
+C51 COMPILER V7.50   OEM_MAIN                                                              09/16/2020 21:10:04 PAGE 10  
+
+0070         ?C0009:
+0070 C3                CLR     C
+0071         ?C0010:
+0071 401D              JC      ?C0008
+                                           ; SOURCE LINE # 123
+                                           ; SOURCE LINE # 124
+0073 900000      E     MOV     DPTR,#GPIO_3x
+0076 E0                MOVX    A,@DPTR
+0077 4440              ORL     A,#040H
+0079 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 125
+007A 900000      E     MOV     DPTR,#GPIO_1x
+007D E0                MOVX    A,@DPTR
+007E 4410              ORL     A,#010H
+0080 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 126
+0081 900000      E     MOV     DPTR,#GPIO_3x
+0084 E0                MOVX    A,@DPTR
+0085 4480              ORL     A,#080H
+0087 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 127
+0088 900000      E     MOV     DPTR,#GPIO_2x
+008B E0                MOVX    A,@DPTR
+008C 4410              ORL     A,#010H
+008E F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 128
+008F 22                RET     
+0090         ?C0008:
+                                           ; SOURCE LINE # 129
+0090 900000      E     MOV     DPTR,#GPIO_4x
+0093 E0                MOVX    A,@DPTR
+0094 30E503            JNB     ACC.5,?C0013
+0097 D3                SETB    C
+0098 8001              SJMP    ?C0014
+009A         ?C0013:
+009A C3                CLR     C
+009B         ?C0014:
+009B 401C              JC      ?C0015
+                                           ; SOURCE LINE # 130
+                                           ; SOURCE LINE # 131
+009D 900000      E     MOV     DPTR,#GPIO_3x
+00A0 E0                MOVX    A,@DPTR
+00A1 54BF              ANL     A,#0BFH
+00A3 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 132
+00A4 900000      E     MOV     DPTR,#GPIO_1x
+00A7 E0                MOVX    A,@DPTR
+00A8 54EF              ANL     A,#0EFH
+00AA F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 133
+00AB 900000      E     MOV     DPTR,#GPIO_3x
+00AE E0                MOVX    A,@DPTR
+00AF 547F              ANL     A,#07FH
+00B1 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 134
+00B2 900000      E     MOV     DPTR,#GPIO_2x
+00B5 E0                MOVX    A,@DPTR
+00B6 54EF              ANL     A,#0EFH
+00B8 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 135
+                                           ; SOURCE LINE # 141
+00B9         ?C0015:
+C51 COMPILER V7.50   OEM_MAIN                                                              09/16/2020 21:10:04 PAGE 11  
+
+00B9 22                RET     
+             ; FUNCTION Oem_Hook_1MS_Event (END)
+
+             ; FUNCTION Oem_Hook_5MS_Event (BEGIN)
+                                           ; SOURCE LINE # 148
+                                           ; SOURCE LINE # 149
+                                           ; SOURCE LINE # 151
+0000 120000      E     LCALL   Check_Power_State
+                                           ; SOURCE LINE # 152
+0003 020000      E     LJMP    Service_EventCenter
+             ; FUNCTION Oem_Hook_5MS_Event (END)
+
+             ; FUNCTION Oem_Hook_10MS_Event (BEGIN)
+                                           ; SOURCE LINE # 159
+                                           ; SOURCE LINE # 160
+                                           ; SOURCE LINE # 162
+0000 22                RET     
+             ; FUNCTION Oem_Hook_10MS_Event (END)
+
+             ; FUNCTION Oem_Hook_50MS_EventA (BEGIN)
+                                           ; SOURCE LINE # 167
+                                           ; SOURCE LINE # 168
+                                           ; SOURCE LINE # 171
+0000 22                RET     
+             ; FUNCTION Oem_Hook_50MS_EventA (END)
+
+             ; FUNCTION Oem_Hook_50MS_EventB (BEGIN)
+                                           ; SOURCE LINE # 173
+                                           ; SOURCE LINE # 174
+                                           ; SOURCE LINE # 176
+0000 22                RET     
+             ; FUNCTION Oem_Hook_50MS_EventB (END)
+
+             ; FUNCTION Oem_Hook_50MS_EventC (BEGIN)
+                                           ; SOURCE LINE # 178
+                                           ; SOURCE LINE # 179
+                                           ; SOURCE LINE # 181
+0000 22                RET     
+             ; FUNCTION Oem_Hook_50MS_EventC (END)
+
+             ; FUNCTION Oem_Hook_100MS_EventA (BEGIN)
+                                           ; SOURCE LINE # 186
+                                           ; SOURCE LINE # 187
+                                           ; SOURCE LINE # 188
+0000 900000      E     MOV     DPTR,#SysPowState
+0003 E0                MOVX    A,@DPTR
+0004 6401              XRL     A,#01H
+0006 6003              JZ      ?C0023
+                                           ; SOURCE LINE # 189
+                                           ; SOURCE LINE # 191
+0008         ?C0021:
+                                           ; SOURCE LINE # 193
+                                           ; SOURCE LINE # 194
+0008 120000      E     LCALL   EC_stop
+                                           ; SOURCE LINE # 195
+                                           ; SOURCE LINE # 197
+000B         ?C0023:
+000B 22                RET     
+             ; FUNCTION Oem_Hook_100MS_EventA (END)
+
+             ; FUNCTION Oem_Hook_100MS_EventB (BEGIN)
+                                           ; SOURCE LINE # 199
+C51 COMPILER V7.50   OEM_MAIN                                                              09/16/2020 21:10:04 PAGE 12  
+
+                                           ; SOURCE LINE # 200
+                                           ; SOURCE LINE # 202
+0000 22                RET     
+             ; FUNCTION Oem_Hook_100MS_EventB (END)
+
+             ; FUNCTION Oem_Hook_100MS_EventC (BEGIN)
+                                           ; SOURCE LINE # 204
+                                           ; SOURCE LINE # 205
+                                           ; SOURCE LINE # 207
+0000 22                RET     
+             ; FUNCTION Oem_Hook_100MS_EventC (END)
+
+             ; FUNCTION Oem_Hook_125MS_Event (BEGIN)
+                                           ; SOURCE LINE # 212
+                                           ; SOURCE LINE # 213
+                                           ; SOURCE LINE # 215
+0000 22                RET     
+             ; FUNCTION Oem_Hook_125MS_Event (END)
+
+             ; FUNCTION Oem_Hook_250MS_Event (BEGIN)
+                                           ; SOURCE LINE # 220
+                                           ; SOURCE LINE # 221
+                                           ; SOURCE LINE # 224
+0000 22                RET     
+             ; FUNCTION Oem_Hook_250MS_Event (END)
+
+             ; FUNCTION Oem_Hook_500MS_EventA (BEGIN)
+                                           ; SOURCE LINE # 229
+                                           ; SOURCE LINE # 230
+                                           ; SOURCE LINE # 232
+0000 22                RET     
+             ; FUNCTION Oem_Hook_500MS_EventA (END)
+
+             ; FUNCTION Oem_Hook_500MS_EventB (BEGIN)
+                                           ; SOURCE LINE # 234
+                                           ; SOURCE LINE # 235
+                                           ; SOURCE LINE # 237
+0000 22                RET     
+             ; FUNCTION Oem_Hook_500MS_EventB (END)
+
+             ; FUNCTION Oem_Hook_500MS_EventC (BEGIN)
+                                           ; SOURCE LINE # 239
+                                           ; SOURCE LINE # 240
+                                           ; SOURCE LINE # 243
+0000 22                RET     
+             ; FUNCTION Oem_Hook_500MS_EventC (END)
+
+             ; FUNCTION Oem_Hook_1S_EventA (BEGIN)
+                                           ; SOURCE LINE # 248
+                                           ; SOURCE LINE # 249
+                                           ; SOURCE LINE # 250
+0000 020000      E     LJMP    ProcessLED
+             ; FUNCTION Oem_Hook_1S_EventA (END)
+
+             ; FUNCTION Oem_Hook_1S_EventB (BEGIN)
+                                           ; SOURCE LINE # 253
+                                           ; SOURCE LINE # 254
+                                           ; SOURCE LINE # 256
+0000 22                RET     
+             ; FUNCTION Oem_Hook_1S_EventB (END)
+
+             ; FUNCTION Oem_Hook_1S_EventC (BEGIN)
+C51 COMPILER V7.50   OEM_MAIN                                                              09/16/2020 21:10:04 PAGE 13  
+
+                                           ; SOURCE LINE # 258
+                                           ; SOURCE LINE # 259
+                                           ; SOURCE LINE # 261
+0000 22                RET     
+             ; FUNCTION Oem_Hook_1S_EventC (END)
+
+             ; FUNCTION Oem_Hook_1Min_Event (BEGIN)
+                                           ; SOURCE LINE # 266
+                                           ; SOURCE LINE # 267
+                                           ; SOURCE LINE # 269
+0000 22                RET     
+             ; FUNCTION Oem_Hook_1Min_Event (END)
+
+             ; FUNCTION Oem_Main_Test_Func (BEGIN)
+                                           ; SOURCE LINE # 274
+                                           ; SOURCE LINE # 275
+                                           ; SOURCE LINE # 277
+0000 22                RET     
+             ; FUNCTION Oem_Main_Test_Func (END)
+
+             ; FUNCTION CheckResetSource (BEGIN)
+                                           ; SOURCE LINE # 280
+                                           ; SOURCE LINE # 281
+                                           ; SOURCE LINE # 283
+0000 22                RET     
+             ; FUNCTION CheckResetSource (END)
+
+             ; FUNCTION _Delay15US (BEGIN)
+                                           ; SOURCE LINE # 286
+0000 900000      R     MOV     DPTR,#dly_count
+0003 EE                MOV     A,R6
+0004 F0                MOVX    @DPTR,A
+0005 A3                INC     DPTR
+0006 EF                MOV     A,R7
+0007 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 287
+0008         ?C0037:
+                                           ; SOURCE LINE # 290
+0008 D3                SETB    C
+0009 900000      R     MOV     DPTR,#dly_count+01H
+000C E0                MOVX    A,@DPTR
+000D 9400              SUBB    A,#00H
+000F 900000      R     MOV     DPTR,#dly_count
+0012 E0                MOVX    A,@DPTR
+0013 9400              SUBB    A,#00H
+0015 4011              JC      ?C0039
+                                           ; SOURCE LINE # 291
+                                           ; SOURCE LINE # 292
+0017 E4                CLR     A
+0018 900000      E     MOV     DPTR,#WNCKR
+001B F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 293
+001C 900000      R     MOV     DPTR,#dly_count
+001F 74FF              MOV     A,#0FFH
+0021 F5F0              MOV     B,A
+0023 120000      E     LCALL   ?C?IILDX
+                                           ; SOURCE LINE # 294
+0026 80E0              SJMP    ?C0037
+                                           ; SOURCE LINE # 296
+0028         ?C0039:
+0028 22                RET     
+             ; FUNCTION _Delay15US (END)
+C51 COMPILER V7.50   OEM_MAIN                                                              09/16/2020 21:10:04 PAGE 14  
+
+
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    438    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----      10
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

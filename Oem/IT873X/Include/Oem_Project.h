@@ -106,7 +106,9 @@
 
 
 //Support 1ms Hook Timer
-#define	SUPPORT_Hook_1ms_Timer	FALSE
+//J74_001--	#define	SUPPORT_Hook_1ms_Timer	FALSE
+#define	SUPPORT_Hook_1ms_Timer		TRUE	//J74_001++
+
 
 #define	SMBusServiceCenterFunc		FALSE
 
@@ -158,7 +160,7 @@
 #define	Reset_PMC_UnderS5			FALSE
 
 //OEM Version number
-#define	OEM_Version_MSB	0x04
+#define	OEM_Version_MSB	0x05
 #define	OEM_Version_LSB	0x00
 
 

@@ -1,1 +1,1 @@
-build.bat IT873X 
+call build IT873X E004 LJ74

@@ -131,6 +131,10 @@ Footnote:
 ECReg CPRS  			_at_    (EC_PWM_BASE_ADDR + 0x00);
 ECReg DCR			_at_    (EC_PWM_BASE_ADDR + 0x01);
 ECReg PWMCTL      	_at_    (EC_PWM_BASE_ADDR + 0x02);
+ECReg DDRSIGN      	_at_    (EC_PWM_BASE_ADDR + 0x03);
+
+
+
 
 
 /******************************************************************************

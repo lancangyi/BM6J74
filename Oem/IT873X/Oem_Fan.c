@@ -79,7 +79,7 @@ void EC_start(void)
 	FAN1_TEMP_OFF = 0;
 	FAN1_TEMP_START = 50;			// First phase: 50°C - 60°C
 	FAN1_TEMP_FULL = 80;			// Full speed temperature: 80°C
-	PWM_FAN_CTL1 = 125;			// Start RPM: 125 * 16 = 2000 RPM
+	PWM_FAN_CTL1 = 185;			// Start RPM: 125 * 16 = 2000 RPM
 	FAN1_CTRL = 0x80 + 5;			// Smoothing mode, Slop = 400RPM / 10°C = 40RPM/°C(40 / 8 = 5)
 	FAN1_TEMP_DELTA = 2;			// Delta-temperature: 2°C
 	FAN1_ZONE = 16;					// Target Zone: 128 RPM = 16 * 8
