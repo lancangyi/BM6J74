@@ -121,7 +121,7 @@ extern XBYTE	LED_S0_Status;
 extern XBYTE	Code_Version;							//_at_ (ECSpace + 0x00);
 extern XBYTE	Code_Beta_Version;						//_at_ (ECSpace + 0x01);
 extern XBYTE	DDRCTR;			                         //_at_ (ECSpace + 0x04);
-
+extern XBYTE	S3_FLAG;					               	//_at_ (ECSpace + 0x05);
 extern XBYTE     FAN_Step;									//_at_(ECSpace+0xE0);
 extern XBYTE     EC_Space_AMBTemp;							//_at_(ECSpace+0xE1);
 extern XBYTE     FAN_INIT_STEP;								//_at_(ECSpace+0xE2);
@@ -206,7 +206,7 @@ extern XBYTE     FAN_INIT_STEP;								//_at_(ECSpace+0xE2);
 extern XBYTE	BRAM_CHECK0;				//_at_ (BRAM_Basse + 0x00);
 extern XBYTE	BRAM_CHECK1;				//_at_ (BRAM_Basse + 0x01);
 extern XBYTE	BRAM_CHECK2;				//_at_ (BRAM_Basse + 0x02);
-
+extern XBYTE	BRAM[61];
 
 
 

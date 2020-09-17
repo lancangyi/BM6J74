@@ -1,4 +1,4 @@
-C51 COMPILER V7.50   OEM_686C                                                              09/16/2020 21:10:05 PAGE 1   
+C51 COMPILER V7.50   OEM_686C                                                              09/17/2020 21:06:55 PAGE 1   
 
 
 C51 COMPILER V7.50, COMPILATION OF MODULE OEM_686C
@@ -62,7 +62,7 @@ line level    source
   52           * Cmd_8A:
   53           * Cmd_8B:
   54           * Cmd_8C:
-C51 COMPILER V7.50   OEM_686C                                                              09/16/2020 21:10:05 PAGE 2   
+C51 COMPILER V7.50   OEM_686C                                                              09/17/2020 21:06:55 PAGE 2   
 
   55           * Cmd_8D:
   56           * Cmd_8E:
@@ -126,7 +126,7 @@ line level    source
  114          //----------------------------------------------------------------------------
  115          //void EC6266_Cmd_50(void)
  116          //{
-C51 COMPILER V7.50   OEM_686C                                                              09/16/2020 21:10:05 PAGE 3   
+C51 COMPILER V7.50   OEM_686C                                                              09/17/2020 21:06:55 PAGE 3   
 
  117          //}
  118          //----------------------------------------------------------------------------
@@ -190,7 +190,7 @@ line level    source
  176          //----------------------------------------------------------------------------
  177          void EC686C_CMD_88(void)
  178          {
-C51 COMPILER V7.50   OEM_686C                                                              09/16/2020 21:10:05 PAGE 4   
+C51 COMPILER V7.50   OEM_686C                                                              09/17/2020 21:06:55 PAGE 4   
 
  179   1      
  180   1      }
@@ -254,7 +254,7 @@ line level    source
  238          //----------------------------------------------------------------------------
  239          // EC Command 0x90:
  240          //----------------------------------------------------------------------------
-C51 COMPILER V7.50   OEM_686C                                                              09/16/2020 21:10:05 PAGE 5   
+C51 COMPILER V7.50   OEM_686C                                                              09/17/2020 21:06:55 PAGE 5   
 
  241          void EC686C_CMD_90(void)
  242          {
@@ -318,7 +318,7 @@ line level    source
  300          // EC Command 0x97:
  301          //----------------------------------------------------------------------------
  302          void EC686C_CMD_97(void)
-C51 COMPILER V7.50   OEM_686C                                                              09/16/2020 21:10:05 PAGE 6   
+C51 COMPILER V7.50   OEM_686C                                                              09/17/2020 21:06:55 PAGE 6   
 
  303          {
  304   1      
@@ -382,7 +382,7 @@ line level    source
  362          
  363          //----------------------------------------------------------------------------
  364          // EC Command 0x9F:
-C51 COMPILER V7.50   OEM_686C                                                              09/16/2020 21:10:05 PAGE 7   
+C51 COMPILER V7.50   OEM_686C                                                              09/17/2020 21:06:55 PAGE 7   
 
  365          //----------------------------------------------------------------------------
  366          void EC686C_CMD_9F(void)
@@ -446,7 +446,7 @@ line level    source
  424          {
  425   1      
  426   1      }
-C51 COMPILER V7.50   OEM_686C                                                              09/16/2020 21:10:05 PAGE 8   
+C51 COMPILER V7.50   OEM_686C                                                              09/17/2020 21:06:55 PAGE 8   
 
  427          
  428          //----------------------------------------------------------------------------
@@ -510,7 +510,7 @@ line level    source
  486          //----------------------------------------------------------------------------
  487          void EC686C_CMD_AE(void)
  488          {
-C51 COMPILER V7.50   OEM_686C                                                              09/16/2020 21:10:05 PAGE 9   
+C51 COMPILER V7.50   OEM_686C                                                              09/17/2020 21:06:55 PAGE 9   
 
  489   1      
  490   1      }
@@ -574,7 +574,7 @@ line level    source
  548          
  549          //----------------------------------------------------------------------------
  550          // EC Command 0xB5:
-C51 COMPILER V7.50   OEM_686C                                                              09/16/2020 21:10:05 PAGE 10  
+C51 COMPILER V7.50   OEM_686C                                                              09/17/2020 21:06:55 PAGE 10  
 
  551          //----------------------------------------------------------------------------
  552          void EC686C_CMD_B5(void)
@@ -638,7 +638,7 @@ line level    source
  610          {
  611   1      
  612   1      }
-C51 COMPILER V7.50   OEM_686C                                                              09/16/2020 21:10:05 PAGE 11  
+C51 COMPILER V7.50   OEM_686C                                                              09/17/2020 21:06:55 PAGE 11  
 
  613          
  614          //----------------------------------------------------------------------------
@@ -702,7 +702,7 @@ line level    source
  672          // EC Command 0xC4:
  673          //----------------------------------------------------------------------------
  674          void EC686C_CMD_C4(void)
-C51 COMPILER V7.50   OEM_686C                                                              09/16/2020 21:10:05 PAGE 12  
+C51 COMPILER V7.50   OEM_686C                                                              09/17/2020 21:06:55 PAGE 12  
 
  675          {
  676   1      
@@ -766,7 +766,7 @@ line level    source
  734   1      }
  735          
  736          //----------------------------------------------------------------------------
-C51 COMPILER V7.50   OEM_686C                                                              09/16/2020 21:10:05 PAGE 13  
+C51 COMPILER V7.50   OEM_686C                                                              09/17/2020 21:06:55 PAGE 13  
 
  737          // EC Command 0xCC:
  738          //----------------------------------------------------------------------------
@@ -830,7 +830,7 @@ line level    source
  796          {
  797   1      
  798   1      }
-C51 COMPILER V7.50   OEM_686C                                                              09/16/2020 21:10:05 PAGE 14  
+C51 COMPILER V7.50   OEM_686C                                                              09/17/2020 21:06:55 PAGE 14  
 
  799          
  800          //----------------------------------------------------------------------------
@@ -894,7 +894,7 @@ line level    source
  858          //----------------------------------------------------------------------------
  859          void EC686C_CMD_DB(void)
  860          {
-C51 COMPILER V7.50   OEM_686C                                                              09/16/2020 21:10:05 PAGE 15  
+C51 COMPILER V7.50   OEM_686C                                                              09/17/2020 21:06:55 PAGE 15  
 
  861   1      
  862   1      }
@@ -958,7 +958,7 @@ line level    source
  920   1          {
  921   1              EEP_MEM[i] = ECINDDR;
  922   1      
-C51 COMPILER V7.50   OEM_686C                                                              09/16/2020 21:10:05 PAGE 16  
+C51 COMPILER V7.50   OEM_686C                                                              09/17/2020 21:06:55 PAGE 16  
 
  923   1              ECINDAR0++;
  924   1      
@@ -1022,7 +1022,7 @@ line level    source
  982          void EC686C_CMD_E6(void)
  983          {
  984   1      
-C51 COMPILER V7.50   OEM_686C                                                              09/16/2020 21:10:05 PAGE 17  
+C51 COMPILER V7.50   OEM_686C                                                              09/17/2020 21:06:55 PAGE 17  
 
  985   1      }
  986          
@@ -1086,7 +1086,7 @@ line level    source
 1044          // EC Command 0xEE:
 1045          //----------------------------------------------------------------------------
 1046          void EC686C_CMD_EE(void)
-C51 COMPILER V7.50   OEM_686C                                                              09/16/2020 21:10:05 PAGE 18  
+C51 COMPILER V7.50   OEM_686C                                                              09/17/2020 21:06:55 PAGE 18  
 
 1047          {
 1048   1      
@@ -1150,7 +1150,7 @@ line level    source
 1106          
 1107          //----------------------------------------------------------------------------
 1108          // EC Command 0xF6:
-C51 COMPILER V7.50   OEM_686C                                                              09/16/2020 21:10:05 PAGE 19  
+C51 COMPILER V7.50   OEM_686C                                                              09/17/2020 21:06:55 PAGE 19  
 
 1109          //----------------------------------------------------------------------------
 1110          void EC686C_CMD_F6(void)
@@ -1214,7 +1214,7 @@ line level    source
 1168   1      
 1169   1      }
 1170          
-C51 COMPILER V7.50   OEM_686C                                                              09/16/2020 21:10:05 PAGE 20  
+C51 COMPILER V7.50   OEM_686C                                                              09/17/2020 21:06:55 PAGE 20  
 
 1171          //----------------------------------------------------------------------------
 1172          // EC Command 0xFE:
@@ -1278,7 +1278,7 @@ line level    source
 1230          
 1231          //----------------------------------------------------------------------------
 1232          // Special Handle
-C51 COMPILER V7.50   OEM_686C                                                              09/16/2020 21:10:05 PAGE 21  
+C51 COMPILER V7.50   OEM_686C                                                              09/17/2020 21:06:55 PAGE 21  
 
 1233          // Embedded Controller Data, EC_DATA (R/W)
 1234          //----------------------------------------------------------------------------
@@ -1342,7 +1342,7 @@ line level    source
 1292          };
 1293          */
 1294          //----------------------------------------------------------------------------
-C51 COMPILER V7.50   OEM_686C                                                              09/16/2020 21:10:05 PAGE 22  
+C51 COMPILER V7.50   OEM_686C                                                              09/17/2020 21:06:55 PAGE 22  
 
 1295          const FUNCT_PTR_V_V code EC686CCmd9X_Table[16] =
 1296          {
@@ -1406,7 +1406,7 @@ line level    source
 1354          //----------------------------------------------------------------------------
 1355          const FUNCT_PTR_V_V code EC686CCmdCX_Table[16] =
 1356          {
-C51 COMPILER V7.50   OEM_686C                                                              09/16/2020 21:10:05 PAGE 23  
+C51 COMPILER V7.50   OEM_686C                                                              09/17/2020 21:06:55 PAGE 23  
 
 1357              EC686C_CMD_C0,                  // Process ACPI command C0
 1358              EC686C_CMD_C1,                  // Process ACPI command C1
@@ -1470,7 +1470,7 @@ line level    source
 1416          {
 1417              EC686C_CMD_F0,                  // Process ACPI command F0
 1418              EC686C_CMD_F1,                  // Process ACPI command F1
-C51 COMPILER V7.50   OEM_686C                                                              09/16/2020 21:10:05 PAGE 24  
+C51 COMPILER V7.50   OEM_686C                                                              09/17/2020 21:06:55 PAGE 24  
 
 1419              EC686C_CMD_F2,                  // Process ACPI command F2
 1420              EC686C_CMD_F3,                  // Process ACPI command F3
@@ -1534,7 +1534,7 @@ line level    source
 1478          //----------------------------------------------------------------------------
 1479          void EC_PMC2_Cmd_4X(void)
 1480          {
-C51 COMPILER V7.50   OEM_686C                                                              09/16/2020 21:10:05 PAGE 25  
+C51 COMPILER V7.50   OEM_686C                                                              09/17/2020 21:06:55 PAGE 25  
 
 1481   1          //(EC686CCmd4X_Table[PM2Cmd&0x0F])();
 1482   1          (EC686CNULL_Table[PM2Cmd&0x0F])();
@@ -1598,7 +1598,7 @@ line level    source
 1540           * End
 1541           *---------------------------------------------------------------------------*/
 1542          
-C51 COMPILER V7.50   OEM_686C                                                              09/16/2020 21:10:05 PAGE 26  
+C51 COMPILER V7.50   OEM_686C                                                              09/17/2020 21:06:55 PAGE 26  
 
 ASSEMBLY LISTING OF GENERATED OBJECT CODE
 
@@ -1662,7 +1662,7 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
 ;---- Variable 'data1' assigned to Register 'R5' ----
 ;---- Variable 'MapIndex' assigned to Register 'R7' ----
                                            ; SOURCE LINE # 29
-C51 COMPILER V7.50   OEM_686C                                                              09/16/2020 21:10:05 PAGE 27  
+C51 COMPILER V7.50   OEM_686C                                                              09/17/2020 21:06:55 PAGE 27  
 
                                            ; SOURCE LINE # 30
                                            ; SOURCE LINE # 32
@@ -1726,7 +1726,7 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
                                            ; SOURCE LINE # 201
                                            ; SOURCE LINE # 202
                                            ; SOURCE LINE # 204
-C51 COMPILER V7.50   OEM_686C                                                              09/16/2020 21:10:05 PAGE 28  
+C51 COMPILER V7.50   OEM_686C                                                              09/17/2020 21:06:55 PAGE 28  
 
 0000 22                RET     
              ; FUNCTION EC686C_CMD_8B (END)
@@ -1790,7 +1790,7 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
              ; FUNCTION EC686C_CMD_94 (BEGIN)
                                            ; SOURCE LINE # 273
                                            ; SOURCE LINE # 274
-C51 COMPILER V7.50   OEM_686C                                                              09/16/2020 21:10:05 PAGE 29  
+C51 COMPILER V7.50   OEM_686C                                                              09/17/2020 21:06:55 PAGE 29  
 
                                            ; SOURCE LINE # 281
 0000 22                RET     
@@ -1854,7 +1854,7 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
 
              ; FUNCTION EC686C_CMD_9D (BEGIN)
                                            ; SOURCE LINE # 350
-C51 COMPILER V7.50   OEM_686C                                                              09/16/2020 21:10:05 PAGE 30  
+C51 COMPILER V7.50   OEM_686C                                                              09/17/2020 21:06:55 PAGE 30  
 
                                            ; SOURCE LINE # 351
                                            ; SOURCE LINE # 353
@@ -1918,7 +1918,7 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
              ; FUNCTION EC686C_CMD_A5 (END)
 
              ; FUNCTION EC686C_CMD_A6 (BEGIN)
-C51 COMPILER V7.50   OEM_686C                                                              09/16/2020 21:10:05 PAGE 31  
+C51 COMPILER V7.50   OEM_686C                                                              09/17/2020 21:06:55 PAGE 31  
 
                                            ; SOURCE LINE # 423
                                            ; SOURCE LINE # 424
@@ -1982,7 +1982,7 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
 0000 22                RET     
              ; FUNCTION EC686C_CMD_AE (END)
 
-C51 COMPILER V7.50   OEM_686C                                                              09/16/2020 21:10:05 PAGE 32  
+C51 COMPILER V7.50   OEM_686C                                                              09/17/2020 21:06:55 PAGE 32  
 
              ; FUNCTION EC686C_CMD_AF (BEGIN)
                                            ; SOURCE LINE # 495
@@ -2046,7 +2046,7 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
                                            ; SOURCE LINE # 572
 0000 22                RET     
              ; FUNCTION EC686C_CMD_B7 (END)
-C51 COMPILER V7.50   OEM_686C                                                              09/16/2020 21:10:05 PAGE 33  
+C51 COMPILER V7.50   OEM_686C                                                              09/17/2020 21:06:55 PAGE 33  
 
 
              ; FUNCTION EC686C_CMD_B8 (BEGIN)
@@ -2110,7 +2110,7 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
                                            ; SOURCE LINE # 642
                                            ; SOURCE LINE # 644
 0000 22                RET     
-C51 COMPILER V7.50   OEM_686C                                                              09/16/2020 21:10:05 PAGE 34  
+C51 COMPILER V7.50   OEM_686C                                                              09/17/2020 21:06:55 PAGE 34  
 
              ; FUNCTION EC686C_CMD_C0 (END)
 
@@ -2174,7 +2174,7 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
                                            ; SOURCE LINE # 715
                                            ; SOURCE LINE # 716
                                            ; SOURCE LINE # 718
-C51 COMPILER V7.50   OEM_686C                                                              09/16/2020 21:10:05 PAGE 35  
+C51 COMPILER V7.50   OEM_686C                                                              09/17/2020 21:06:55 PAGE 35  
 
 0000 22                RET     
              ; FUNCTION EC686C_CMD_C9 (END)
@@ -2238,7 +2238,7 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
              ; FUNCTION EC686C_CMD_D2 (BEGIN)
                                            ; SOURCE LINE # 787
                                            ; SOURCE LINE # 788
-C51 COMPILER V7.50   OEM_686C                                                              09/16/2020 21:10:05 PAGE 36  
+C51 COMPILER V7.50   OEM_686C                                                              09/17/2020 21:06:55 PAGE 36  
 
                                            ; SOURCE LINE # 790
 0000 22                RET     
@@ -2302,7 +2302,7 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
 
              ; FUNCTION EC686C_CMD_DB (BEGIN)
                                            ; SOURCE LINE # 859
-C51 COMPILER V7.50   OEM_686C                                                              09/16/2020 21:10:05 PAGE 37  
+C51 COMPILER V7.50   OEM_686C                                                              09/17/2020 21:06:55 PAGE 37  
 
                                            ; SOURCE LINE # 860
                                            ; SOURCE LINE # 862
@@ -2366,7 +2366,7 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
              ; FUNCTION EC686C_CMD_E3 (END)
 
              ; FUNCTION EC686C_CMD_E4 (BEGIN)
-C51 COMPILER V7.50   OEM_686C                                                              09/16/2020 21:10:05 PAGE 38  
+C51 COMPILER V7.50   OEM_686C                                                              09/17/2020 21:06:55 PAGE 38  
 
                                            ; SOURCE LINE # 966
                                            ; SOURCE LINE # 967
@@ -2430,7 +2430,7 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
 0000 22                RET     
              ; FUNCTION EC686C_CMD_EC (END)
 
-C51 COMPILER V7.50   OEM_686C                                                              09/16/2020 21:10:05 PAGE 39  
+C51 COMPILER V7.50   OEM_686C                                                              09/17/2020 21:06:55 PAGE 39  
 
              ; FUNCTION EC686C_CMD_ED (BEGIN)
                                            ; SOURCE LINE # 1038
@@ -2494,7 +2494,7 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
                                            ; SOURCE LINE # 1105
 0000 22                RET     
              ; FUNCTION EC686C_CMD_F5 (END)
-C51 COMPILER V7.50   OEM_686C                                                              09/16/2020 21:10:05 PAGE 40  
+C51 COMPILER V7.50   OEM_686C                                                              09/17/2020 21:06:55 PAGE 40  
 
 
              ; FUNCTION EC686C_CMD_F6 (BEGIN)
@@ -2558,7 +2558,7 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
                                            ; SOURCE LINE # 1175
                                            ; SOURCE LINE # 1177
 0000 22                RET     
-C51 COMPILER V7.50   OEM_686C                                                              09/16/2020 21:10:05 PAGE 41  
+C51 COMPILER V7.50   OEM_686C                                                              09/17/2020 21:06:55 PAGE 41  
 
              ; FUNCTION EC686C_CMD_FE (END)
 
@@ -2622,7 +2622,7 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
 0007 E4                CLR     A
 0008 F0                MOVX    @DPTR,A
 0009         ?C0135:
-C51 COMPILER V7.50   OEM_686C                                                              09/16/2020 21:10:05 PAGE 42  
+C51 COMPILER V7.50   OEM_686C                                                              09/17/2020 21:06:55 PAGE 42  
 
                                            ; SOURCE LINE # 1251
                                            ; SOURCE LINE # 1252
@@ -2686,7 +2686,7 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
 0000 120000      R     LCALL   L?0157
 0003 020000      E     LJMP    ?C?ICALL
              ; FUNCTION EC_PMC2_Cmd_1X (END)
-C51 COMPILER V7.50   OEM_686C                                                              09/16/2020 21:10:05 PAGE 43  
+C51 COMPILER V7.50   OEM_686C                                                              09/17/2020 21:06:55 PAGE 43  
 
 
              ; FUNCTION EC_PMC2_Cmd_2X (BEGIN)
@@ -2750,7 +2750,7 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
 000D 020000      E     LJMP    ?C?ICALL
              ; FUNCTION EC_PMC2_Cmd_9X (END)
 
-C51 COMPILER V7.50   OEM_686C                                                              09/16/2020 21:10:05 PAGE 44  
+C51 COMPILER V7.50   OEM_686C                                                              09/17/2020 21:06:55 PAGE 44  
 
              ; FUNCTION EC_PMC2_Cmd_AX (BEGIN)
                                            ; SOURCE LINE # 1508
@@ -2814,7 +2814,7 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
 0007 E4                CLR     A
 0008 3400        R     ADDC    A,#HIGH EC686CCmdEX_Table
 000A 120000      R     LCALL   L?0159
-C51 COMPILER V7.50   OEM_686C                                                              09/16/2020 21:10:05 PAGE 45  
+C51 COMPILER V7.50   OEM_686C                                                              09/17/2020 21:06:55 PAGE 45  
 
 000D 020000      E     LJMP    ?C?ICALL
              ; FUNCTION EC_PMC2_Cmd_EX (END)

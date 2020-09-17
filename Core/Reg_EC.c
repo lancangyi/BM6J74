@@ -131,7 +131,7 @@ Footnote:
 ECReg CPRS  			_at_    (EC_PWM_BASE_ADDR + 0x00);
 ECReg DCR			_at_    (EC_PWM_BASE_ADDR + 0x01);
 ECReg PWMCTL      	_at_    (EC_PWM_BASE_ADDR + 0x02);
-ECReg DDRSIGN      	_at_    (EC_PWM_BASE_ADDR + 0x03);
+//J74_001A--	ECReg DDRSIGN      	_at_    (EC_PWM_BASE_ADDR + 0x03);
 
 
 
@@ -455,7 +455,7 @@ ECReg   FAN0_Limit_MR                           _at_ (GEE_BASE_ADDR + 0x1B);
 ECReg   FAN1_Limit_MR                           _at_ (GEE_BASE_ADDR + 0x1C);
 ECReg   FAN2_Limit_MR                           _at_ (GEE_BASE_ADDR + 0x1D);
 
-ECReg	ADC_channel_enable		_at_ (GEE_BASE_ADDR + 0x50);
+ECReg	ADC_channel_enable		_at_ (GEE_BASE_ADDR + 0x50);
 
 ECReg	zz2						_at_ (GEE_BASE_ADDR + 0x5C);    //
 

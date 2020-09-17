@@ -1,4 +1,4 @@
-C51 COMPILER V7.50   OEM_CIR                                                               09/16/2020 21:10:05 PAGE 1   
+C51 COMPILER V7.50   OEM_CIR                                                               09/17/2020 21:06:55 PAGE 1   
 
 
 C51 COMPILER V7.50, COMPILATION OF MODULE OEM_CIR
@@ -62,7 +62,7 @@ line level    source
   52   2              
   53   2                              CIR_RCR  &= ~(RXEN_MASK);
   54   2                              bClearCirFIFO();
-C51 COMPILER V7.50   OEM_CIR                                                               09/16/2020 21:10:05 PAGE 2   
+C51 COMPILER V7.50   OEM_CIR                                                               09/17/2020 21:06:55 PAGE 2   
 
   55   2                              CIR_RCR |= ( (RXEN_MASK) | (RXACT_MASK) ) ;
   56   2      
@@ -126,7 +126,7 @@ line level    source
  114   1              CLR_BIT(CIR_IER, 4);
  115   1      
  116   1              CIR_RCR = 0x01;
-C51 COMPILER V7.50   OEM_CIR                                                               09/16/2020 21:10:05 PAGE 3   
+C51 COMPILER V7.50   OEM_CIR                                                               09/17/2020 21:06:55 PAGE 3   
 
  117   1      
  118   1              bClearCirFIFO();                                // Clear FIFO
@@ -190,7 +190,7 @@ line level    source
  176          // The function of CIR Interrupt service routine
  177          //----------------------------------------------------------------------------
  178          void Service_CIR(void)
-C51 COMPILER V7.50   OEM_CIR                                                               09/16/2020 21:10:05 PAGE 4   
+C51 COMPILER V7.50   OEM_CIR                                                               09/17/2020 21:06:55 PAGE 4   
 
  179          {
  180   1      
@@ -213,7 +213,7 @@ line level    source
  197          //=============================================================================
  198          
  199          
-C51 COMPILER V7.50   OEM_CIR                                                               09/16/2020 21:10:05 PAGE 5   
+C51 COMPILER V7.50   OEM_CIR                                                               09/17/2020 21:06:55 PAGE 5   
 
 ASSEMBLY LISTING OF GENERATED OBJECT CODE
 
@@ -277,7 +277,7 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
 0024 900000      E     MOV     DPTR,#CIR_DR
 0027 E0                MOVX    A,@DPTR
 0028 FD                MOV     R5,A
-C51 COMPILER V7.50   OEM_CIR                                                               09/16/2020 21:10:05 PAGE 6   
+C51 COMPILER V7.50   OEM_CIR                                                               09/17/2020 21:06:55 PAGE 6   
 
 0029 7400        E     MOV     A,#LOW CIR_Buffer
 002B 2E                ADD     A,R6
@@ -341,7 +341,7 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
 006D F0                MOVX    @DPTR,A
 006E 22                RET     
              ; FUNCTION Hook_CIRWakeUp (END)
-C51 COMPILER V7.50   OEM_CIR                                                               09/16/2020 21:10:05 PAGE 7   
+C51 COMPILER V7.50   OEM_CIR                                                               09/17/2020 21:06:55 PAGE 7   
 
 
              ; FUNCTION Init_CIR (BEGIN)
@@ -405,7 +405,7 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
 0044 7433              MOV     A,#033H
 0046 F0                MOVX    @DPTR,A
                                            ; SOURCE LINE # 114
-C51 COMPILER V7.50   OEM_CIR                                                               09/16/2020 21:10:05 PAGE 8   
+C51 COMPILER V7.50   OEM_CIR                                                               09/17/2020 21:06:55 PAGE 8   
 
 0047 900000      E     MOV     DPTR,#CIR_IER
 004A E0                MOVX    A,@DPTR
@@ -469,7 +469,7 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
                                            ; SOURCE LINE # 149
 0006 22                RET     
              ; FUNCTION EN_EC_CIR (END)
-C51 COMPILER V7.50   OEM_CIR                                                               09/16/2020 21:10:05 PAGE 9   
+C51 COMPILER V7.50   OEM_CIR                                                               09/17/2020 21:06:55 PAGE 9   
 
 
              ; FUNCTION bClearCirFIFO (BEGIN)
@@ -533,7 +533,7 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
 0006         ?C0023:
 0006 F0                MOVX    @DPTR,A
 0007 A3                INC     DPTR
-C51 COMPILER V7.50   OEM_CIR                                                               09/16/2020 21:10:05 PAGE 10  
+C51 COMPILER V7.50   OEM_CIR                                                               09/17/2020 21:06:55 PAGE 10  
 
 0008 DFFC              DJNZ    R7,?C0023
                                            ; SOURCE LINE # 193

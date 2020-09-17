@@ -1,4 +1,4 @@
-C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 1   
+C51 COMPILER V7.50   CORE_FLASH                                                            09/17/2020 21:06:52 PAGE 1   
 
 
 C51 COMPILER V7.50, COMPILATION OF MODULE CORE_FLASH
@@ -62,7 +62,7 @@ line level    source
   52   2                      {
   53   3                              ECINDDR = _FlashCMD;
   54   3                              _SEND = 0x00;
-C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 2   
+C51 COMPILER V7.50   CORE_FLASH                                                            09/17/2020 21:06:52 PAGE 2   
 
   55   3                              continue;
   56   3                      }
@@ -106,7 +106,7 @@ line level    source
   94   3                      }
   95   2                      else if(_FlashCMD==0xFE)
   96   2                      {       
-  97   3                              //BRAM[63]=0x55;
+  97   3                              BRAM[60]=0x55;
   98   3                              WDTCON |= 0x01;     /* WDTRST = 1 Reset watch dog timer.*/
   99   3                              WDTCON |= 0x02;     /* WDTEN  = 1 Enable watch dog.     */
  100   3                      while(1);                               // Wait for watch dog time-out
@@ -126,7 +126,7 @@ line level    source
  114   1              ECINDAR2 = 0xFF;
  115   1              ECINDAR0 = 0x00;                                // FFFFExx = 0xFF  
  116   1      
-C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 3   
+C51 COMPILER V7.50   CORE_FLASH                                                            09/17/2020 21:06:52 PAGE 3   
 
  117   1              ECINDAR1 = 0xFE;
  118   1              ECINDDR = 0xFF;                                 // SCE# high level
@@ -190,7 +190,7 @@ line level    source
  176   2              {
  177   3                  break;
  178   3              } 
-C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 4   
+C51 COMPILER V7.50   CORE_FLASH                                                            09/17/2020 21:06:52 PAGE 4   
 
  179   2              }
  180   1              
@@ -254,7 +254,7 @@ line level    source
  238          {
  239   1              ECINDAR3 = 0x0F; 
  240   1              ECINDAR2 = 0xFF;
-C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 5   
+C51 COMPILER V7.50   CORE_FLASH                                                            09/17/2020 21:06:52 PAGE 5   
 
  241   1              ECINDAR0 = 0x00;                                // FFFFExx = 0xFF  
  242   1              
@@ -318,7 +318,7 @@ line level    source
  300   2                      if((ECINDDR&(SPIStatus_BUSY+SPIStatus_WEL))==SPIStatus_WriteEnable)
  301   2              {
  302   3                  break;
-C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 6   
+C51 COMPILER V7.50   CORE_FLASH                                                            09/17/2020 21:06:52 PAGE 6   
 
  303   3              } 
  304   2              }                                                               
@@ -382,7 +382,7 @@ line level    source
  362   2              ECINDAR1 = 0xFD;
  363   2              ECINDDR = SPICmd_EWSR;          // Enable Write Status Register
  364   2          }
-C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 7   
+C51 COMPILER V7.50   CORE_FLASH                                                            09/17/2020 21:06:52 PAGE 7   
 
  365   1          
  366   1              ECINDAR1 = 0xFE;
@@ -446,7 +446,7 @@ line level    source
  424          //-----------------------------------------------------------------------------
  425          // The function of other SPI write 256 bytes
  426          //-----------------------------------------------------------------------------
-C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 8   
+C51 COMPILER V7.50   CORE_FLASH                                                            09/17/2020 21:06:52 PAGE 8   
 
  427          void Other_SPI_Write_256Bytes(void)
  428          {
@@ -510,7 +510,7 @@ line level    source
  486   1              
  487   1              ECINDAR1 = 0xFE;
  488   1              ECINDDR = 0xFF;                                 // SCE# high level
-C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 9   
+C51 COMPILER V7.50   CORE_FLASH                                                            09/17/2020 21:06:52 PAGE 9   
 
  489   1              ECINDAR1 = 0xFD;
  490   1              ECINDDR = SPICmd_ReadStatus;    // Read Status Register
@@ -574,7 +574,7 @@ line level    source
  548   1      
  549   1              ECINDAR3 = 0x00;                        // Exit follow mode
  550   1              ECINDAR2 = 0x00;                                // For 256 bytes function limite
-C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 10  
+C51 COMPILER V7.50   CORE_FLASH                                                            09/17/2020 21:06:52 PAGE 10  
 
  551   1      }
  552          
@@ -638,7 +638,7 @@ line level    source
  610   1      
  611   1              ECINDAR1 = 0xFE;
  612   1              ECINDDR = 0xFF;                             // SCE# high level
-C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 11  
+C51 COMPILER V7.50   CORE_FLASH                                                            09/17/2020 21:06:52 PAGE 11  
 
  613   1              ECINDAR1 = 0xFD;
  614   1          ECINDDR = SPICmd_WRDI;          // Write disable
@@ -702,7 +702,7 @@ line level    source
  672   1              ECINDAR3 = 0x0F; 
  673   1              ECINDAR2 = 0xFF;
  674   1              ECINDAR0 = 0x00;                                // FFFFExx = 0xFF  
-C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 12  
+C51 COMPILER V7.50   CORE_FLASH                                                            09/17/2020 21:06:52 PAGE 12  
 
  675   1              
  676   1              ECINDAR1 = 0xFE;
@@ -766,7 +766,7 @@ line level    source
  734   1      
  735   1              _R2= 0x00;
  736   1              do
-C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 13  
+C51 COMPILER V7.50   CORE_FLASH                                                            09/17/2020 21:06:52 PAGE 13  
 
  737   1              {
  738   2                      *Tmp_XPntr = *Tmp_code_pointer;
@@ -830,7 +830,7 @@ line level    source
  796          //-----------------------------------------------------------------------------
  797          #pragma ot(7, SIZE)
  798          void Do_SPI_Read_ID(void)
-C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 14  
+C51 COMPILER V7.50   CORE_FLASH                                                            09/17/2020 21:06:52 PAGE 14  
 
  799          {
  800   1              DisableAllInterrupt();                  // Disable all interrupt 
@@ -894,7 +894,7 @@ line level    source
  858   1              SPIAddrCycle[0] = Addr2;
  859   1              SPIAddrCycle[1] = Addr1;
  860   1              SPIAddrCycle[2] = Addr0;
-C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 15  
+C51 COMPILER V7.50   CORE_FLASH                                                            09/17/2020 21:06:52 PAGE 15  
 
  861   1                              
  862   1              DisableAllInterrupt();                          // Disable all interrupt 
@@ -958,7 +958,7 @@ line level    source
  920   1              CLEAR_MASK(FBCFG,SSMC);                 // disable scatch ROM
  921   1      }
  922          
-C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 16  
+C51 COMPILER V7.50   CORE_FLASH                                                            09/17/2020 21:06:52 PAGE 16  
 
  923          
  924          
@@ -1022,7 +1022,7 @@ line level    source
  982   1              /* start cache dma                  */
  983   1              *asDMAScratchSRAM[sramnum].scarh = 0x00;
  984   1      
-C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 17  
+C51 COMPILER V7.50   CORE_FLASH                                                            09/17/2020 21:06:52 PAGE 17  
 
  985   1      }
  986          
@@ -1086,11 +1086,11 @@ line level    source
                       }
                               
               }
-C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 18  
+C51 COMPILER V7.50   CORE_FLASH                                                            09/17/2020 21:06:52 PAGE 18  
 
               
               #endif          //COMPARE_CHECKSUM
-C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 19  
+C51 COMPILER V7.50   CORE_FLASH                                                            09/17/2020 21:06:52 PAGE 19  
 
 ASSEMBLY LISTING OF GENERATED OBJECT CODE
 
@@ -1154,7 +1154,7 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
                                            ; SOURCE LINE # 53
 0024 900000      E     MOV     DPTR,#ECINDDR
 0027 E500        E     MOV     A,_FlashCMD
-C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 20  
+C51 COMPILER V7.50   CORE_FLASH                                                            09/17/2020 21:06:52 PAGE 20  
 
 0029 F0                MOVX    @DPTR,A
                                            ; SOURCE LINE # 54
@@ -1218,7 +1218,7 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
                                            ; SOURCE LINE # 76
                                            ; SOURCE LINE # 77
 006C 900000      E     MOV     DPTR,#ECINDDR
-C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 21  
+C51 COMPILER V7.50   CORE_FLASH                                                            09/17/2020 21:06:52 PAGE 21  
 
 006F E0                MOVX    A,@DPTR
 0070 900000      E     MOV     DPTR,#PM1DO
@@ -1247,7 +1247,7 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
                                            ; SOURCE LINE # 86
 008B 7500AA      E     MOV     ExitRamCodeCommand,#0AAH
                                            ; SOURCE LINE # 87
-008E 801E              SJMP    ?C0003
+008E 8024              SJMP    ?C0003
                                            ; SOURCE LINE # 88
 0090         ?C0017:
                                            ; SOURCE LINE # 89
@@ -1269,21 +1269,25 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
 00A1 6003              JZ      $ + 5H
 00A3 020000      R     LJMP    ?C0002
                                            ; SOURCE LINE # 96
+                                           ; SOURCE LINE # 97
+00A6 900000      E     MOV     DPTR,#BRAM+03CH
+00A9 7455              MOV     A,#055H
+00AB F0                MOVX    @DPTR,A
                                            ; SOURCE LINE # 98
-00A6 43D801            ORL     WDTCON,#01H
+00AC 43D801            ORL     WDTCON,#01H
                                            ; SOURCE LINE # 99
-00A9 43D802            ORL     WDTCON,#02H
-00AC         ?C0024:
+00AF 43D802            ORL     WDTCON,#02H
+00B2         ?C0024:
                                            ; SOURCE LINE # 100
-00AC 80FE              SJMP    ?C0024
+00B2 80FE              SJMP    ?C0024
                                            ; SOURCE LINE # 101
                                            ; SOURCE LINE # 102
-00AE         ?C0003:
-                                           ; SOURCE LINE # 103
-00AE 020000      E     LJMP    main
-             ; FUNCTION FlashECCode (END)
-C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 22  
+C51 COMPILER V7.50   CORE_FLASH                                                            09/17/2020 21:06:52 PAGE 22  
 
+00B4         ?C0003:
+                                           ; SOURCE LINE # 103
+00B4 020000      E     LJMP    main
+             ; FUNCTION FlashECCode (END)
 
              ; FUNCTION SPI_Read_Status (BEGIN)
                                            ; SOURCE LINE # 111
@@ -1342,12 +1346,12 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
 0006 900000      E     MOV     DPTR,#ECINDAR2
 0009 74FF              MOV     A,#0FFH
 000B F0                MOVX    @DPTR,A
+C51 COMPILER V7.50   CORE_FLASH                                                            09/17/2020 21:06:52 PAGE 23  
+
                                            ; SOURCE LINE # 136
 000C E4                CLR     A
 000D 900000      E     MOV     DPTR,#ECINDAR0
 0010 F0                MOVX    @DPTR,A
-C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 23  
-
                                            ; SOURCE LINE # 138
 0011 900000      E     MOV     DPTR,#ECINDAR1
 0014 74FE              MOV     A,#0FEH
@@ -1406,12 +1410,12 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
 0056 04                INC     A
 0057 F0                MOVX    @DPTR,A
                                            ; SOURCE LINE # 159
+C51 COMPILER V7.50   CORE_FLASH                                                            09/17/2020 21:06:52 PAGE 24  
+
 0058 900000      E     MOV     DPTR,#ECINDAR1
 005B 74FD              MOV     A,#0FDH
 005D F0                MOVX    @DPTR,A
                                            ; SOURCE LINE # 160
-C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 24  
-
 005E 900000      E     MOV     DPTR,#ECINDDR
 0061 7450              MOV     A,#050H
 0063 F0                MOVX    @DPTR,A
@@ -1470,12 +1474,12 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
 00A1 E4                CLR     A
 00A2 900000      E     MOV     DPTR,#ECINDAR3
 00A5 F0                MOVX    @DPTR,A
+C51 COMPILER V7.50   CORE_FLASH                                                            09/17/2020 21:06:52 PAGE 25  
+
                                            ; SOURCE LINE # 182
 00A6 900000      E     MOV     DPTR,#ECINDAR2
 00A9 F0                MOVX    @DPTR,A
                                            ; SOURCE LINE # 183
-C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 25  
-
 00AA 22                RET     
              ; FUNCTION SPI_Write_Status (END)
 
@@ -1534,12 +1538,12 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
 003A 900000      E     MOV     DPTR,#ECINDAR1
 003D 74FD              MOV     A,#0FDH
 003F F0                MOVX    @DPTR,A
+C51 COMPILER V7.50   CORE_FLASH                                                            09/17/2020 21:06:52 PAGE 26  
+
                                            ; SOURCE LINE # 210
 0040 900000      E     MOV     DPTR,#ECINDDR
 0043 749F              MOV     A,#09FH
 0045 F0                MOVX    @DPTR,A
-C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 26  
-
                                            ; SOURCE LINE # 211
 0046 E4                CLR     A
 0047 900000      E     MOV     DPTR,#SPIIndex
@@ -1598,12 +1602,12 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
                                            ; SOURCE LINE # 225
                                            ; SOURCE LINE # 226
                                            ; SOURCE LINE # 227
+C51 COMPILER V7.50   CORE_FLASH                                                            09/17/2020 21:06:52 PAGE 27  
+
                                            ; SOURCE LINE # 228
 008F         ?C0043:
                                            ; SOURCE LINE # 229
 008F E4                CLR     A
-C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 27  
-
 0090 900000      E     MOV     DPTR,#ECINDAR3
 0093 F0                MOVX    @DPTR,A
                                            ; SOURCE LINE # 230
@@ -1662,12 +1666,12 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
 0034 F0                MOVX    @DPTR,A
                                            ; SOURCE LINE # 256
 0035 900000      E     MOV     DPTR,#ECINDDR
+C51 COMPILER V7.50   CORE_FLASH                                                            09/17/2020 21:06:52 PAGE 28  
+
 0038 04                INC     A
 0039 F0                MOVX    @DPTR,A
                                            ; SOURCE LINE # 257
 003A 900000      E     MOV     DPTR,#ECINDAR1
-C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 28  
-
 003D 74FD              MOV     A,#0FDH
 003F F0                MOVX    @DPTR,A
                                            ; SOURCE LINE # 258
@@ -1726,12 +1730,12 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
 0084 F0                MOVX    @DPTR,A
                                            ; SOURCE LINE # 272
 0085 900000      E     MOV     DPTR,#ECINDDR
+C51 COMPILER V7.50   CORE_FLASH                                                            09/17/2020 21:06:52 PAGE 29  
+
 0088 7405              MOV     A,#05H
 008A F0                MOVX    @DPTR,A
 008B         ?C0052:
                                            ; SOURCE LINE # 274
-C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 29  
-
                                            ; SOURCE LINE # 275
                                            ; SOURCE LINE # 276
 008B 900000      E     MOV     DPTR,#ECINDDR
@@ -1790,12 +1794,12 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
                                            ; SOURCE LINE # 300
 0028 900000      E     MOV     DPTR,#ECINDDR
 002B E0                MOVX    A,@DPTR
+C51 COMPILER V7.50   CORE_FLASH                                                            09/17/2020 21:06:52 PAGE 30  
+
 002C 5403              ANL     A,#03H
 002E FF                MOV     R7,A
 002F BF02F6            CJNE    R7,#02H,?C0056
                                            ; SOURCE LINE # 301
-C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 30  
-
                                            ; SOURCE LINE # 302
                                            ; SOURCE LINE # 303
                                            ; SOURCE LINE # 304
@@ -1854,12 +1858,12 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
 0077 900000      E     MOV     DPTR,#ECINDAR1
 007A 74FD              MOV     A,#0FDH
 007C F0                MOVX    @DPTR,A
+C51 COMPILER V7.50   CORE_FLASH                                                            09/17/2020 21:06:52 PAGE 31  
+
                                            ; SOURCE LINE # 319
 007D 900000      E     MOV     DPTR,#ECINDDR
 0080 7405              MOV     A,#05H
 0082 F0                MOVX    @DPTR,A
-C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 31  
-
 0083         ?C0062:
                                            ; SOURCE LINE # 321
                                            ; SOURCE LINE # 322
@@ -1918,12 +1922,12 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
                                            ; SOURCE LINE # 345
                                            ; SOURCE LINE # 346
                                            ; SOURCE LINE # 347
+C51 COMPILER V7.50   CORE_FLASH                                                            09/17/2020 21:06:52 PAGE 32  
+
 0028 900000      E     MOV     DPTR,#ECINDDR
 002B E0                MOVX    A,@DPTR
 002C 20E0F9            JB      ACC.0,?C0066
                                            ; SOURCE LINE # 348
-C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 32  
-
                                            ; SOURCE LINE # 349
                                            ; SOURCE LINE # 350
                                            ; SOURCE LINE # 351
@@ -1982,12 +1986,12 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
                                            ; SOURCE LINE # 369
 0075 900000      E     MOV     DPTR,#ECINDDR
 0078 7405              MOV     A,#05H
+C51 COMPILER V7.50   CORE_FLASH                                                            09/17/2020 21:06:52 PAGE 33  
+
 007A F0                MOVX    @DPTR,A
 007B         ?C0070:
                                            ; SOURCE LINE # 370
                                            ; SOURCE LINE # 371
-C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 33  
-
                                            ; SOURCE LINE # 372
 007B 900000      E     MOV     DPTR,#ECINDDR
 007E E0                MOVX    A,@DPTR
@@ -2046,12 +2050,12 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
                                            ; SOURCE LINE # 396
                                            ; SOURCE LINE # 397
 0028 900000      E     MOV     DPTR,#ECINDDR
+C51 COMPILER V7.50   CORE_FLASH                                                            09/17/2020 21:06:52 PAGE 34  
+
 002B E0                MOVX    A,@DPTR
 002C 20E0F9            JB      ACC.0,?C0074
                                            ; SOURCE LINE # 398
                                            ; SOURCE LINE # 399
-C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 34  
-
                                            ; SOURCE LINE # 400
                                            ; SOURCE LINE # 401
 002F         ?C0075:
@@ -2110,12 +2114,12 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
                                            ; SOURCE LINE # 422
 006E 22                RET     
              ; FUNCTION SPI_Write_Disable (END)
+C51 COMPILER V7.50   CORE_FLASH                                                            09/17/2020 21:06:52 PAGE 35  
+
 
              ; FUNCTION Other_SPI_Write_256Bytes (BEGIN)
                                            ; SOURCE LINE # 427
                                            ; SOURCE LINE # 428
-C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 35  
-
                                            ; SOURCE LINE # 429
 0000 900000      E     MOV     DPTR,#ECINDAR3
 0003 740F              MOV     A,#0FH
@@ -2174,12 +2178,12 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
 0045 F0                MOVX    @DPTR,A
                                            ; SOURCE LINE # 450
 0046 900000      E     MOV     DPTR,#SPIAddrCycle
+C51 COMPILER V7.50   CORE_FLASH                                                            09/17/2020 21:06:52 PAGE 36  
+
 0049 E0                MOVX    A,@DPTR
 004A 900000      E     MOV     DPTR,#ECINDDR
 004D F0                MOVX    @DPTR,A
                                            ; SOURCE LINE # 451
-C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 36  
-
 004E 900000      E     MOV     DPTR,#SPIAddrCycle+01H
 0051 E0                MOVX    A,@DPTR
 0052 900000      E     MOV     DPTR,#ECINDDR
@@ -2238,12 +2242,12 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
 009B F0                MOVX    @DPTR,A
 009C         ?C0087:
                                            ; SOURCE LINE # 466
+C51 COMPILER V7.50   CORE_FLASH                                                            09/17/2020 21:06:52 PAGE 37  
+
                                            ; SOURCE LINE # 467
                                            ; SOURCE LINE # 468
 009C 900000      E     MOV     DPTR,#ECINDDR
 009F E0                MOVX    A,@DPTR
-C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 37  
-
 00A0 20E0F9            JB      ACC.0,?C0087
                                            ; SOURCE LINE # 469
                                            ; SOURCE LINE # 470
@@ -2302,12 +2306,12 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
                                            ; SOURCE LINE # 494
                                            ; SOURCE LINE # 495
                                            ; SOURCE LINE # 496
+C51 COMPILER V7.50   CORE_FLASH                                                            09/17/2020 21:06:52 PAGE 38  
+
                                            ; SOURCE LINE # 497
 002F         ?C0092:
                                            ; SOURCE LINE # 499
 002F 900000      E     MOV     DPTR,#ECINDAR1
-C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 38  
-
 0032 74FE              MOV     A,#0FEH
 0034 F0                MOVX    @DPTR,A
                                            ; SOURCE LINE # 500
@@ -2366,12 +2370,12 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
 007E F0                MOVX    @DPTR,A
                                            ; SOURCE LINE # 515
 007F 900000      E     MOV     DPTR,#SPIIndex
+C51 COMPILER V7.50   CORE_FLASH                                                            09/17/2020 21:06:52 PAGE 39  
+
 0082 E0                MOVX    A,@DPTR
 0083 20E03B            JB      ACC.0,?C0094
                                            ; SOURCE LINE # 516
                                            ; SOURCE LINE # 517
-C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 39  
-
 0086 900000      E     MOV     DPTR,#ECINDAR1
 0089 74FE              MOV     A,#0FEH
 008B F0                MOVX    @DPTR,A
@@ -2430,12 +2434,12 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
                                            ; SOURCE LINE # 539
 00C7 900000      E     MOV     DPTR,#ECINDAR1
 00CA 74FE              MOV     A,#0FEH
+C51 COMPILER V7.50   CORE_FLASH                                                            09/17/2020 21:06:52 PAGE 40  
+
 00CC F0                MOVX    @DPTR,A
                                            ; SOURCE LINE # 540
 00CD 900000      E     MOV     DPTR,#ECINDDR
 00D0 04                INC     A
-C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 40  
-
 00D1 F0                MOVX    @DPTR,A
                                            ; SOURCE LINE # 541
 00D2 900000      E     MOV     DPTR,#ECINDAR1
@@ -2494,12 +2498,12 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
 0021 F0                MOVX    @DPTR,A
                                            ; SOURCE LINE # 565
 0022 900000      E     MOV     DPTR,#ECINDDR
+C51 COMPILER V7.50   CORE_FLASH                                                            09/17/2020 21:06:52 PAGE 41  
+
 0025 7405              MOV     A,#05H
 0027 F0                MOVX    @DPTR,A
 0028         ?C0103:
                                            ; SOURCE LINE # 566
-C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 41  
-
                                            ; SOURCE LINE # 567
                                            ; SOURCE LINE # 568
 0028 900000      E     MOV     DPTR,#ECINDDR
@@ -2558,12 +2562,12 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
 006E E0                MOVX    A,@DPTR
 006F 900000      E     MOV     DPTR,#ECINDDR
 0072 F0                MOVX    @DPTR,A
+C51 COMPILER V7.50   CORE_FLASH                                                            09/17/2020 21:06:52 PAGE 42  
+
                                            ; SOURCE LINE # 587
 0073 900000      E     MOV     DPTR,#SPIIndex
 0076 E0                MOVX    A,@DPTR
 0077 04                INC     A
-C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 42  
-
 0078 F0                MOVX    @DPTR,A
                                            ; SOURCE LINE # 588
 0079 90009C            MOV     DPTR,#09CH
@@ -2622,12 +2626,12 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
                                            ; SOURCE LINE # 608
                                            ; SOURCE LINE # 609
 00BA         ?C0106:
+C51 COMPILER V7.50   CORE_FLASH                                                            09/17/2020 21:06:52 PAGE 43  
+
 00BA 900000      E     MOV     DPTR,#SPIIndex
 00BD E0                MOVX    A,@DPTR
 00BE 70A3              JNZ     ?C0108
                                            ; SOURCE LINE # 611
-C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 43  
-
 00C0 900000      E     MOV     DPTR,#ECINDAR1
 00C3 74FE              MOV     A,#0FEH
 00C5 F0                MOVX    @DPTR,A
@@ -2686,12 +2690,12 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
                                            ; SOURCE LINE # 655
 0014 7E00        R     MOV     R6,#HIGH SST_SPI_Write_256Bytes
 0016 7F00        R     MOV     R7,#LOW SST_SPI_Write_256Bytes
+C51 COMPILER V7.50   CORE_FLASH                                                            09/17/2020 21:06:52 PAGE 44  
+
 0018         ?C0150:
                                            ; SOURCE LINE # 656
                                            ; SOURCE LINE # 657
 0018 8004              SJMP    ?C0151
-C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 44  
-
 001A         ?C0114:
                                            ; SOURCE LINE # 659
                                            ; SOURCE LINE # 660
@@ -2750,12 +2754,12 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
 002F         ?C0120:
                                            ; SOURCE LINE # 688
 002F 900000      E     MOV     DPTR,#ECINDAR1
+C51 COMPILER V7.50   CORE_FLASH                                                            09/17/2020 21:06:52 PAGE 45  
+
 0032 74FE              MOV     A,#0FEH
 0034 F0                MOVX    @DPTR,A
                                            ; SOURCE LINE # 689
 0035 900000      E     MOV     DPTR,#ECINDDR
-C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 45  
-
 0038 04                INC     A
 0039 F0                MOVX    @DPTR,A
                                            ; SOURCE LINE # 690
@@ -2814,12 +2818,12 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
 0081 F0                MOVX    @DPTR,A
                                            ; SOURCE LINE # 704
 0082 900000      E     MOV     DPTR,#SPIIndex
+C51 COMPILER V7.50   CORE_FLASH                                                            09/17/2020 21:06:52 PAGE 46  
+
 0085 E0                MOVX    A,@DPTR
 0086 70DC              JNZ     ?C0124
                                            ; SOURCE LINE # 706
 0088 900000      E     MOV     DPTR,#ECINDAR1
-C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 46  
-
 008B 74FE              MOV     A,#0FEH
 008D F0                MOVX    @DPTR,A
                                            ; SOURCE LINE # 707
@@ -2878,12 +2882,12 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
 000F F500        E     MOV     _R2,A
 0011         ?C0131:
                                            ; SOURCE LINE # 737
+C51 COMPILER V7.50   CORE_FLASH                                                            09/17/2020 21:06:52 PAGE 47  
+
                                            ; SOURCE LINE # 738
 0011 7800        E     MOV     R0,#LOW Tmp_code_pointer
 0013 E6                MOV     A,@R0
 0014 FE                MOV     R6,A
-C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 47  
-
 0015 08                INC     R0
 0016 E6                MOV     A,@R0
 0017 F582              MOV     DPL,A
@@ -2942,12 +2946,12 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
 0011 120000      R     LCALL   FuncAt_0xFE00
                                            ; SOURCE LINE # 756
 0014 22                RET     
+C51 COMPILER V7.50   CORE_FLASH                                                            09/17/2020 21:06:52 PAGE 48  
+
              ; FUNCTION ITE_Flash_Utility (END)
 
              ; FUNCTION _Do_SPI_Write_Status (BEGIN)
                                            ; SOURCE LINE # 766
-C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 48  
-
 ;---- Variable 'statusvalue' assigned to Register 'R7' ----
                                            ; SOURCE LINE # 767
                                            ; SOURCE LINE # 768
@@ -3006,12 +3010,12 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
              ; FUNCTION Do_SPI_Read_Status (END)
 
              ; FUNCTION Do_SPI_Read_ID (BEGIN)
+C51 COMPILER V7.50   CORE_FLASH                                                            09/17/2020 21:06:52 PAGE 49  
+
                                            ; SOURCE LINE # 798
                                            ; SOURCE LINE # 799
                                            ; SOURCE LINE # 800
 0000 120000      E     LCALL   DisableAllInterrupt
-C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 49  
-
                                            ; SOURCE LINE # 801
 0003 7E00        R     MOV     R6,#HIGH SPI_Read_ID
 0005 7F00        R     MOV     R7,#LOW SPI_Read_ID
@@ -3070,12 +3074,12 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
                                            ; SOURCE LINE # 834
 0000 900000      E     MOV     DPTR,#SPIAEraseCmd
 0003 EF                MOV     A,R7
+C51 COMPILER V7.50   CORE_FLASH                                                            09/17/2020 21:06:52 PAGE 50  
+
 0004 F0                MOVX    @DPTR,A
                                            ; SOURCE LINE # 835
 0005 900000      E     MOV     DPTR,#SPIAddrCycle
 0008 ED                MOV     A,R5
-C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 50  
-
 0009 F0                MOVX    @DPTR,A
                                            ; SOURCE LINE # 836
 000A A3                INC     DPTR
@@ -3134,12 +3138,12 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
                                            ; SOURCE LINE # 860
 0010 900000      R     MOV     DPTR,#Addr0
 0013 E0                MOVX    A,@DPTR
+C51 COMPILER V7.50   CORE_FLASH                                                            09/17/2020 21:06:52 PAGE 51  
+
 0014 900000      E     MOV     DPTR,#SPIAddrCycle+02H
 0017 F0                MOVX    @DPTR,A
                                            ; SOURCE LINE # 862
 0018 120000      E     LCALL   DisableAllInterrupt
-C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 51  
-
                                            ; SOURCE LINE # 863
 001B 120000      R     LCALL   SPI_Write_256Bytes
                                            ; SOURCE LINE # 864
@@ -3198,12 +3202,12 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
 0026 4480              ORL     A,#080H
 0028 F0                MOVX    @DPTR,A
                                            ; SOURCE LINE # 888
+C51 COMPILER V7.50   CORE_FLASH                                                            09/17/2020 21:06:52 PAGE 52  
+
 0029 120000      R     LCALL   FuncAt_0xFE00
                                            ; SOURCE LINE # 889
 002C 120000      E     LCALL   EnableAllInterrupt
                                            ; SOURCE LINE # 890
-C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 52  
-
 002F 900000      E     MOV     DPTR,#FBCFG
 0032 E0                MOVX    A,@DPTR
 0033 547F              ANL     A,#07FH
@@ -3262,11 +3266,11 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
 001A E0                MOVX    A,@DPTR
 001B 547F              ANL     A,#07FH
 001D F0                MOVX    @DPTR,A
+C51 COMPILER V7.50   CORE_FLASH                                                            09/17/2020 21:06:52 PAGE 53  
+
                                            ; SOURCE LINE # 921
 001E 22                RET     
              ; FUNCTION Do_SPI_Write_Disable (END)
-
-C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 53  
 
              ; FUNCTION _OEM_Read_SPI_256Bytes (BEGIN)
                                            ; SOURCE LINE # 935
@@ -3326,12 +3330,12 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
 0019 E0                MOVX    A,@DPTR
 001A FB                MOV     R3,A
 001B A3                INC     DPTR
+C51 COMPILER V7.50   CORE_FLASH                                                            09/17/2020 21:06:52 PAGE 54  
+
 001C E0                MOVX    A,@DPTR
 001D 900000      R     MOV     DPTR,#?_Do_SPI_Erase?BYTE+03H
 0020 F0                MOVX    @DPTR,A
 0021 7F20              MOV     R7,#020H
-C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 54  
-
 0023 120000      R     LCALL   _Do_SPI_Erase
                                            ; SOURCE LINE # 950
 0026 120000      R     LCALL   Do_SPI_Write_Enable
@@ -3390,12 +3394,12 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
 0026 900000      R     MOV     DPTR,#addr
 0029 E0                MOVX    A,@DPTR
 002A FF                MOV     R7,A
+C51 COMPILER V7.50   CORE_FLASH                                                            09/17/2020 21:06:52 PAGE 55  
+
 002B EB                MOV     A,R3
 002C 75F006            MOV     B,#06H
 002F A4                MUL     AB
 0030 2400        R     ADD     A,#LOW asDMAScratchSRAM+02H
-C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 55  
-
 0032 F582              MOV     DPL,A
 0034 E4                CLR     A
 0035 3400        R     ADDC    A,#HIGH asDMAScratchSRAM+02H
@@ -3454,12 +3458,12 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
 0080 22                RET     
              ; FUNCTION _CacheDma (END)
 
+C51 COMPILER V7.50   CORE_FLASH                                                            09/17/2020 21:06:52 PAGE 56  
+
              ; FUNCTION _EC_Indirect_Read_SPI (BEGIN)
                                            ; SOURCE LINE # 990
 ;---- Variable 'Addr2' assigned to Register 'R7' ----
 ;---- Variable 'Addr0' assigned to Register 'R3' ----
-C51 COMPILER V7.50   CORE_FLASH                                                            09/16/2020 21:10:03 PAGE 56  
-
 ;---- Variable 'Addr1' assigned to Register 'R5' ----
                                            ; SOURCE LINE # 991
                                            ; SOURCE LINE # 993
@@ -3500,7 +3504,7 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =   2668    ----
+   CODE SIZE        =   2674    ----
    CONSTANT SIZE    =     24    ----
    XDATA SIZE       =   ----      19
    PDATA SIZE       =   ----    ----

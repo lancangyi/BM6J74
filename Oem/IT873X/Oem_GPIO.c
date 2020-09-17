@@ -52,23 +52,27 @@ void Initialize_GPIO_Pin_State(void)
 	SET_BIT(GP36_SEL_REG,6);		//Set GP36
 	SET_BIT(GP3X_FUNC_REG,6);		//Set GP36 simple IO function
 	SET_BIT(GP3X_IOMODE_REG,6); 	//Set GP36 output
-	GP36_HI();
+	//J74_001A--	GP36_HI();
+	GP36_LO();	//J74_001A++
 		
 	SET_BIT(GP14_SEL_REG,4);		//Set GP14
 	SET_BIT(GP1X_IOMODE_REG,4); 	//Set GP14 output
 	SET_BIT(GP1X_FUNC_REG,4);		//Set GP14 simple IO function
-	GP14_HI();
+	//J74_001A-- 	GP14_HI();
+	GP14_LO();	//J74_001A++
 	
 		
 	SET_BIT(GP37_SEL_REG,7);		//Set GP37
 	SET_BIT(GP3X_IOMODE_REG,7); 	//Set GP37 output
 	SET_BIT(GP3X_FUNC_REG,7);		//Set GP37 simple IO function
-	GP37_HI();
+	//J74_001A--	GP37_HI();
+	GP37_LO();	//J74_001A++
 		
 	SET_BIT(GP24_SEL_REG,4);		//Set GP24
 	SET_BIT(GP2X_IOMODE_REG,4); 	//Set GP24 output
 	SET_BIT(GP2X_FUNC_REG,4);		//Set GP24 simple IO function
-	GP24_HI();
+	//J74_001A--	GP24_HI();
+	GP24_LO();	//J74_001A++
 	Index_07H = 0x00;
 
 	//Index_07H = 0x06;

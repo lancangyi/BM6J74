@@ -272,7 +272,7 @@ Footnote:
 extern ECReg CPRS;			//_at_    (EC_PWM_BASE_ADDR + 0x00);
 extern ECReg DCR;			//_at_    (EC_PWM_BASE_ADDR + 0x01);
 extern ECReg PWMCTL;		//_at_    (EC_PWM_BASE_ADDR + 0x02);
-extern ECReg DDRSIGN;      	//_at_    (EC_PWM_BASE_ADDR + 0x03);
+//J74_003-- extern ECReg DDRSIGN;      	//_at_    (EC_PWM_BASE_ADDR + 0x03);
 
 #define	PWMODEN	5
 #define	PCFS		4
@@ -664,7 +664,8 @@ extern ECReg            FAN0_Limit_MR;//                                _at_ (GE
 extern ECReg            FAN1_Limit_MR;//                                _at_ (GEE_BASE_ADDR + 0x1C);
 extern ECReg            FAN2_Limit_MR;//                                _at_ (GEE_BASE_ADDR + 0x1D);
 
-extern ECReg		ADC_channel_enable;//				_at_ (GEE_BASE_ADDR + 0x50);
+extern ECReg		ADC_channel_enable;//				_at_ (GEE_BASE_ADDR + 0x50);
+
 
 extern ECReg       zz2;					//_at_(GEE_BASE_ADDR + 0x5C);	//
 
@@ -672,7 +673,8 @@ extern ECReg		PWM_FAN_CTL1; 	//_at_(GEE_BASE_ADDR + 0x63);	//
 extern ECReg		PWM_FAN_CTL2; 	//_at_(GEE_BASE_ADDR + 0x6B);	//
 extern ECReg		PWM_FAN_CTL3; 	//_at_(GEE_BASE_ADDR + 0x73);	//
 
-extern ECReg		ADC0_test;//				_at_ (GEE_BASE_ADDR + 0x20);
+extern ECReg		ADC0_test;//				_at_ (GEE_BASE_ADDR + 0x20);
+
 extern ECReg		ADC1_test;//				_at_ (GEE_BASE_ADDR + 0x21);
 extern ECReg		ADC2_test;//				_at_ (GEE_BASE_ADDR + 0x22);
 extern ECReg		ADC3_test;//				_at_ (GEE_BASE_ADDR + 0x23);

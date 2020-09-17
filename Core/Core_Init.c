@@ -111,7 +111,13 @@ void Reset_Initialization(void)
 	Init_BRAM() ;
 	
 	Init_Timers();
-
+	//J74_001A++>> 
+	if(BRAM[60] == 0x55)
+	{
+		S3_FLAG = 1;
+		BRAM[60] = 0;
+	}
+	//J74_001A++<<
 }
 
 void Init_Timers(void)

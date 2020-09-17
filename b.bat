@@ -1,1 +1,1 @@
-call build IT873X E004 LJ74
+call build IT873X E006 LJ74

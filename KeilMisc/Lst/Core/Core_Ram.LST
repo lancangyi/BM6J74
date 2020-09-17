@@ -1,4 +1,4 @@
-C51 COMPILER V7.50   CORE_RAM                                                              09/16/2020 21:10:03 PAGE 1   
+C51 COMPILER V7.50   CORE_RAM                                                              09/17/2020 21:06:52 PAGE 1   
 
 
 C51 COMPILER V7.50, COMPILATION OF MODULE CORE_RAM
@@ -62,7 +62,7 @@ line level    source
   52          volatile unsigned char bdata Service    _at_ 0x20;
   53          sbit F_Service_000      = Service^0;
   54          sbit F_Service_001      = Service^1;
-C51 COMPILER V7.50   CORE_RAM                                                              09/16/2020 21:10:03 PAGE 2   
+C51 COMPILER V7.50   CORE_RAM                                                              09/17/2020 21:06:52 PAGE 2   
 
   55          sbit F_Service_002      = Service^2;
   56          sbit F_Service_003      = Service^3;
@@ -126,7 +126,7 @@ line level    source
  114          sbit MULPX_Mx_state2            = MULPX^1;
  115          sbit MULPX_Mx_state3            = MULPX^2;
  116          sbit MULPX_Multiplex            = MULPX^3;
-C51 COMPILER V7.50   CORE_RAM                                                              09/16/2020 21:10:03 PAGE 3   
+C51 COMPILER V7.50   CORE_RAM                                                              09/17/2020 21:06:52 PAGE 3   
 
  117          sbit MULPX_RV1                          = MULPX^4;
  118          sbit MULPX_RV2                          = MULPX^5;
@@ -190,7 +190,7 @@ line level    source
  176          IBYTE   KBHICmd                         _at_ 0x72;
  177          IBYTE   KBHIStep                        _at_ 0x73;
  178          IBYTE   KBHIData                        _at_ 0x74;
-C51 COMPILER V7.50   CORE_RAM                                                              09/16/2020 21:10:03 PAGE 4   
+C51 COMPILER V7.50   CORE_RAM                                                              09/17/2020 21:06:52 PAGE 4   
 
  179          IBYTE   KBHIData1                       _at_ 0x75;
  180          IBYTE   KBHIData2                       _at_ 0x76;
@@ -254,7 +254,7 @@ line level    source
  238          
  239          //-----------------------------------------------------------------------------
  240          //-----------------------------------------------------------------------------
-C51 COMPILER V7.50   CORE_RAM                                                              09/16/2020 21:10:03 PAGE 5   
+C51 COMPILER V7.50   CORE_RAM                                                              09/17/2020 21:06:52 PAGE 5   
 
  241          #define OEMHook_MemBase     0x0000  //-0x001F
  242          XBYTE    Timer1msCnt                            _at_ 0x0000;
@@ -318,7 +318,7 @@ line level    source
  300          #define Record_MemBase      0x0040  //-0x04F
  301          XBYTE   SCI_SMI_Event_Record[15]                        _at_ Record_MemBase+0x00;
  302          XBYTE   SCI_SMI_Index_Record                    _at_ Record_MemBase+0x0F; 
-C51 COMPILER V7.50   CORE_RAM                                                              09/16/2020 21:10:03 PAGE 6   
+C51 COMPILER V7.50   CORE_RAM                                                              09/17/2020 21:06:52 PAGE 6   
 
  303          //-----------------------------------------------------------------------------
  304          
@@ -382,7 +382,7 @@ line level    source
  362          XBYTE   SPIWriteStatus                                          _at_ 0x9A;      
  363          XBYTE   *SPIDataPointer                                         _at_ 0x9B;      
  364          XBYTE   SPIID                                                           _at_ 0x9D;      
-C51 COMPILER V7.50   CORE_RAM                                                              09/16/2020 21:10:03 PAGE 7   
+C51 COMPILER V7.50   CORE_RAM                                                              09/17/2020 21:06:52 PAGE 7   
 
  365          XBYTE   SSTDeviceID                                             _at_ 0x9E;
  366          
@@ -419,7 +419,7 @@ line level    source
  397          // CIR Buffer 0xF0
  398          //-----------------------------------------------------------------------------
  399          XBYTE   CIR_Buffer[16]                                  _at_    0x00F0;
-C51 COMPILER V7.50   CORE_RAM                                                              09/16/2020 21:10:03 PAGE 8   
+C51 COMPILER V7.50   CORE_RAM                                                              09/17/2020 21:06:52 PAGE 8   
 
 ASSEMBLY LISTING OF GENERATED OBJECT CODE
 

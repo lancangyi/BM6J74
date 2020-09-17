@@ -1,4 +1,21 @@
 --------------------------------------------------------------------------
+* EC version:  BM6J74 Project EC Source Code rev.06 update from rev.05
+**************************************************************************
+Author          : ROMAI
+Modify Date     : 2020/09/17
+--------------------------------------------------------------------------
+1.[J74_001A]Modification of DDR control
+	       File Modify:
+                       .\Oem\IT873X\Core_Flash.c
+                       .\Oem\IT873X\Core_Init.c
+                       .\Oem\IT873X\OEM_GPIO.C
+                       .\Oem\IT873X\OEM_6266.C 
+                       .\Oem\IT873X\OEM_MAIN.C
+                       .\Oem\IT873X\OME_Ram.c
+                       .\Oem\IT873X\Reg_EC.c
+                       .\Oem\IT873X\Reg_EC.H
+                                         
+--------------------------------------------------------------------------
 * EC version:  BM6J74 Project EC Source Code rev.05 update from rev.04
 **************************************************************************
 Author          : ROMAI

@@ -1,4 +1,4 @@
-C51 COMPILER V7.50   CORE_FW_VERSION                                                       09/16/2020 21:10:04 PAGE 1   
+C51 COMPILER V7.50   CORE_FW_VERSION                                                       09/17/2020 21:06:54 PAGE 1   
 
 
 C51 COMPILER V7.50, COMPILATION OF MODULE CORE_FW_VERSION
@@ -22,7 +22,7 @@ line level    source
   12          {
   13                  0x12,0x06                                                       //V1.2  Rev06
   14          };
-C51 COMPILER V7.50   CORE_FW_VERSION                                                       09/16/2020 21:10:04 PAGE 2   
+C51 COMPILER V7.50   CORE_FW_VERSION                                                       09/17/2020 21:06:54 PAGE 2   
 
 ASSEMBLY LISTING OF GENERATED OBJECT CODE
 

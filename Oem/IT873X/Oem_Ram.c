@@ -118,6 +118,7 @@ XBYTE	LED_S0_Status				_at_ (SRAM_200_BASE+0x03);
 XBYTE	Code_Version							_at_ (ECSpace + 0x00);
 XBYTE	Code_Beta_Version						_at_ (ECSpace + 0x01);
 XBYTE	DDRCTR					               	_at_ (ECSpace + 0x04);
+XBYTE	S3_FLAG					               	_at_ (ECSpace + 0x05);	//J74_001A++ 
 XBYTE FAN_Step									_at_(ECSpace+0xE0);
 XBYTE EC_Space_AMBTemp							_at_(ECSpace+0xE1);
 XBYTE FAN_INIT_STEP								_at_(ECSpace+0xE2);
@@ -215,7 +216,7 @@ XBYTE FAN_INIT_STEP								_at_(ECSpace+0xE2);
 XBYTE	BRAM_CHECK0				_at_ (BRAM_Basse + 0x00);
 XBYTE	BRAM_CHECK1				_at_ (BRAM_Basse + 0x01);
 XBYTE	BRAM_CHECK2				_at_ (BRAM_Basse + 0x02);
-
+XBYTE	BRAM[61]				_at_ (BRAM_Basse + 0x03);	//J74_001A++ 
 
 //==========================================================
 

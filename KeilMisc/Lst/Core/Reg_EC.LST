@@ -1,4 +1,4 @@
-C51 COMPILER V7.50   REG_EC                                                                09/16/2020 21:10:04 PAGE 1   
+C51 COMPILER V7.50   REG_EC                                                                09/17/2020 21:06:54 PAGE 1   
 
 
 C51 COMPILER V7.50, COMPILATION OF MODULE REG_EC
@@ -62,7 +62,7 @@ line level    source
   52          ECReg IER0               _at_    (INTC_BASE_ADDR + 0x04);
   53          ECReg IER1                      _at_    (INTC_BASE_ADDR + 0x05);
   54          ECReg IER2               _at_    (INTC_BASE_ADDR + 0x06);
-C51 COMPILER V7.50   REG_EC                                                                09/16/2020 21:10:04 PAGE 2   
+C51 COMPILER V7.50   REG_EC                                                                09/17/2020 21:06:54 PAGE 2   
 
   55          ECReg IER3               _at_    (INTC_BASE_ADDR + 0x07);
   56          ECReg IELMR0           _at_    (INTC_BASE_ADDR + 0x08);
@@ -126,7 +126,7 @@ line level    source
  114          ECReg PM2DI               _at_    (PMC_BASE_ADDR + 0x14);
  115          ECReg PM2DISCI            _at_    (PMC_BASE_ADDR + 0x15);
  116          ECReg PM2CTL              _at_    (PMC_BASE_ADDR + 0x16);
-C51 COMPILER V7.50   REG_EC                                                                09/16/2020 21:10:04 PAGE 3   
+C51 COMPILER V7.50   REG_EC                                                                09/17/2020 21:06:54 PAGE 3   
 
  117          ECReg PM2IC               _at_    (PMC_BASE_ADDR + 0x17);
  118          ECReg PM2IE               _at_    (PMC_BASE_ADDR + 0x18);
@@ -145,372 +145,372 @@ line level    source
  131          ECReg CPRS                      _at_    (EC_PWM_BASE_ADDR + 0x00);
  132          ECReg DCR                       _at_    (EC_PWM_BASE_ADDR + 0x01);
  133          ECReg PWMCTL            _at_    (EC_PWM_BASE_ADDR + 0x02);
- 134          ECReg DDRSIGN           _at_    (EC_PWM_BASE_ADDR + 0x03);
+ 134          
  135          
  136          
  137          
  138          
- 139          
- 140          /******************************************************************************
- 141          Define
- 142          Description: Define WUC_BASE_ADDR
- 143          Footnote:
- 144          ******************************************************************************/
- 145          #define WUC_BASE_ADDR           0x1B00
- 146          ECReg  WUEMR1           _at_    (WUC_BASE_ADDR + 0x00);         // Wake-up Edge Mode Reg 1
- 147          ECReg  WUEMR2           _at_    (WUC_BASE_ADDR + 0x01);         // Wake-up Edge Mode Reg 2
- 148          ECReg  WUEMR3           _at_    (WUC_BASE_ADDR + 0x02);         // Wake-up Edge Mode Reg 3
- 149          ECReg  WUEMR4           _at_    (WUC_BASE_ADDR + 0x03);         // Wake-up Edge Mode Reg 4
- 150          ECReg  WUEMR5           _at_    (WUC_BASE_ADDR + 0x0C);         // Wake-up Edge Mode Reg 5 (IT8750)
- 151          ECReg  WUEMR6           _at_    (WUC_BASE_ADDR + 0x10);         // Wake-up Edge Mode Reg 6 (IT8516)
- 152          
- 153          ECReg  WUESR1           _at_    (WUC_BASE_ADDR + 0x04);         // Wake-up Edge Sense Reg 1
- 154          ECReg  WUESR2           _at_    (WUC_BASE_ADDR + 0x05);         // Wake-up Edge Sense Reg 2
- 155          ECReg  WUESR3           _at_    (WUC_BASE_ADDR + 0x06);         // Wake-up Edge Sense Reg 3
- 156          ECReg  WUESR4           _at_    (WUC_BASE_ADDR + 0x07);         // Wake-up Edge Sense Reg 4
- 157          ECReg  WUESR5           _at_    (WUC_BASE_ADDR + 0x0D);         // Wake-up Edge Sense Reg 5 (IT8750)
- 158          ECReg  WUESR6           _at_    (WUC_BASE_ADDR + 0x11);         // Wake-up Edge Sense Reg 6 (IT8516)
- 159          
- 160          ECReg  WUENR1           _at_    (WUC_BASE_ADDR + 0x08);         // Wake-up Enable Reg 1
- 161          ECReg  WUENR2           _at_    (WUC_BASE_ADDR + 0x09);         // Wake-up Enable Reg 2
- 162          ECReg  WUENR3           _at_    (WUC_BASE_ADDR + 0x0A);         // Wake-up Enable Reg 3
- 163          ECReg  WUENR4           _at_    (WUC_BASE_ADDR + 0x0B);         // Wake-up Enable Reg 4
- 164          ECReg  WUENR5           _at_    (WUC_BASE_ADDR + 0x0E);         // Wake-up Enable Reg 5 (IT8750)
- 165          ECReg  WUENR6           _at_    (WUC_BASE_ADDR + 0x12);         // Wake-up Enable Reg 6 (IT8516)
- 166          
- 167          /******************************************************************************
- 168          Define
- 169          Description: Define SMB_BASE_ADDR
- 170          Footnote:
- 171          ******************************************************************************/
- 172          #define SMB_BASE_ADDR           0x1C00
- 173          ECReg  HOSTA_A          _at_    (SMB_BASE_ADDR + 0x00);         // HOST Status
- 174          ECReg  HOCTL_A          _at_    (SMB_BASE_ADDR + 0x01);         // HOST Control
- 175          ECReg  HOCMD_A          _at_    (SMB_BASE_ADDR + 0x02);         // HOST Command
- 176          ECReg  TRASLA_A         _at_    (SMB_BASE_ADDR + 0x03);         // Transmit Slave Address
- 177          ECReg  D0REG_A          _at_    (SMB_BASE_ADDR + 0x04);         // HOST Data0
- 178          ECReg  D1REG_A          _at_    (SMB_BASE_ADDR + 0x05);         // HOST Data1
-C51 COMPILER V7.50   REG_EC                                                                09/16/2020 21:10:04 PAGE 4   
+ 139          /******************************************************************************
+ 140          Define
+ 141          Description: Define WUC_BASE_ADDR
+ 142          Footnote:
+ 143          ******************************************************************************/
+ 144          #define WUC_BASE_ADDR           0x1B00
+ 145          ECReg  WUEMR1           _at_    (WUC_BASE_ADDR + 0x00);         // Wake-up Edge Mode Reg 1
+ 146          ECReg  WUEMR2           _at_    (WUC_BASE_ADDR + 0x01);         // Wake-up Edge Mode Reg 2
+ 147          ECReg  WUEMR3           _at_    (WUC_BASE_ADDR + 0x02);         // Wake-up Edge Mode Reg 3
+ 148          ECReg  WUEMR4           _at_    (WUC_BASE_ADDR + 0x03);         // Wake-up Edge Mode Reg 4
+ 149          ECReg  WUEMR5           _at_    (WUC_BASE_ADDR + 0x0C);         // Wake-up Edge Mode Reg 5 (IT8750)
+ 150          ECReg  WUEMR6           _at_    (WUC_BASE_ADDR + 0x10);         // Wake-up Edge Mode Reg 6 (IT8516)
+ 151          
+ 152          ECReg  WUESR1           _at_    (WUC_BASE_ADDR + 0x04);         // Wake-up Edge Sense Reg 1
+ 153          ECReg  WUESR2           _at_    (WUC_BASE_ADDR + 0x05);         // Wake-up Edge Sense Reg 2
+ 154          ECReg  WUESR3           _at_    (WUC_BASE_ADDR + 0x06);         // Wake-up Edge Sense Reg 3
+ 155          ECReg  WUESR4           _at_    (WUC_BASE_ADDR + 0x07);         // Wake-up Edge Sense Reg 4
+ 156          ECReg  WUESR5           _at_    (WUC_BASE_ADDR + 0x0D);         // Wake-up Edge Sense Reg 5 (IT8750)
+ 157          ECReg  WUESR6           _at_    (WUC_BASE_ADDR + 0x11);         // Wake-up Edge Sense Reg 6 (IT8516)
+ 158          
+ 159          ECReg  WUENR1           _at_    (WUC_BASE_ADDR + 0x08);         // Wake-up Enable Reg 1
+ 160          ECReg  WUENR2           _at_    (WUC_BASE_ADDR + 0x09);         // Wake-up Enable Reg 2
+ 161          ECReg  WUENR3           _at_    (WUC_BASE_ADDR + 0x0A);         // Wake-up Enable Reg 3
+ 162          ECReg  WUENR4           _at_    (WUC_BASE_ADDR + 0x0B);         // Wake-up Enable Reg 4
+ 163          ECReg  WUENR5           _at_    (WUC_BASE_ADDR + 0x0E);         // Wake-up Enable Reg 5 (IT8750)
+ 164          ECReg  WUENR6           _at_    (WUC_BASE_ADDR + 0x12);         // Wake-up Enable Reg 6 (IT8516)
+ 165          
+ 166          /******************************************************************************
+ 167          Define
+ 168          Description: Define SMB_BASE_ADDR
+ 169          Footnote:
+ 170          ******************************************************************************/
+ 171          #define SMB_BASE_ADDR           0x1C00
+ 172          ECReg  HOSTA_A          _at_    (SMB_BASE_ADDR + 0x00);         // HOST Status
+ 173          ECReg  HOCTL_A          _at_    (SMB_BASE_ADDR + 0x01);         // HOST Control
+ 174          ECReg  HOCMD_A          _at_    (SMB_BASE_ADDR + 0x02);         // HOST Command
+ 175          ECReg  TRASLA_A         _at_    (SMB_BASE_ADDR + 0x03);         // Transmit Slave Address
+ 176          ECReg  D0REG_A          _at_    (SMB_BASE_ADDR + 0x04);         // HOST Data0
+ 177          ECReg  D1REG_A          _at_    (SMB_BASE_ADDR + 0x05);         // HOST Data1
+ 178          ECReg  HOBDB_A          _at_    (SMB_BASE_ADDR + 0x06);         // HOST Block Data Byte
+C51 COMPILER V7.50   REG_EC                                                                09/17/2020 21:06:54 PAGE 4   
 
- 179          ECReg  HOBDB_A          _at_    (SMB_BASE_ADDR + 0x06);         // HOST Block Data Byte
- 180          ECReg  PECERC_A         _at_    (SMB_BASE_ADDR + 0x07);         // Packet Error Check
- 181          ECReg  SMBPCTL_A        _at_    (SMB_BASE_ADDR + 0x0A);         // SMBUS Pin Control
- 182          ECReg  HOCTL2_A         _at_    (SMB_BASE_ADDR + 0x10);         // HOST Control2
- 183          ECReg  HOSTA_B          _at_    (SMB_BASE_ADDR + 0x11);         // HOST Status
- 184          ECReg  HOCTL_B          _at_    (SMB_BASE_ADDR + 0x12);         // HOST Control
- 185          ECReg  HOCMD_B          _at_    (SMB_BASE_ADDR + 0x13);         // HOST Command
- 186          ECReg  TRASLA_B         _at_    (SMB_BASE_ADDR + 0x14);         // Transmit Slave Address
- 187          ECReg  D0REG_B          _at_    (SMB_BASE_ADDR + 0x15);         // HOST Data0
- 188          ECReg  D1REG_B          _at_    (SMB_BASE_ADDR + 0x16);         // HOST Data1
- 189          ECReg  HOBDB_B          _at_    (SMB_BASE_ADDR + 0x17);         // HOST Block Data Byte
- 190          ECReg  PECERC_B         _at_    (SMB_BASE_ADDR + 0x18);         // Packet Error Check
- 191          ECReg  SMBPCTL_B        _at_    (SMB_BASE_ADDR + 0x1B);         // SMBUS Pin Control
- 192          ECReg  HOCTL2_B         _at_    (SMB_BASE_ADDR + 0x21);         // HOST Control2
- 193          ECReg  SMBUS_4P7USREG    _at_    (SMB_BASE_ADDR + 0x22);        // SMB TIMING SETUP1
- 194          ECReg  SMBUS_4P0USREG    _at_    (SMB_BASE_ADDR + 0x23);        // SMB TIMING SETUP2
- 195          ECReg  SMBUS_300NSREG    _at_    (SMB_BASE_ADDR + 0x24);        // SMB TIMING SETUP3
- 196          ECReg  SMBUS_250NSREG    _at_    (SMB_BASE_ADDR + 0x25);        // SMB TIMING SETUP4
- 197          ECReg  SMBUS_25MSREG     _at_    (SMB_BASE_ADDR + 0x26);        // SMB TIMING SETUP5
- 198          ECReg  SMBUS_45P3USLREG  _at_    (SMB_BASE_ADDR + 0x27);        // SMB TIMING SETUP6
- 199          ECReg  SMBUS_45P3USHREG  _at_    (SMB_BASE_ADDR + 0x28);                // SMB TIMING SETUP7
- 200          ECReg  HOSTA_C          _at_    (SMB_BASE_ADDR + 0x29);         // HOST Status
- 201          ECReg  HOCTL_C          _at_    (SMB_BASE_ADDR + 0x2A);         // HOST Control
- 202          ECReg  HOCMD_C          _at_    (SMB_BASE_ADDR + 0x2B);         // HOST Command
- 203          ECReg  TRASLA_C         _at_    (SMB_BASE_ADDR + 0x2C);         // Transmit Slave Address
- 204          ECReg  D0REG_C          _at_    (SMB_BASE_ADDR + 0x2D);         // HOST Data0
- 205          ECReg  D1REG_C          _at_    (SMB_BASE_ADDR + 0x2E);         // HOST Data1
- 206          ECReg  HOBDB_C          _at_    (SMB_BASE_ADDR + 0x2F);         // HOST Block Data Byte
- 207          ECReg  PECERC_C         _at_    (SMB_BASE_ADDR + 0x30);         // Packet Error Check
- 208          ECReg  SMBPCTL_C        _at_    (SMB_BASE_ADDR + 0x31);         // SMBUS Pin Control
- 209          ECReg  HOCTL2_C         _at_    (SMB_BASE_ADDR + 0x32);         // HOST Control2
- 210          ECReg  SMBUS_4P7A4P0H    _at_    (SMB_BASE_ADDR + 0x33);        // SMB TIMING SETUP8
- 211          
- 212          /******************************************************************************
- 213          Define
- 214          Description: Define SWKBC_BASE_ADDR
- 215          Footnote:
- 216          ******************************************************************************/
- 217          #define SWKBC_BASE_ADDR   0x1D00
- 218          ECReg  KSOR          _at_ (SWKBC_BASE_ADDR + 0x00);
- 219          ECReg  KSOCTRL    _at_ (SWKBC_BASE_ADDR + 0x01);
- 220          ECReg  KSIR            _at_ (SWKBC_BASE_ADDR + 0x02);
- 221          ECReg  KSICTRLR    _at_ (SWKBC_BASE_ADDR + 0x03);
- 222          ECReg  SCCTRL       _at_ (SWKBC_BASE_ADDR + 0x04);
- 223          ECReg  KBHICR       _at_ (SWKBC_BASE_ADDR + 0x07);
- 224          ECReg  KBHISR       _at_ (SWKBC_BASE_ADDR + 0x08);
- 225          ECReg  KBHIKDOR  _at_ (SWKBC_BASE_ADDR + 0x09);
- 226          ECReg  KBHIDIR      _at_ (SWKBC_BASE_ADDR + 0x0A);
- 227          
- 228          /******************************************************************************
- 229          Define
- 230          Description: Define ECPM_BASE_ADDR
- 231          Footnote:
- 232          ******************************************************************************/
- 233          #define ECPM_BASE_ADDR          0x1E00
- 234          ECReg  EC_1E00                  _at_    (ECPM_BASE_ADDR + 0x00);        // Clock Frequency Select(8510,8511 only)
- 235          ECReg  ECPM_CGCTRL1R    _at_    (ECPM_BASE_ADDR + 0x01);        // Clock Gating Control1
- 236          ECReg  CGCTRL2R                 _at_    (ECPM_BASE_ADDR + 0x02);        // Clock Gating Control2
- 237          ECReg  EC_1E03          _at_    (ECPM_BASE_ADDR + 0x03);        // PLL Control
- 238          ECReg  AUTOCG           _at_    (ECPM_BASE_ADDR + 0x04);        // Auto Clock Gatting
- 239          ECReg  CGCTRL3R                 _at_    (ECPM_BASE_ADDR + 0x05);        // Clock Gating Control3
- 240          ECReg  EC_1E06          _at_    (ECPM_BASE_ADDR + 0x06);
-C51 COMPILER V7.50   REG_EC                                                                09/16/2020 21:10:04 PAGE 5   
+ 179          ECReg  PECERC_A         _at_    (SMB_BASE_ADDR + 0x07);         // Packet Error Check
+ 180          ECReg  SMBPCTL_A        _at_    (SMB_BASE_ADDR + 0x0A);         // SMBUS Pin Control
+ 181          ECReg  HOCTL2_A         _at_    (SMB_BASE_ADDR + 0x10);         // HOST Control2
+ 182          ECReg  HOSTA_B          _at_    (SMB_BASE_ADDR + 0x11);         // HOST Status
+ 183          ECReg  HOCTL_B          _at_    (SMB_BASE_ADDR + 0x12);         // HOST Control
+ 184          ECReg  HOCMD_B          _at_    (SMB_BASE_ADDR + 0x13);         // HOST Command
+ 185          ECReg  TRASLA_B         _at_    (SMB_BASE_ADDR + 0x14);         // Transmit Slave Address
+ 186          ECReg  D0REG_B          _at_    (SMB_BASE_ADDR + 0x15);         // HOST Data0
+ 187          ECReg  D1REG_B          _at_    (SMB_BASE_ADDR + 0x16);         // HOST Data1
+ 188          ECReg  HOBDB_B          _at_    (SMB_BASE_ADDR + 0x17);         // HOST Block Data Byte
+ 189          ECReg  PECERC_B         _at_    (SMB_BASE_ADDR + 0x18);         // Packet Error Check
+ 190          ECReg  SMBPCTL_B        _at_    (SMB_BASE_ADDR + 0x1B);         // SMBUS Pin Control
+ 191          ECReg  HOCTL2_B         _at_    (SMB_BASE_ADDR + 0x21);         // HOST Control2
+ 192          ECReg  SMBUS_4P7USREG    _at_    (SMB_BASE_ADDR + 0x22);        // SMB TIMING SETUP1
+ 193          ECReg  SMBUS_4P0USREG    _at_    (SMB_BASE_ADDR + 0x23);        // SMB TIMING SETUP2
+ 194          ECReg  SMBUS_300NSREG    _at_    (SMB_BASE_ADDR + 0x24);        // SMB TIMING SETUP3
+ 195          ECReg  SMBUS_250NSREG    _at_    (SMB_BASE_ADDR + 0x25);        // SMB TIMING SETUP4
+ 196          ECReg  SMBUS_25MSREG     _at_    (SMB_BASE_ADDR + 0x26);        // SMB TIMING SETUP5
+ 197          ECReg  SMBUS_45P3USLREG  _at_    (SMB_BASE_ADDR + 0x27);        // SMB TIMING SETUP6
+ 198          ECReg  SMBUS_45P3USHREG  _at_    (SMB_BASE_ADDR + 0x28);                // SMB TIMING SETUP7
+ 199          ECReg  HOSTA_C          _at_    (SMB_BASE_ADDR + 0x29);         // HOST Status
+ 200          ECReg  HOCTL_C          _at_    (SMB_BASE_ADDR + 0x2A);         // HOST Control
+ 201          ECReg  HOCMD_C          _at_    (SMB_BASE_ADDR + 0x2B);         // HOST Command
+ 202          ECReg  TRASLA_C         _at_    (SMB_BASE_ADDR + 0x2C);         // Transmit Slave Address
+ 203          ECReg  D0REG_C          _at_    (SMB_BASE_ADDR + 0x2D);         // HOST Data0
+ 204          ECReg  D1REG_C          _at_    (SMB_BASE_ADDR + 0x2E);         // HOST Data1
+ 205          ECReg  HOBDB_C          _at_    (SMB_BASE_ADDR + 0x2F);         // HOST Block Data Byte
+ 206          ECReg  PECERC_C         _at_    (SMB_BASE_ADDR + 0x30);         // Packet Error Check
+ 207          ECReg  SMBPCTL_C        _at_    (SMB_BASE_ADDR + 0x31);         // SMBUS Pin Control
+ 208          ECReg  HOCTL2_C         _at_    (SMB_BASE_ADDR + 0x32);         // HOST Control2
+ 209          ECReg  SMBUS_4P7A4P0H    _at_    (SMB_BASE_ADDR + 0x33);        // SMB TIMING SETUP8
+ 210          
+ 211          /******************************************************************************
+ 212          Define
+ 213          Description: Define SWKBC_BASE_ADDR
+ 214          Footnote:
+ 215          ******************************************************************************/
+ 216          #define SWKBC_BASE_ADDR   0x1D00
+ 217          ECReg  KSOR          _at_ (SWKBC_BASE_ADDR + 0x00);
+ 218          ECReg  KSOCTRL    _at_ (SWKBC_BASE_ADDR + 0x01);
+ 219          ECReg  KSIR            _at_ (SWKBC_BASE_ADDR + 0x02);
+ 220          ECReg  KSICTRLR    _at_ (SWKBC_BASE_ADDR + 0x03);
+ 221          ECReg  SCCTRL       _at_ (SWKBC_BASE_ADDR + 0x04);
+ 222          ECReg  KBHICR       _at_ (SWKBC_BASE_ADDR + 0x07);
+ 223          ECReg  KBHISR       _at_ (SWKBC_BASE_ADDR + 0x08);
+ 224          ECReg  KBHIKDOR  _at_ (SWKBC_BASE_ADDR + 0x09);
+ 225          ECReg  KBHIDIR      _at_ (SWKBC_BASE_ADDR + 0x0A);
+ 226          
+ 227          /******************************************************************************
+ 228          Define
+ 229          Description: Define ECPM_BASE_ADDR
+ 230          Footnote:
+ 231          ******************************************************************************/
+ 232          #define ECPM_BASE_ADDR          0x1E00
+ 233          ECReg  EC_1E00                  _at_    (ECPM_BASE_ADDR + 0x00);        // Clock Frequency Select(8510,8511 only)
+ 234          ECReg  ECPM_CGCTRL1R    _at_    (ECPM_BASE_ADDR + 0x01);        // Clock Gating Control1
+ 235          ECReg  CGCTRL2R                 _at_    (ECPM_BASE_ADDR + 0x02);        // Clock Gating Control2
+ 236          ECReg  EC_1E03          _at_    (ECPM_BASE_ADDR + 0x03);        // PLL Control
+ 237          ECReg  AUTOCG           _at_    (ECPM_BASE_ADDR + 0x04);        // Auto Clock Gatting
+ 238          ECReg  CGCTRL3R                 _at_    (ECPM_BASE_ADDR + 0x05);        // Clock Gating Control3
+ 239          ECReg  EC_1E06          _at_    (ECPM_BASE_ADDR + 0x06);
+ 240          ECReg  PLLCSS           _at_    (ECPM_BASE_ADDR + 0x08);
+C51 COMPILER V7.50   REG_EC                                                                09/17/2020 21:06:54 PAGE 5   
 
- 241          ECReg  PLLCSS           _at_    (ECPM_BASE_ADDR + 0x08);
- 242          
- 243          /******************************************************************************
- 244          Define
- 245          Description: Define ETWD_BASE_ADDR
- 246          Footnote:
- 247          ******************************************************************************/
- 248          #define ETWD_BASE_ADDR          0x1F00
- 249          ECReg  ETWCFG           _at_    (ETWD_BASE_ADDR + 0x01);        // External Timer/WDT Configuration REG
- 250          ECReg  ETPSR            _at_    (ETWD_BASE_ADDR + 0x02);        // External Timer Prescaler REG
- 251          ECReg  ETCNTLHR         _at_    (ETWD_BASE_ADDR + 0x03);        // External Timer Counter High Byte
- 252          ECReg  ETCNTLLR         _at_    (ETWD_BASE_ADDR + 0x04);        // External Timer Counter Low Byte
- 253          ECReg  ETWCTRL          _at_    (ETWD_BASE_ADDR + 0x05);        // External Timer/WDT Control REG
- 254          ECReg  EWDCNTLHR                _at_    (ETWD_BASE_ADDR + 0x09);        // External WDT Counter High Byte
- 255          ECReg  EWDCNTLLR                _at_    (ETWD_BASE_ADDR + 0x06);        // External WDT Counter Low Byte
- 256          ECReg  EWDKEYR          _at_    (ETWD_BASE_ADDR + 0x07);        // External WDT Key REG
- 257          ECReg  RSTSCR           _at_    (ETWD_BASE_ADDR + 0x08);        // Reset Scratch REG
+ 241          
+ 242          /******************************************************************************
+ 243          Define
+ 244          Description: Define ETWD_BASE_ADDR
+ 245          Footnote:
+ 246          ******************************************************************************/
+ 247          #define ETWD_BASE_ADDR          0x1F00
+ 248          ECReg  ETWCFG           _at_    (ETWD_BASE_ADDR + 0x01);        // External Timer/WDT Configuration REG
+ 249          ECReg  ETPSR            _at_    (ETWD_BASE_ADDR + 0x02);        // External Timer Prescaler REG
+ 250          ECReg  ETCNTLHR         _at_    (ETWD_BASE_ADDR + 0x03);        // External Timer Counter High Byte
+ 251          ECReg  ETCNTLLR         _at_    (ETWD_BASE_ADDR + 0x04);        // External Timer Counter Low Byte
+ 252          ECReg  ETWCTRL          _at_    (ETWD_BASE_ADDR + 0x05);        // External Timer/WDT Control REG
+ 253          ECReg  EWDCNTLHR                _at_    (ETWD_BASE_ADDR + 0x09);        // External WDT Counter High Byte
+ 254          ECReg  EWDCNTLLR                _at_    (ETWD_BASE_ADDR + 0x06);        // External WDT Counter Low Byte
+ 255          ECReg  EWDKEYR          _at_    (ETWD_BASE_ADDR + 0x07);        // External WDT Key REG
+ 256          ECReg  RSTSCR           _at_    (ETWD_BASE_ADDR + 0x08);        // Reset Scratch REG
+ 257          
  258          
- 259          
- 260          /******************************************************************************
- 261          Define
- 262          Description: Define EC interface base address
- 263          Footnote:
- 264          ******************************************************************************/
- 265          #define    GCTRL_BASE_ADDR    0x2000
- 266          ECReg    ECHIPID1       _at_    (GCTRL_BASE_ADDR + 0x00);    // CHIP ID BYTE 1
- 267          ECReg    ECHIPID2       _at_    (GCTRL_BASE_ADDR + 0x01);    // CHIP ID BYTE 2
- 268          ECReg    ECHIPVER       _at_    (GCTRL_BASE_ADDR + 0x02);    // CHIP VERSION
- 269          ECReg    RSTS           _at_    (GCTRL_BASE_ADDR + 0x06);    // RESET STATUS
- 270          ECReg    RSTC1          _at_    (GCTRL_BASE_ADDR + 0x07);    // RESET CONTROL 1
- 271          ECReg    RSTC2          _at_    (GCTRL_BASE_ADDR + 0x08);    // RESET CONTROL 2
- 272          ECReg    RSTC3          _at_    (GCTRL_BASE_ADDR + 0x09);    // RESET CONTROL 3
- 273          ECReg    WNCKR          _at_    (GCTRL_BASE_ADDR + 0x0B);    // WAIT NEXT CLOCK RISING
- 274          ECReg    SPCTRL1        _at_    (GCTRL_BASE_ADDR + 0x0D);    // SPECIAL CONTROL 1
- 275          ECReg    GENIRQ         _at_    (GCTRL_BASE_ADDR + 0x0F);    // GENERATE IRQ
- 276          ECReg    RSTC4          _at_    (GCTRL_BASE_ADDR + 0x11);    // RESET CONTROL 4
- 277          ECReg    SPCTRL2        _at_    (GCTRL_BASE_ADDR + 0x12);    // SPECIAL CONTROL 2
- 278          ECReg    PI2ECH         _at_    (GCTRL_BASE_ADDR + 0x14);    // PORT I2EC HIGH-BYTE REGISTER
- 279          ECReg    PI2ECL         _at_    (GCTRL_BASE_ADDR + 0x15);    // PORT I2EC LOW-BYTE REGISTER
- 280          ECReg    SPCTRL3        _at_    (GCTRL_BASE_ADDR + 0x16);    // SPECIAL CONTROL 3
- 281          
- 282          /******************************************************************************
- 283          Define
- 284          Description: Define CIR_BASE_ADDR
- 285          Footnote:
- 286          ******************************************************************************/
- 287          #define CIR_BASE_ADDR           0x2300
- 288          ECReg   CIR_DR                          _at_    CIR_BASE_ADDR+0x00;
- 289          ECReg   CIR_IER                         _at_    CIR_BASE_ADDR+0x01;     //bit: BR
- 290          ECReg   CIR_RCR                         _at_    CIR_BASE_ADDR+0x02;
- 291          ECReg   CIR_TCR1                        _at_    CIR_BASE_ADDR+0x03;
- 292          ECReg   CIR_TCR2                        _at_    CIR_BASE_ADDR+0x04;
- 293          ECReg   CIR_TSR                         _at_    CIR_BASE_ADDR+0x05;
- 294          ECReg   CIR_RSR                 _at_    CIR_BASE_ADDR+0x06;
- 295          //#define       CIR_BDLR        CIR_TSR                 //_at_  CIR_BASE_ADDR+0x05;     //BR = 1
- 296          //#define       CIR_BDHR        CIR_RSR         //_at_  CIR_BASE_ADDR+0x06;     //BR = 1
- 297          ECReg   CIR_IIR                         _at_    CIR_BASE_ADDR+0x07;     
+ 259          /******************************************************************************
+ 260          Define
+ 261          Description: Define EC interface base address
+ 262          Footnote:
+ 263          ******************************************************************************/
+ 264          #define    GCTRL_BASE_ADDR    0x2000
+ 265          ECReg    ECHIPID1       _at_    (GCTRL_BASE_ADDR + 0x00);    // CHIP ID BYTE 1
+ 266          ECReg    ECHIPID2       _at_    (GCTRL_BASE_ADDR + 0x01);    // CHIP ID BYTE 2
+ 267          ECReg    ECHIPVER       _at_    (GCTRL_BASE_ADDR + 0x02);    // CHIP VERSION
+ 268          ECReg    RSTS           _at_    (GCTRL_BASE_ADDR + 0x06);    // RESET STATUS
+ 269          ECReg    RSTC1          _at_    (GCTRL_BASE_ADDR + 0x07);    // RESET CONTROL 1
+ 270          ECReg    RSTC2          _at_    (GCTRL_BASE_ADDR + 0x08);    // RESET CONTROL 2
+ 271          ECReg    RSTC3          _at_    (GCTRL_BASE_ADDR + 0x09);    // RESET CONTROL 3
+ 272          ECReg    WNCKR          _at_    (GCTRL_BASE_ADDR + 0x0B);    // WAIT NEXT CLOCK RISING
+ 273          ECReg    SPCTRL1        _at_    (GCTRL_BASE_ADDR + 0x0D);    // SPECIAL CONTROL 1
+ 274          ECReg    GENIRQ         _at_    (GCTRL_BASE_ADDR + 0x0F);    // GENERATE IRQ
+ 275          ECReg    RSTC4          _at_    (GCTRL_BASE_ADDR + 0x11);    // RESET CONTROL 4
+ 276          ECReg    SPCTRL2        _at_    (GCTRL_BASE_ADDR + 0x12);    // SPECIAL CONTROL 2
+ 277          ECReg    PI2ECH         _at_    (GCTRL_BASE_ADDR + 0x14);    // PORT I2EC HIGH-BYTE REGISTER
+ 278          ECReg    PI2ECL         _at_    (GCTRL_BASE_ADDR + 0x15);    // PORT I2EC LOW-BYTE REGISTER
+ 279          ECReg    SPCTRL3        _at_    (GCTRL_BASE_ADDR + 0x16);    // SPECIAL CONTROL 3
+ 280          
+ 281          /******************************************************************************
+ 282          Define
+ 283          Description: Define CIR_BASE_ADDR
+ 284          Footnote:
+ 285          ******************************************************************************/
+ 286          #define CIR_BASE_ADDR           0x2300
+ 287          ECReg   CIR_DR                          _at_    CIR_BASE_ADDR+0x00;
+ 288          ECReg   CIR_IER                         _at_    CIR_BASE_ADDR+0x01;     //bit: BR
+ 289          ECReg   CIR_RCR                         _at_    CIR_BASE_ADDR+0x02;
+ 290          ECReg   CIR_TCR1                        _at_    CIR_BASE_ADDR+0x03;
+ 291          ECReg   CIR_TCR2                        _at_    CIR_BASE_ADDR+0x04;
+ 292          ECReg   CIR_TSR                         _at_    CIR_BASE_ADDR+0x05;
+ 293          ECReg   CIR_RSR                 _at_    CIR_BASE_ADDR+0x06;
+ 294          //#define       CIR_BDLR        CIR_TSR                 //_at_  CIR_BASE_ADDR+0x05;     //BR = 1
+ 295          //#define       CIR_BDHR        CIR_RSR         //_at_  CIR_BASE_ADDR+0x06;     //BR = 1
+ 296          ECReg   CIR_IIR                         _at_    CIR_BASE_ADDR+0x07;     
+ 297          
  298          
- 299          
- 300          /******************************************************************************
- 301          Define
- 302          Description: Define SPI_BASE_ADDR
-C51 COMPILER V7.50   REG_EC                                                                09/16/2020 21:10:04 PAGE 6   
+ 299          /******************************************************************************
+ 300          Define
+ 301          Description: Define SPI_BASE_ADDR
+ 302          Footnote:
+C51 COMPILER V7.50   REG_EC                                                                09/17/2020 21:06:54 PAGE 6   
 
- 303          Footnote:
- 304          ******************************************************************************/
- 305          #define SPI_BASE_ADDR           0x2600
- 306          ECReg SPI0_DATA_REG             _at_    (SPI_BASE_ADDR + 0x00); //
- 307          ECReg SPI0_CTRL1_REG            _at_    (SPI_BASE_ADDR + 0x01); //
- 308          ECReg SPI0_CTRL2_REG            _at_    (SPI_BASE_ADDR + 0x02); //
- 309          ECReg SPI0_STATUS_REG           _at_    (SPI_BASE_ADDR + 0x03); //
- 310          ECReg SPI0_CTRL3_REG            _at_    (SPI_BASE_ADDR + 0x04); //
- 311          
- 312          ECReg SPI1_DATA_REG             _at_    (SPI_BASE_ADDR + 0x10); //
- 313          ECReg SPI1_CTRL1_REG            _at_    (SPI_BASE_ADDR + 0x11); //
- 314          ECReg SPI1_CTRL2_REG            _at_    (SPI_BASE_ADDR + 0x12); //
- 315          ECReg SPI1_STATUS_REG           _at_    (SPI_BASE_ADDR + 0x13); //
- 316          ECReg SPI1_CTRL3_REG            _at_    (SPI_BASE_ADDR + 0x14); //
- 317          
- 318          /******************************************************************************
- 319          Define
- 320          Description: Define UART1_BASE_ADDR
- 321          Footnote:
- 322          ******************************************************************************/
- 323          #define UART1_BASE_ADDR         0x2700
- 324          ECReg   UART1_RBR_REG           _at_    (UART1_BASE_ADDR + 0x00);       //
- 325          ECReg   UART1_IER_REG           _at_    (UART1_BASE_ADDR + 0x01);       //
- 326          ECReg   UART1_IIR_REG           _at_    (UART1_BASE_ADDR + 0x02);       //
- 327          ECReg   UART1_LCR_REG           _at_    (UART1_BASE_ADDR + 0x03);       //
- 328          ECReg   UART1_MCR_REG           _at_    (UART1_BASE_ADDR + 0x04);       //
- 329          ECReg   UART1_LSR_REG           _at_    (UART1_BASE_ADDR + 0x05);       //
- 330          ECReg   UART1_MSR_REG           _at_    (UART1_BASE_ADDR + 0x06);       //
- 331          ECReg   UART1_SCR_REG           _at_    (UART1_BASE_ADDR + 0x07);       //
- 332          
- 333          /******************************************************************************
- 334          Define
- 335          Description: Define UART2_BASE_ADDR
- 336          Footnote:
- 337          ******************************************************************************/
- 338          #define UART2_BASE_ADDR         0x2800
- 339          ECReg   UART2_RBR_REG           _at_    (UART2_BASE_ADDR + 0x00);       //
- 340          ECReg   UART2_IER_REG           _at_    (UART2_BASE_ADDR + 0x01);       //
- 341          ECReg   UART2_IIR_REG           _at_    (UART2_BASE_ADDR + 0x02);       //
- 342          ECReg   UART2_LCR_REG           _at_    (UART2_BASE_ADDR + 0x03);       //
- 343          ECReg   UART2_MCR_REG           _at_    (UART2_BASE_ADDR + 0x04);       //
- 344          ECReg   UART2_LSR_REG           _at_    (UART2_BASE_ADDR + 0x05);       //
- 345          ECReg   UART2_MSR_REG           _at_    (UART2_BASE_ADDR + 0x06);       //
- 346          ECReg   UART2_SCR_REG           _at_    (UART2_BASE_ADDR + 0x07);       //
+ 303          ******************************************************************************/
+ 304          #define SPI_BASE_ADDR           0x2600
+ 305          ECReg SPI0_DATA_REG             _at_    (SPI_BASE_ADDR + 0x00); //
+ 306          ECReg SPI0_CTRL1_REG            _at_    (SPI_BASE_ADDR + 0x01); //
+ 307          ECReg SPI0_CTRL2_REG            _at_    (SPI_BASE_ADDR + 0x02); //
+ 308          ECReg SPI0_STATUS_REG           _at_    (SPI_BASE_ADDR + 0x03); //
+ 309          ECReg SPI0_CTRL3_REG            _at_    (SPI_BASE_ADDR + 0x04); //
+ 310          
+ 311          ECReg SPI1_DATA_REG             _at_    (SPI_BASE_ADDR + 0x10); //
+ 312          ECReg SPI1_CTRL1_REG            _at_    (SPI_BASE_ADDR + 0x11); //
+ 313          ECReg SPI1_CTRL2_REG            _at_    (SPI_BASE_ADDR + 0x12); //
+ 314          ECReg SPI1_STATUS_REG           _at_    (SPI_BASE_ADDR + 0x13); //
+ 315          ECReg SPI1_CTRL3_REG            _at_    (SPI_BASE_ADDR + 0x14); //
+ 316          
+ 317          /******************************************************************************
+ 318          Define
+ 319          Description: Define UART1_BASE_ADDR
+ 320          Footnote:
+ 321          ******************************************************************************/
+ 322          #define UART1_BASE_ADDR         0x2700
+ 323          ECReg   UART1_RBR_REG           _at_    (UART1_BASE_ADDR + 0x00);       //
+ 324          ECReg   UART1_IER_REG           _at_    (UART1_BASE_ADDR + 0x01);       //
+ 325          ECReg   UART1_IIR_REG           _at_    (UART1_BASE_ADDR + 0x02);       //
+ 326          ECReg   UART1_LCR_REG           _at_    (UART1_BASE_ADDR + 0x03);       //
+ 327          ECReg   UART1_MCR_REG           _at_    (UART1_BASE_ADDR + 0x04);       //
+ 328          ECReg   UART1_LSR_REG           _at_    (UART1_BASE_ADDR + 0x05);       //
+ 329          ECReg   UART1_MSR_REG           _at_    (UART1_BASE_ADDR + 0x06);       //
+ 330          ECReg   UART1_SCR_REG           _at_    (UART1_BASE_ADDR + 0x07);       //
+ 331          
+ 332          /******************************************************************************
+ 333          Define
+ 334          Description: Define UART2_BASE_ADDR
+ 335          Footnote:
+ 336          ******************************************************************************/
+ 337          #define UART2_BASE_ADDR         0x2800
+ 338          ECReg   UART2_RBR_REG           _at_    (UART2_BASE_ADDR + 0x00);       //
+ 339          ECReg   UART2_IER_REG           _at_    (UART2_BASE_ADDR + 0x01);       //
+ 340          ECReg   UART2_IIR_REG           _at_    (UART2_BASE_ADDR + 0x02);       //
+ 341          ECReg   UART2_LCR_REG           _at_    (UART2_BASE_ADDR + 0x03);       //
+ 342          ECReg   UART2_MCR_REG           _at_    (UART2_BASE_ADDR + 0x04);       //
+ 343          ECReg   UART2_LSR_REG           _at_    (UART2_BASE_ADDR + 0x05);       //
+ 344          ECReg   UART2_MSR_REG           _at_    (UART2_BASE_ADDR + 0x06);       //
+ 345          ECReg   UART2_SCR_REG           _at_    (UART2_BASE_ADDR + 0x07);       //
+ 346          
  347          
- 348          
- 349          /******************************************************************************
- 350          Define
- 351          Description: Define global configuration registers
- 352          Footnote:
- 353          ******************************************************************************/
- 354          #define    GLOBAL_BASE_ADDR    0x2900
- 355          //ECReg      LDN_REG          _at_    (GLOBAL_BASE_ADDR + 0x07);    // Change LDN
- 356          ECReg      Index_07H      _at_    (GLOBAL_BASE_ADDR + 0x07);    // Change LDN
- 357          ECReg      Index_13H      _at_    (GLOBAL_BASE_ADDR + 0x13);    // SCI# Output Enable/Disable
- 358          ECReg      Index_23H      _at_    (GLOBAL_BASE_ADDR + 0x23);    //
- 359          ECReg      Index_25H      _at_    (GLOBAL_BASE_ADDR + 0x25);    //
- 360          ECReg      Index_26H      _at_    (GLOBAL_BASE_ADDR + 0x26);    //
- 361          ECReg      Index_27H      _at_    (GLOBAL_BASE_ADDR + 0x27);    //
- 362          ECReg      Index_28H      _at_    (GLOBAL_BASE_ADDR + 0x28);    //
- 363          ECReg      Index_29H      _at_    (GLOBAL_BASE_ADDR + 0x29);    //
- 364          ECReg      Index_2AH      _at_    (GLOBAL_BASE_ADDR + 0x2A);    //
-C51 COMPILER V7.50   REG_EC                                                                09/16/2020 21:10:04 PAGE 7   
+ 348          /******************************************************************************
+ 349          Define
+ 350          Description: Define global configuration registers
+ 351          Footnote:
+ 352          ******************************************************************************/
+ 353          #define    GLOBAL_BASE_ADDR    0x2900
+ 354          //ECReg      LDN_REG          _at_    (GLOBAL_BASE_ADDR + 0x07);    // Change LDN
+ 355          ECReg      Index_07H      _at_    (GLOBAL_BASE_ADDR + 0x07);    // Change LDN
+ 356          ECReg      Index_13H      _at_    (GLOBAL_BASE_ADDR + 0x13);    // SCI# Output Enable/Disable
+ 357          ECReg      Index_23H      _at_    (GLOBAL_BASE_ADDR + 0x23);    //
+ 358          ECReg      Index_25H      _at_    (GLOBAL_BASE_ADDR + 0x25);    //
+ 359          ECReg      Index_26H      _at_    (GLOBAL_BASE_ADDR + 0x26);    //
+ 360          ECReg      Index_27H      _at_    (GLOBAL_BASE_ADDR + 0x27);    //
+ 361          ECReg      Index_28H      _at_    (GLOBAL_BASE_ADDR + 0x28);    //
+ 362          ECReg      Index_29H      _at_    (GLOBAL_BASE_ADDR + 0x29);    //
+ 363          ECReg      Index_2AH      _at_    (GLOBAL_BASE_ADDR + 0x2A);    //
+ 364          ECReg      Index_2BH      _at_    (GLOBAL_BASE_ADDR + 0x2B);    //
+C51 COMPILER V7.50   REG_EC                                                                09/17/2020 21:06:54 PAGE 7   
 
- 365          ECReg      Index_2BH      _at_    (GLOBAL_BASE_ADDR + 0x2B);    //
- 366          ECReg      Index_2CH      _at_    (GLOBAL_BASE_ADDR + 0x2C);    //
- 367          ECReg      Index_2DH      _at_    (GLOBAL_BASE_ADDR + 0x2D);    //
+ 365          ECReg      Index_2CH      _at_    (GLOBAL_BASE_ADDR + 0x2C);    //
+ 366          ECReg      Index_2DH      _at_    (GLOBAL_BASE_ADDR + 0x2D);    //
+ 367          
  368          
- 369          
- 370          ECReg      Index_60H      _at_    (GLOBAL_BASE_ADDR + 0x60);    //
- 371          ECReg      Index_61H      _at_    (GLOBAL_BASE_ADDR + 0x61);    //
- 372          ECReg      Index_62H      _at_    (GLOBAL_BASE_ADDR + 0x62);    //
- 373          ECReg      Index_63H      _at_    (GLOBAL_BASE_ADDR + 0x63);    //
- 374          
- 375          ECReg      Index_70H      _at_    (GLOBAL_BASE_ADDR + 0x70);    //
- 376          ECReg      Index_76H      _at_    (GLOBAL_BASE_ADDR + 0x76);    //
- 377          
- 378          ECReg      Index_E9H      _at_    (GLOBAL_BASE_ADDR + 0xE9);    //
- 379          ECReg      Index_A0H      _at_    (GLOBAL_BASE_ADDR + 0xA0);
- 380          ECReg      Index_A1H      _at_    (GLOBAL_BASE_ADDR + 0xA1);
+ 369          ECReg      Index_60H      _at_    (GLOBAL_BASE_ADDR + 0x60);    //
+ 370          ECReg      Index_61H      _at_    (GLOBAL_BASE_ADDR + 0x61);    //
+ 371          ECReg      Index_62H      _at_    (GLOBAL_BASE_ADDR + 0x62);    //
+ 372          ECReg      Index_63H      _at_    (GLOBAL_BASE_ADDR + 0x63);    //
+ 373          
+ 374          ECReg      Index_70H      _at_    (GLOBAL_BASE_ADDR + 0x70);    //
+ 375          ECReg      Index_76H      _at_    (GLOBAL_BASE_ADDR + 0x76);    //
+ 376          
+ 377          ECReg      Index_E9H      _at_    (GLOBAL_BASE_ADDR + 0xE9);    //
+ 378          ECReg      Index_A0H      _at_    (GLOBAL_BASE_ADDR + 0xA0);
+ 379          ECReg      Index_A1H      _at_    (GLOBAL_BASE_ADDR + 0xA1);
+ 380          
  381          
- 382          
- 383          ECReg      Index_30H      _at_    (GLOBAL_BASE_ADDR + 0x30);    //
- 384          ECReg      Index_B0H      _at_    (GLOBAL_BASE_ADDR + 0xB0);    // (LDN=07)GPIO SET 1 PIN POLARITY REGISTE
+ 382          ECReg      Index_30H      _at_    (GLOBAL_BASE_ADDR + 0x30);    //
+ 383          ECReg      Index_B0H      _at_    (GLOBAL_BASE_ADDR + 0xB0);    // (LDN=07)GPIO SET 1 PIN POLARITY REGISTE
              -R
- 385          ECReg      Index_B1H      _at_    (GLOBAL_BASE_ADDR + 0xB1);    // (LDN=07)GPIO SET 2 PIN POLARITY REGISTE
+ 384          ECReg      Index_B1H      _at_    (GLOBAL_BASE_ADDR + 0xB1);    // (LDN=07)GPIO SET 2 PIN POLARITY REGISTE
              -R
- 386          ECReg      Index_B2H      _at_    (GLOBAL_BASE_ADDR + 0xB2);    // (LDN=07)GPIO SET 3 PIN POLARITY REGISTE
+ 385          ECReg      Index_B2H      _at_    (GLOBAL_BASE_ADDR + 0xB2);    // (LDN=07)GPIO SET 3 PIN POLARITY REGISTE
              -R
- 387          ECReg      Index_B3H      _at_    (GLOBAL_BASE_ADDR + 0xB3);    // (LDN=07)GPIO SET 4 PIN POLARITY REGISTE
+ 386          ECReg      Index_B3H      _at_    (GLOBAL_BASE_ADDR + 0xB3);    // (LDN=07)GPIO SET 4 PIN POLARITY REGISTE
              -R
- 388          ECReg      Index_B4H      _at_    (GLOBAL_BASE_ADDR + 0xB4);    // (LDN=07)GPIO SET 5 PIN POLARITY REGISTE
+ 387          ECReg      Index_B4H      _at_    (GLOBAL_BASE_ADDR + 0xB4);    // (LDN=07)GPIO SET 5 PIN POLARITY REGISTE
              -R
- 389          ECReg      Index_B8H      _at_    (GLOBAL_BASE_ADDR + 0xB8);    // (LDN=07)GPIO SET 1 PIN INTERNAL PULL-UP
+ 388          ECReg      Index_B8H      _at_    (GLOBAL_BASE_ADDR + 0xB8);    // (LDN=07)GPIO SET 1 PIN INTERNAL PULL-UP
              - ENABLE REGISTER
- 390          ECReg      Index_B9H      _at_    (GLOBAL_BASE_ADDR + 0xB9);    // (LDN=07)GPIO SET 2 PIN INTERNAL PULL-UP
+ 389          ECReg      Index_B9H      _at_    (GLOBAL_BASE_ADDR + 0xB9);    // (LDN=07)GPIO SET 2 PIN INTERNAL PULL-UP
              - ENABLE REGISTER
- 391          ECReg      Index_BAH      _at_    (GLOBAL_BASE_ADDR + 0xBA);    // (LDN=07)GPIO SET 3 PIN INTERNAL PULL-UP
+ 390          ECReg      Index_BAH      _at_    (GLOBAL_BASE_ADDR + 0xBA);    // (LDN=07)GPIO SET 3 PIN INTERNAL PULL-UP
              - ENABLE REGISTER
- 392          ECReg      Index_BBH      _at_    (GLOBAL_BASE_ADDR + 0xBB);    // (LDN=07)GPIO SET 4 PIN INTERNAL PULL-UP
+ 391          ECReg      Index_BBH      _at_    (GLOBAL_BASE_ADDR + 0xBB);    // (LDN=07)GPIO SET 4 PIN INTERNAL PULL-UP
              - ENABLE REGISTER
- 393          ECReg      Index_BCH      _at_    (GLOBAL_BASE_ADDR + 0xBC);    // (LDN=07)GPIO SET 5 PIN INTERNAL PULL-UP
+ 392          ECReg      Index_BCH      _at_    (GLOBAL_BASE_ADDR + 0xBC);    // (LDN=07)GPIO SET 5 PIN INTERNAL PULL-UP
              - ENABLE REGISTER
- 394          ECReg      Index_BDH      _at_    (GLOBAL_BASE_ADDR + 0xBD);    // (LDN=07)GPIO SET 6 PIN INTERNAL PULL-UP
+ 393          ECReg      Index_BDH      _at_    (GLOBAL_BASE_ADDR + 0xBD);    // (LDN=07)GPIO SET 6 PIN INTERNAL PULL-UP
              - ENABLE REGISTER
- 395          ECReg      Index_BFH      _at_    (GLOBAL_BASE_ADDR + 0xBF);    // (LDN=07)GPIO SET 8 PIN INTERNAL PULL-UP
+ 394          ECReg      Index_BFH      _at_    (GLOBAL_BASE_ADDR + 0xBF);    // (LDN=07)GPIO SET 8 PIN INTERNAL PULL-UP
              - ENABLE REGISTER
- 396          ECReg      Index_C0H      _at_    (GLOBAL_BASE_ADDR + 0xC0);    // (LDN=07)SIMPLE I/O SET 1 ENABLE REGISTE
+ 395          ECReg      Index_C0H      _at_    (GLOBAL_BASE_ADDR + 0xC0);    // (LDN=07)SIMPLE I/O SET 1 ENABLE REGISTE
              -R
- 397          ECReg      Index_C1H      _at_    (GLOBAL_BASE_ADDR + 0xC1);    // (LDN=07)SIMPLE I/O SET 2 ENABLE REGISTE
+ 396          ECReg      Index_C1H      _at_    (GLOBAL_BASE_ADDR + 0xC1);    // (LDN=07)SIMPLE I/O SET 2 ENABLE REGISTE
              -R
- 398          ECReg      Index_C2H      _at_    (GLOBAL_BASE_ADDR + 0xC2);    // (LDN=07)SIMPLE I/O SET 3 ENABLE REGISTE
+ 397          ECReg      Index_C2H      _at_    (GLOBAL_BASE_ADDR + 0xC2);    // (LDN=07)SIMPLE I/O SET 3 ENABLE REGISTE
              -R
- 399          ECReg      Index_C3H      _at_    (GLOBAL_BASE_ADDR + 0xC3);    // (LDN=07)SIMPLE I/O SET 4 ENABLE REGISTE
+ 398          ECReg      Index_C3H      _at_    (GLOBAL_BASE_ADDR + 0xC3);    // (LDN=07)SIMPLE I/O SET 4 ENABLE REGISTE
              -R
- 400          ECReg      Index_C4H      _at_    (GLOBAL_BASE_ADDR + 0xC4);    // (LDN=07)SIMPLE I/O SET 5 ENABLE REGISTE
+ 399          ECReg      Index_C4H      _at_    (GLOBAL_BASE_ADDR + 0xC4);    // (LDN=07)SIMPLE I/O SET 5 ENABLE REGISTE
              -R
- 401          ECReg      Index_C8H      _at_    (GLOBAL_BASE_ADDR + 0xC8);    // (LDN=07)SIMPLE I/O SET 1 OUTPUT ENABLE 
+ 400          ECReg      Index_C8H      _at_    (GLOBAL_BASE_ADDR + 0xC8);    // (LDN=07)SIMPLE I/O SET 1 OUTPUT ENABLE 
              -REGISTER
- 402          ECReg      Index_C9H      _at_    (GLOBAL_BASE_ADDR + 0xC9);    // (LDN=07)SIMPLE I/O SET 2 OUTPUT ENABLE 
+ 401          ECReg      Index_C9H      _at_    (GLOBAL_BASE_ADDR + 0xC9);    // (LDN=07)SIMPLE I/O SET 2 OUTPUT ENABLE 
              -REGISTER
- 403          ECReg      Index_CAH      _at_    (GLOBAL_BASE_ADDR + 0xCA);    // (LDN=07)SIMPLE I/O SET 3 OUTPUT ENABLE 
+ 402          ECReg      Index_CAH      _at_    (GLOBAL_BASE_ADDR + 0xCA);    // (LDN=07)SIMPLE I/O SET 3 OUTPUT ENABLE 
              -REGISTER
- 404          ECReg      Index_CBH      _at_    (GLOBAL_BASE_ADDR + 0xCB);    // (LDN=07)SIMPLE I/O SET 4 OUTPUT ENABLE 
+ 403          ECReg      Index_CBH      _at_    (GLOBAL_BASE_ADDR + 0xCB);    // (LDN=07)SIMPLE I/O SET 4 OUTPUT ENABLE 
              -REGISTER
- 405          ECReg      Index_CCH      _at_    (GLOBAL_BASE_ADDR + 0xCC);    // (LDN=07)SIMPLE I/O SET 5 OUTPUT ENABLE 
-C51 COMPILER V7.50   REG_EC                                                                09/16/2020 21:10:04 PAGE 8   
+ 404          ECReg      Index_CCH      _at_    (GLOBAL_BASE_ADDR + 0xCC);    // (LDN=07)SIMPLE I/O SET 5 OUTPUT ENABLE 
+             -REGISTER
+C51 COMPILER V7.50   REG_EC                                                                09/17/2020 21:06:54 PAGE 8   
 
+ 405          ECReg      Index_CDH      _at_    (GLOBAL_BASE_ADDR + 0xCD);    // (LDN=07)SIMPLE I/O SET 6 OUTPUT ENABLE 
              -REGISTER
- 406          ECReg      Index_CDH      _at_    (GLOBAL_BASE_ADDR + 0xCD);    // (LDN=07)SIMPLE I/O SET 6 OUTPUT ENABLE 
+ 406          ECReg      Index_CEH      _at_    (GLOBAL_BASE_ADDR + 0xCE);    // (LDN=07)SIMPLE I/O SET 7 OUTPUT ENABLE 
              -REGISTER
- 407          ECReg      Index_CEH      _at_    (GLOBAL_BASE_ADDR + 0xCE);    // (LDN=07)SIMPLE I/O SET 7 OUTPUT ENABLE 
+ 407          ECReg      Index_CFH      _at_    (GLOBAL_BASE_ADDR + 0xCF);    // (LDN=07)SIMPLE I/O SET 8 OUTPUT ENABLE 
              -REGISTER
- 408          ECReg      Index_CFH      _at_    (GLOBAL_BASE_ADDR + 0xCF);    // (LDN=07)SIMPLE I/O SET 8 OUTPUT ENABLE 
-             -REGISTER
- 409          ECReg      Index_F0H      _at_    (GLOBAL_BASE_ADDR + 0xF0);    //
- 410          ECReg      Index_F2H      _at_    (GLOBAL_BASE_ADDR + 0xF2);    //
- 411          ECReg      Index_F4H      _at_    (GLOBAL_BASE_ADDR + 0xF4);    //
- 412          ECReg      Index_F7H      _at_    (GLOBAL_BASE_ADDR + 0xF7);    //
- 413          
- 414          ECReg      DACPDREG       _at_    (GLOBAL_BASE_ADDR + 0x90);    // Respective DAC Channel Power Down
- 415          ECReg      DACDAT0_LSB    _at_    (GLOBAL_BASE_ADDR + 0x91);    // DAC Channel 0 Low Byte
- 416          ECReg      DACDAT0_MSB    _at_    (GLOBAL_BASE_ADDR + 0x92);    // DAC Channel 0 High Byte
- 417          ECReg      DACDAT1_LSB    _at_    (GLOBAL_BASE_ADDR + 0x93);    // DAC Channel 1 Low Byte
- 418          ECReg      DACDAT1_MSB    _at_    (GLOBAL_BASE_ADDR + 0x94);    // DAC Channel 1 High Byte
- 419          ECReg      DACDAT2_LSB    _at_    (GLOBAL_BASE_ADDR + 0x95);    // DAC Channel 2 Low Byte
- 420          ECReg      DACDAT2_MSB    _at_    (GLOBAL_BASE_ADDR + 0x96);    // DAC Channel 2 High Byte
- 421          ECReg      DACDAT3_LSB    _at_    (GLOBAL_BASE_ADDR + 0x97);    // DAC Channel 3 Low Byte
- 422          ECReg      DACDAT3_MSB    _at_    (GLOBAL_BASE_ADDR + 0x98);    // DAC Channel 3 High Byte
- 423          ECReg      DACDAT4_LSB    _at_    (GLOBAL_BASE_ADDR + 0x99);    // DAC Channel 4 Low Byte
- 424          ECReg      DACDAT4_MSB    _at_    (GLOBAL_BASE_ADDR + 0x9A);    // DAC Channel 4 High Byte
+ 408          ECReg      Index_F0H      _at_    (GLOBAL_BASE_ADDR + 0xF0);    //
+ 409          ECReg      Index_F2H      _at_    (GLOBAL_BASE_ADDR + 0xF2);    //
+ 410          ECReg      Index_F4H      _at_    (GLOBAL_BASE_ADDR + 0xF4);    //
+ 411          ECReg      Index_F7H      _at_    (GLOBAL_BASE_ADDR + 0xF7);    //
+ 412          
+ 413          ECReg      DACPDREG       _at_    (GLOBAL_BASE_ADDR + 0x90);    // Respective DAC Channel Power Down
+ 414          ECReg      DACDAT0_LSB    _at_    (GLOBAL_BASE_ADDR + 0x91);    // DAC Channel 0 Low Byte
+ 415          ECReg      DACDAT0_MSB    _at_    (GLOBAL_BASE_ADDR + 0x92);    // DAC Channel 0 High Byte
+ 416          ECReg      DACDAT1_LSB    _at_    (GLOBAL_BASE_ADDR + 0x93);    // DAC Channel 1 Low Byte
+ 417          ECReg      DACDAT1_MSB    _at_    (GLOBAL_BASE_ADDR + 0x94);    // DAC Channel 1 High Byte
+ 418          ECReg      DACDAT2_LSB    _at_    (GLOBAL_BASE_ADDR + 0x95);    // DAC Channel 2 Low Byte
+ 419          ECReg      DACDAT2_MSB    _at_    (GLOBAL_BASE_ADDR + 0x96);    // DAC Channel 2 High Byte
+ 420          ECReg      DACDAT3_LSB    _at_    (GLOBAL_BASE_ADDR + 0x97);    // DAC Channel 3 Low Byte
+ 421          ECReg      DACDAT3_MSB    _at_    (GLOBAL_BASE_ADDR + 0x98);    // DAC Channel 3 High Byte
+ 422          ECReg      DACDAT4_LSB    _at_    (GLOBAL_BASE_ADDR + 0x99);    // DAC Channel 4 Low Byte
+ 423          ECReg      DACDAT4_MSB    _at_    (GLOBAL_BASE_ADDR + 0x9A);    // DAC Channel 4 High Byte
+ 424          
  425          
  426          
  427          
- 428          
- 429          /******************************************************************************
- 430          Define
- 431          Description: Define Environment Controller output registers
- 432          Footnote:
- 433          ******************************************************************************/
- 434          //#define    GEE_BASE_ADDR    0x2A00
- 435          ECReg   CFG_REG                          _at_ (GEE_BASE_ADDR + 0x00);    //
- 436          ECReg   HWM_ISR1                                _at_ (GEE_BASE_ADDR + 0x01);    //
- 437          ECReg   IF_SELECT_REG                   _at_ (GEE_BASE_ADDR + 0x0A);
- 438          ECReg   PWM_STEP_FREQ_REG               _at_ (GEE_BASE_ADDR + 0x0B);
- 439          ECReg   PWM_F1TLRR                      _at_ (GEE_BASE_ADDR + 0x0D);
- 440          ECReg   PWM_F2TLRR                      _at_ (GEE_BASE_ADDR + 0x0E);
- 441          ECReg   PWM_F3TLRR                      _at_ (GEE_BASE_ADDR + 0x0F);
- 442          ECReg   FAN0_Limit_LR                   _at_ (GEE_BASE_ADDR + 0x10);
- 443          ECReg   FAN1_Limit_LR                   _at_ (GEE_BASE_ADDR + 0x11);
- 444          ECReg   FAN2_Limit_LR                   _at_ (GEE_BASE_ADDR + 0x12);
- 445          ECReg   FAN_MAIN_CTL                    _at_ (GEE_BASE_ADDR + 0x13);
- 446          ECReg   FAN_CTL                                 _at_ (GEE_BASE_ADDR + 0x14);
- 447          ECReg   FAN_CTL1                                _at_ (GEE_BASE_ADDR + 0x15);
- 448          ECReg   FAN_CTL2                                _at_ (GEE_BASE_ADDR + 0x16);
- 449          ECReg   FAN_CTL3                                _at_ (GEE_BASE_ADDR + 0x17);
- 450          ECReg   PWM_F1TMRR                      _at_ (GEE_BASE_ADDR + 0x18);
- 451          ECReg   PWM_F2TMRR                      _at_ (GEE_BASE_ADDR + 0x19);
- 452          ECReg   PWM_F3TMRR                      _at_ (GEE_BASE_ADDR + 0x1A);
- 453          
- 454          ECReg   FAN0_Limit_MR                           _at_ (GEE_BASE_ADDR + 0x1B);
- 455          ECReg   FAN1_Limit_MR                           _at_ (GEE_BASE_ADDR + 0x1C);
- 456          ECReg   FAN2_Limit_MR                           _at_ (GEE_BASE_ADDR + 0x1D);
- 457          
- 458          ECReg   ADC_channel_enable              _at_ (GEE_BASE_ADDR + 0x50);
+ 428          /******************************************************************************
+ 429          Define
+ 430          Description: Define Environment Controller output registers
+ 431          Footnote:
+ 432          ******************************************************************************/
+ 433          //#define    GEE_BASE_ADDR    0x2A00
+ 434          ECReg   CFG_REG                          _at_ (GEE_BASE_ADDR + 0x00);    //
+ 435          ECReg   HWM_ISR1                                _at_ (GEE_BASE_ADDR + 0x01);    //
+ 436          ECReg   IF_SELECT_REG                   _at_ (GEE_BASE_ADDR + 0x0A);
+ 437          ECReg   PWM_STEP_FREQ_REG               _at_ (GEE_BASE_ADDR + 0x0B);
+ 438          ECReg   PWM_F1TLRR                      _at_ (GEE_BASE_ADDR + 0x0D);
+ 439          ECReg   PWM_F2TLRR                      _at_ (GEE_BASE_ADDR + 0x0E);
+ 440          ECReg   PWM_F3TLRR                      _at_ (GEE_BASE_ADDR + 0x0F);
+ 441          ECReg   FAN0_Limit_LR                   _at_ (GEE_BASE_ADDR + 0x10);
+ 442          ECReg   FAN1_Limit_LR                   _at_ (GEE_BASE_ADDR + 0x11);
+ 443          ECReg   FAN2_Limit_LR                   _at_ (GEE_BASE_ADDR + 0x12);
+ 444          ECReg   FAN_MAIN_CTL                    _at_ (GEE_BASE_ADDR + 0x13);
+ 445          ECReg   FAN_CTL                                 _at_ (GEE_BASE_ADDR + 0x14);
+ 446          ECReg   FAN_CTL1                                _at_ (GEE_BASE_ADDR + 0x15);
+ 447          ECReg   FAN_CTL2                                _at_ (GEE_BASE_ADDR + 0x16);
+ 448          ECReg   FAN_CTL3                                _at_ (GEE_BASE_ADDR + 0x17);
+ 449          ECReg   PWM_F1TMRR                      _at_ (GEE_BASE_ADDR + 0x18);
+ 450          ECReg   PWM_F2TMRR                      _at_ (GEE_BASE_ADDR + 0x19);
+ 451          ECReg   PWM_F3TMRR                      _at_ (GEE_BASE_ADDR + 0x1A);
+ 452          
+ 453          ECReg   FAN0_Limit_MR                           _at_ (GEE_BASE_ADDR + 0x1B);
+ 454          ECReg   FAN1_Limit_MR                           _at_ (GEE_BASE_ADDR + 0x1C);
+ 455          ECReg   FAN2_Limit_MR                           _at_ (GEE_BASE_ADDR + 0x1D);
+ 456          
+ 457          ECReg   ADC_channel_enable              _at_ (GEE_BASE_ADDR + 0x50);
+ 458          
  459          
  460          ECReg   zz2                                             _at_ (GEE_BASE_ADDR + 0x5C);    //
  461          
  462          ECReg   PWM_FAN_CTL1                    _at_ (GEE_BASE_ADDR + 0x63);
  463          ECReg   PWM_FAN_CTL2                    _at_ (GEE_BASE_ADDR + 0x6B);
-C51 COMPILER V7.50   REG_EC                                                                09/16/2020 21:10:04 PAGE 9   
+C51 COMPILER V7.50   REG_EC                                                                09/17/2020 21:06:54 PAGE 9   
 
  464          ECReg   PWM_FAN_CTL3                    _at_ (GEE_BASE_ADDR + 0x73);
  465          
@@ -568,7 +568,7 @@ line level    source
  517          
  518          
  519          
-C51 COMPILER V7.50   REG_EC                                                                09/16/2020 21:10:04 PAGE 10  
+C51 COMPILER V7.50   REG_EC                                                                09/17/2020 21:06:54 PAGE 10  
 
 ASSEMBLY LISTING OF GENERATED OBJECT CODE
 

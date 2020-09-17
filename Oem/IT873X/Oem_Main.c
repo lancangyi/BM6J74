@@ -77,7 +77,9 @@ void Oem_Hook_1MS_Event(void)
 		#endif
 	#endif	
  	//J74_001++>>
- 	Index_07H = 0x07;
+ 	//J74_001A-->>
+    /*
+    Index_07H = 0x07;
 	SET_BIT(GP36_SEL_REG,6);		//Set GP36
 	SET_BIT(GP3X_FUNC_REG,6);		//Set GP36 simple IO function
 	SET_BIT(GP3X_IOMODE_REG,6); 	//Set GP36 output
@@ -117,8 +119,10 @@ void Oem_Hook_1MS_Event(void)
 		GP14_LO();
 	    GP37_LO();
 	    GP24_LO();
-	}*/
-
+	}
+	*/
+   //J74_001A--<<
+   //J74_001A++>>
 	if(!STATE_PM_SLP_S4())
     {
 	    GP36_HI();	
@@ -133,9 +137,42 @@ void Oem_Hook_1MS_Event(void)
 		GP37_LO();
 	    GP24_LO();
 	}
-	
 
-	
+	if(IS_PM_SLP_S4())
+    {
+		if(IS_PANSHW())
+		{
+		  GP36_HI();	
+		  GP14_HI();
+	      GP37_HI();
+		  GP24_HI();
+		  S3_FLAG = 1;
+		}
+		else if(S3_FLAG == 0)
+		{
+		  GP36_LO();	
+		  GP14_LO();
+		  GP37_LO();
+	      GP24_LO();
+		}
+    }
+	else if(IS_PM_SLP_S3())
+	{
+		GP36_LO();	
+		GP14_LO();
+		GP37_LO();
+	    GP24_LO();
+		S3_FLAG = 2;
+	}
+	else if(S3_FLAG == 1)
+	{
+		GP36_HI();	
+		GP14_HI();
+	    GP37_HI();
+		GP24_HI();
+		S3_FLAG = 0;
+	}
+   //J74_001A++<<
    //J74_001++<<
 
 }

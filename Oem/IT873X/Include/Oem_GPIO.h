@@ -687,7 +687,7 @@ extern void Initialize_GPIO_Pin_State(void) ;
 /****************************************************************************/
 
 #define	STATE_PANSHW()		IS_BIT_SET(GPIO_4x, 3)
-
+#define	IS_PANSHW()		    IS_BIT_CLEAR(GPIO_4x, 3)
 
 
 #define	EN_1P2_HI()				SET_BIT(GPIO_7x,1)
@@ -697,8 +697,10 @@ extern void Initialize_GPIO_Pin_State(void) ;
 #define	PWRBTN_LO()			CLR_BIT(GPIO_4x,4)
 
 #define	STATE_PM_SLP_S3()		IS_BIT_SET(GPIO_4x, 5)
-#define	STATE_PM_SLP_S4()		IS_BIT_SET(GPIO_5x, 3)
+#define	IS_PM_SLP_S3()		IS_BIT_CLEAR(GPIO_4x, 5)
 
+#define	STATE_PM_SLP_S4()		IS_BIT_SET(GPIO_5x, 3)
+#define	IS_PM_SLP_S4()		IS_BIT_CLEAR(GPIO_5x, 3)
 
 extern void PWR_LED_ON(void);
 extern void PWR_LED_OFF(void);

@@ -1,4 +1,4 @@
-C51 COMPILER V7.50   CORE_ITESTRING                                                        09/16/2020 21:10:04 PAGE 1   
+C51 COMPILER V7.50   CORE_ITESTRING                                                        09/17/2020 21:06:53 PAGE 1   
 
 
 C51 COMPILER V7.50, COMPILATION OF MODULE CORE_ITESTRING
@@ -25,7 +25,7 @@ line level    source
   15          };
   16          
   17          const unsigned char code VersionString[] =  "IT873X -ITE Tech. Inc.";
-C51 COMPILER V7.50   CORE_ITESTRING                                                        09/16/2020 21:10:04 PAGE 2   
+C51 COMPILER V7.50   CORE_ITESTRING                                                        09/17/2020 21:06:53 PAGE 2   
 
 ASSEMBLY LISTING OF GENERATED OBJECT CODE
 

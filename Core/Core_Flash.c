@@ -94,7 +94,8 @@ void FlashECCode(void)
 		}
 		else if(_FlashCMD==0xFE)
 		{	
-			//BRAM[63]=0x55;
+		    //BRAM[63]=0x55;
+			BRAM[60]=0x55;	//J74_001A++ 
 			WDTCON |= 0x01;     /* WDTRST = 1 Reset watch dog timer.*/
 			WDTCON |= 0x02;     /* WDTEN  = 1 Enable watch dog.     */
        		while(1);				// Wait for watch dog time-out
