@@ -1,4 +1,4 @@
-C51 COMPILER V7.50   OEM_SMBUS                                                             09/17/2020 21:06:55 PAGE 1   
+C51 COMPILER V7.50   OEM_SMBUS                                                             09/20/2020 10:56:20 PAGE 1   
 
 
 C51 COMPILER V7.50, COMPILATION OF MODULE OEM_SMBUS
@@ -62,7 +62,7 @@ line level    source
               {          
                       {   &SMBus1index,  &SMBus1counter,      &SMBus1ByteCunt, &SMBus1InUsing,  &SMBus1TableSize, &F_Service_SMBus1
              -,   service_smbus1  },        
-C51 COMPILER V7.50   OEM_SMBUS                                                             09/17/2020 21:06:55 PAGE 2   
+C51 COMPILER V7.50   OEM_SMBUS                                                             09/20/2020 10:56:20 PAGE 2   
 
                       {   &SMBus2index,  &SMBus2counter,      &SMBus2ByteCunt, &SMBus2InUsing,  &SMBus2TableSize, &F_Service_SMBus2
              -,   service_smbus2  },
@@ -126,7 +126,7 @@ line level    source
              -bug,        0x00      },
               //      { Cmd_ReadBlock,        0xAA,   0x00,   &SMB_TEST_D4,                   BIT4,   &SMB_TEST,              Hook_SMB_Test_Debug,    Hook_SMB_Test_Error
              -_Debug,        0x08    },
-C51 COMPILER V7.50   OEM_SMBUS                                                             09/17/2020 21:06:55 PAGE 3   
+C51 COMPILER V7.50   OEM_SMBUS                                                             09/20/2020 10:56:20 PAGE 3   
 
                       #endif
               
@@ -190,7 +190,7 @@ line level    source
               
               
               //----------------------------------------------------------------------------
-C51 COMPILER V7.50   OEM_SMBUS                                                             09/17/2020 21:06:55 PAGE 4   
+C51 COMPILER V7.50   OEM_SMBUS                                                             09/20/2020 10:56:20 PAGE 4   
 
               // To calculate smbus table size.
               //----------------------------------------------------------------------------
@@ -254,7 +254,7 @@ line level    source
                                       //**********************************************************************
                                       switch(channel)                 // Channel selection.
                                       {
-C51 COMPILER V7.50   OEM_SMBUS                                                             09/17/2020 21:06:55 PAGE 5   
+C51 COMPILER V7.50   OEM_SMBUS                                                             09/20/2020 10:56:20 PAGE 5   
 
                                               case SMbusCh1:              // Channel 1
                                                       CLEAR_MASK(*asSCS1[tempSMBusindex].ConditionVar, asSCS1[tempSMBusindex].Conditionflag);
@@ -318,7 +318,7 @@ line level    source
                               }
                               //**********************************************************************
                               //End (Check flag)
-C51 COMPILER V7.50   OEM_SMBUS                                                             09/17/2020 21:06:55 PAGE 6   
+C51 COMPILER V7.50   OEM_SMBUS                                                             09/20/2020 10:56:20 PAGE 6   
 
                               //**********************************************************************
               
@@ -382,7 +382,7 @@ line level    source
                                                       {
                                                               SMBus2BlockPtr = asSCS2[tempSMBusindex].smbdata;
                                                               *asSMBus[channel].SMBusBData = *SMBus2BlockPtr;
-C51 COMPILER V7.50   OEM_SMBUS                                                             09/17/2020 21:06:55 PAGE 7   
+C51 COMPILER V7.50   OEM_SMBUS                                                             09/20/2020 10:56:20 PAGE 7   
 
                                                       }
                                               }
@@ -446,7 +446,7 @@ line level    source
                                               {
                                                       PollSMBusReceiveByte(channel,smbus_address);
                                               }
-C51 COMPILER V7.50   OEM_SMBUS                                                             09/17/2020 21:06:55 PAGE 8   
+C51 COMPILER V7.50   OEM_SMBUS                                                             09/20/2020 10:56:20 PAGE 8   
 
                                       break;
                                                       
@@ -510,7 +510,7 @@ line level    source
                                       break;
                                                       
                                       case Cmd_WriteBlock:            // Debug mode, for SMBus utility
-C51 COMPILER V7.50   OEM_SMBUS                                                             09/17/2020 21:06:55 PAGE 9   
+C51 COMPILER V7.50   OEM_SMBUS                                                             09/20/2020 10:56:20 PAGE 9   
 
                                               if(smbus_address==0x01)
                                               {
@@ -574,7 +574,7 @@ line level    source
                                       *asSMBus[channel].SMBusISR = asSMBus[channel].IERFlag;
                                       *asSSC[channel].serviceflag = SMBus_ClearService;
                                       (asSSC[channel].servicefunc)();
-C51 COMPILER V7.50   OEM_SMBUS                                                             09/17/2020 21:06:55 PAGE 10  
+C51 COMPILER V7.50   OEM_SMBUS                                                             09/20/2020 10:56:20 PAGE 10  
 
                               }
                               else
@@ -638,7 +638,7 @@ line level    source
               
               //----------------------------------------------------------------------------
               //01
-C51 COMPILER V7.50   OEM_SMBUS                                                             09/17/2020 21:06:55 PAGE 11  
+C51 COMPILER V7.50   OEM_SMBUS                                                             09/20/2020 10:56:20 PAGE 11  
 
               //----------------------------------------------------------------------------
               void PollSMBusReceiveByte(BYTE Channel,BYTE Addr)
@@ -702,7 +702,7 @@ line level    source
                       *asSSC[Channel].inusing=0x00;       // SMBus interface can't be used.                           
                   }
                   else
-C51 COMPILER V7.50   OEM_SMBUS                                                             09/17/2020 21:06:55 PAGE 12  
+C51 COMPILER V7.50   OEM_SMBUS                                                             09/20/2020 10:56:20 PAGE 12  
 
                   {   
                           *asSMBus[Channel].SMBusIER|=asSMBus[Channel].IERFlag; // Enable interrupt   
@@ -766,7 +766,7 @@ line level    source
                               *asSMBus[Channel].SMBusADR=Addr|0x01;   // set address with reading bit 
                               *asSMBus[Channel].SMBusCMD=Comd;                // Set command
                               *asSMBus[Channel].SMBusCTL=(SMbusRWBB|HOCTL_SRT|HOCTL_INTREN);  // Start transaction
-C51 COMPILER V7.50   OEM_SMBUS                                                             09/17/2020 21:06:55 PAGE 13  
+C51 COMPILER V7.50   OEM_SMBUS                                                             09/20/2020 10:56:20 PAGE 13  
 
                       }
               }       
@@ -830,7 +830,7 @@ line level    source
                                                               SMB_BCNT = SMBus1ByteCunt;
                                                               DB_SMBusBCunt = SMBus1ByteCunt;
                                                                       
-C51 COMPILER V7.50   OEM_SMBUS                                                             09/17/2020 21:06:55 PAGE 14  
+C51 COMPILER V7.50   OEM_SMBUS                                                             09/20/2020 10:56:20 PAGE 14  
 
                                                               *SMBus1BlockPtr = HOBDB_A;  // read data1
                                                               SMBus1ByteCunt--;
@@ -894,7 +894,7 @@ line level    source
                                       //******************************************************************************************
                                       else
                                       {
-C51 COMPILER V7.50   OEM_SMBUS                                                             09/17/2020 21:06:55 PAGE 15  
+C51 COMPILER V7.50   OEM_SMBUS                                                             09/20/2020 10:56:20 PAGE 15  
 
                                               if(IS_MASK_SET(HOSTA_A, HOSTA_FINTR))       // Only Finish Interrupt bit is set.
                                               {
@@ -958,7 +958,7 @@ line level    source
                                       // Cmd_ReadBlock
                                       //*********************************************************************
                                       if(asSCS2[SMBus2index].protocol==Cmd_ReadBlock)
-C51 COMPILER V7.50   OEM_SMBUS                                                             09/17/2020 21:06:55 PAGE 16  
+C51 COMPILER V7.50   OEM_SMBUS                                                             09/20/2020 10:56:20 PAGE 16  
 
                                       {
                                               if(IS_MASK_SET(HOSTA_B, (HOSTA_FINTR+HOSTA_BDS)))   // Only Byte Done Status or Finish Interrupt bit i
@@ -1022,7 +1022,7 @@ line level    source
                                                       }
                                                       else  
                                                       {
-C51 COMPILER V7.50   OEM_SMBUS                                                             09/17/2020 21:06:55 PAGE 17  
+C51 COMPILER V7.50   OEM_SMBUS                                                             09/20/2020 10:56:20 PAGE 17  
 
                                                               SMBus2BlockPtr++;
                                                               HOBDB_B=*SMBus2BlockPtr;
@@ -1086,7 +1086,7 @@ line level    source
               //----------------------------------------------------------------------------
               void service_smbus3(void)
               {
-C51 COMPILER V7.50   OEM_SMBUS                                                             09/17/2020 21:06:55 PAGE 18  
+C51 COMPILER V7.50   OEM_SMBUS                                                             09/20/2020 10:56:20 PAGE 18  
 
                       if(SMBus3InUsing)
                       {
@@ -1150,7 +1150,7 @@ line level    source
                                               }
                                               else                                        // No any bit is set of host status register.
                                               {
-C51 COMPILER V7.50   OEM_SMBUS                                                             09/17/2020 21:06:55 PAGE 19  
+C51 COMPILER V7.50   OEM_SMBUS                                                             09/20/2020 10:56:20 PAGE 19  
 
                                                       SET_MASK(SMBusXStatus, SMBus3_Fail);    // SMBus fail
                                               }
@@ -1214,7 +1214,7 @@ line level    source
              -ervice flag.
               
                               if(IS_MASK_SET(SMBusXStatus, SMBus3_Fail))  // if protocol fail
-C51 COMPILER V7.50   OEM_SMBUS                                                             09/17/2020 21:06:55 PAGE 20  
+C51 COMPILER V7.50   OEM_SMBUS                                                             09/20/2020 10:56:20 PAGE 20  
 
                               {
                                       (asSCS3[SMBus3index].errorfunc)();      // OEM error hook function
@@ -1245,7 +1245,7 @@ line level    source
 1159   1              // Always return SMBus_ClearService, if SMBusCenter is no use function.
 1160   1              return(SMBus_ClearService);
 1161   1      }
-C51 COMPILER V7.50   OEM_SMBUS                                                             09/17/2020 21:06:55 PAGE 21  
+C51 COMPILER V7.50   OEM_SMBUS                                                             09/20/2020 10:56:20 PAGE 21  
 
 ASSEMBLY LISTING OF GENERATED OBJECT CODE
 
@@ -1309,7 +1309,7 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
              ; FUNCTION Hook_SMB_Test_Error_Debug (END)
 
              ; FUNCTION CheckSMBusNeedService (BEGIN)
-C51 COMPILER V7.50   OEM_SMBUS                                                             09/17/2020 21:06:55 PAGE 22  
+C51 COMPILER V7.50   OEM_SMBUS                                                             09/20/2020 10:56:20 PAGE 22  
 
                                            ; SOURCE LINE # 1152
                                            ; SOURCE LINE # 1153

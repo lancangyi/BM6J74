@@ -1,4 +1,4 @@
-C51 COMPILER V7.50   CORE_MAIN                                                             09/17/2020 21:06:51 PAGE 1   
+C51 COMPILER V7.50   CORE_MAIN                                                             09/20/2020 10:56:17 PAGE 1   
 
 
 C51 COMPILER V7.50, COMPILATION OF MODULE CORE_MAIN
@@ -62,7 +62,7 @@ line level    source
   52   2                      MPREFC = 0x01;
   53   2                      _nop_();
   54   2                      MPREFC = 0x01;
-C51 COMPILER V7.50   CORE_MAIN                                                             09/17/2020 21:06:51 PAGE 2   
+C51 COMPILER V7.50   CORE_MAIN                                                             09/20/2020 10:56:17 PAGE 2   
 
   55   2                      _nop_(); 
   56   2                      MPREFC = 0x01;
@@ -126,7 +126,7 @@ line level    source
                       EN_EC_CIR();
               
                               #if CIRRX_mapping_to_Pin84
-C51 COMPILER V7.50   CORE_MAIN                                                             09/17/2020 21:06:51 PAGE 3   
+C51 COMPILER V7.50   CORE_MAIN                                                             09/20/2020 10:56:17 PAGE 3   
 
                               //-----------------------------------------------
                               //SET CIRRX mapping to Pin84(GP10)
@@ -190,7 +190,7 @@ line level    source
                       {
                               BYTE Original_PLLFreq_Setting;
                               //========Change FSPI CLK To 48MHz Start================
-C51 COMPILER V7.50   CORE_MAIN                                                             09/17/2020 21:06:51 PAGE 4   
+C51 COMPILER V7.50   CORE_MAIN                                                             09/20/2020 10:56:17 PAGE 4   
 
                               Original_PLLFreq_Setting = EC_1E06;
                               //RamDebug(Original_PLLFreq_Setting);
@@ -254,7 +254,7 @@ line level    source
                               #else
  239   2                      if (  (Service==0x00) && (Service1==0x00) )
  240   2                      #endif
-C51 COMPILER V7.50   CORE_MAIN                                                             09/17/2020 21:06:51 PAGE 5   
+C51 COMPILER V7.50   CORE_MAIN                                                             09/20/2020 10:56:17 PAGE 5   
 
  241   2                      {
  242   3                              //if( (!DeepSleepCountDown) && (SysPowState == _SYSTEM_S5) )    //
@@ -318,7 +318,7 @@ line level    source
  300                          service_006,        // reserve
  301                          service_007,    // For SMBUS scan center
  302          
-C51 COMPILER V7.50   CORE_MAIN                                                             09/17/2020 21:06:51 PAGE 6   
+C51 COMPILER V7.50   CORE_MAIN                                                             09/20/2020 10:56:17 PAGE 6   
 
  303                          service_008,    // UART2
  304                          service_009,            // UART1
@@ -382,7 +382,7 @@ line level    source
  362   1              Service_PCI2();
  363   1              
  364   1      }
-C51 COMPILER V7.50   CORE_MAIN                                                             09/17/2020 21:06:51 PAGE 7   
+C51 COMPILER V7.50   CORE_MAIN                                                             09/20/2020 10:56:17 PAGE 7   
 
  365          
  366          void service_001(void)
@@ -446,7 +446,7 @@ line level    source
  424   2                      Timer250msCnt++;
  425   2                      if( Timer250msCnt >= 25 )
  426   2                      {
-C51 COMPILER V7.50   CORE_MAIN                                                             09/17/2020 21:06:51 PAGE 8   
+C51 COMPILER V7.50   CORE_MAIN                                                             09/20/2020 10:56:17 PAGE 8   
 
  427   3                              Timer250msCnt = 0;
  428   3                              Oem_Hook_250MS_Event();
@@ -510,7 +510,7 @@ line level    source
  486   5                                                              Timer100msCnt = 0;
  487   5                                                              Timer1SecCnt ++;
  488   5                                                              if ( Timer1SecCnt == 10 )
-C51 COMPILER V7.50   CORE_MAIN                                                             09/17/2020 21:06:51 PAGE 9   
+C51 COMPILER V7.50   CORE_MAIN                                                             09/20/2020 10:56:17 PAGE 9   
 
  489   5                                                              {
  490   6                                                                      Oem_Hook_1Min_Event();
@@ -574,7 +574,7 @@ line level    source
               
                               //To Modify RxIndex count as you want
                               for (UART_RxIndex=0 ; UART_RxIndex<4 ; UART_RxIndex++) {
-C51 COMPILER V7.50   CORE_MAIN                                                             09/17/2020 21:06:51 PAGE 10  
+C51 COMPILER V7.50   CORE_MAIN                                                             09/20/2020 10:56:17 PAGE 10  
 
                                       UART_RxBuff[UART_RxIndex] = UART2_RBR;                  // Store Rx to buffer array
                                       }
@@ -638,7 +638,7 @@ line level    source
  610          {
  611   1              // Runtime Service 00B
  612   1      }
-C51 COMPILER V7.50   CORE_MAIN                                                             09/17/2020 21:06:51 PAGE 11  
+C51 COMPILER V7.50   CORE_MAIN                                                             09/20/2020 10:56:17 PAGE 11  
 
  613          
  614          
@@ -702,11 +702,11 @@ line level    source
               }
               
               #endif
-C51 COMPILER V7.50   CORE_MAIN                                                             09/17/2020 21:06:51 PAGE 12  
+C51 COMPILER V7.50   CORE_MAIN                                                             09/20/2020 10:56:17 PAGE 12  
 
  675          
  676          
-C51 COMPILER V7.50   CORE_MAIN                                                             09/17/2020 21:06:51 PAGE 13  
+C51 COMPILER V7.50   CORE_MAIN                                                             09/20/2020 10:56:17 PAGE 13  
 
 ASSEMBLY LISTING OF GENERATED OBJECT CODE
 
@@ -770,7 +770,7 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
                                            ; SOURCE LINE # 58
 0020 75F701            MOV     MPREFC,#01H
                                            ; SOURCE LINE # 59
-C51 COMPILER V7.50   CORE_MAIN                                                             09/17/2020 21:06:51 PAGE 14  
+C51 COMPILER V7.50   CORE_MAIN                                                             09/20/2020 10:56:17 PAGE 14  
 
 0023 00                NOP     
                                            ; SOURCE LINE # 60
@@ -826,7 +826,7 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
 005A 120000      E     LCALL   InitSMBus
                                            ; SOURCE LINE # 140
 005D 900000      E     MOV     DPTR,#Code_Version
-0060 7406              MOV     A,#06H
+0060 7407              MOV     A,#07H
 0062 F0                MOVX    @DPTR,A
                                            ; SOURCE LINE # 141
 0063 E4                CLR     A
@@ -834,7 +834,7 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
 0067 F0                MOVX    @DPTR,A
                                            ; SOURCE LINE # 146
 0068 900000      E     MOV     DPTR,#SysPowState
-C51 COMPILER V7.50   CORE_MAIN                                                             09/17/2020 21:06:51 PAGE 15  
+C51 COMPILER V7.50   CORE_MAIN                                                             09/20/2020 10:56:17 PAGE 15  
 
 006B F0                MOVX    @DPTR,A
                                            ; SOURCE LINE # 149
@@ -898,7 +898,7 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
                                            ; SOURCE LINE # 266
 0093 00                NOP     
                                            ; SOURCE LINE # 267
-C51 COMPILER V7.50   CORE_MAIN                                                             09/17/2020 21:06:51 PAGE 16  
+C51 COMPILER V7.50   CORE_MAIN                                                             09/20/2020 10:56:17 PAGE 16  
 
 0094 00                NOP     
                                            ; SOURCE LINE # 268
@@ -962,7 +962,7 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
 002F         ?C0065:
 002F C3                CLR     C
 0030 33                RLC     A
-C51 COMPILER V7.50   CORE_MAIN                                                             09/17/2020 21:06:51 PAGE 17  
+C51 COMPILER V7.50   CORE_MAIN                                                             09/20/2020 10:56:17 PAGE 17  
 
 0031         ?C0066:
 0031 D8FC              DJNZ    R0,?C0065
@@ -1026,7 +1026,7 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
                                            ; SOURCE LINE # 341
 007E         ?C0069:
 007E AF00        E     MOV     R7,Service1
-C51 COMPILER V7.50   CORE_MAIN                                                             09/17/2020 21:06:51 PAGE 18  
+C51 COMPILER V7.50   CORE_MAIN                                                             09/20/2020 10:56:17 PAGE 18  
 
 0080 EF                MOV     A,R7
 0081 AD00        E     MOV     R5,Service
@@ -1090,7 +1090,7 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
                                            ; SOURCE LINE # 401
                                            ; SOURCE LINE # 402
                                            ; SOURCE LINE # 407
-C51 COMPILER V7.50   CORE_MAIN                                                             09/17/2020 21:06:51 PAGE 19  
+C51 COMPILER V7.50   CORE_MAIN                                                             09/20/2020 10:56:17 PAGE 19  
 
 0000 22                RET     
              ; FUNCTION service_004 (END)
@@ -1154,7 +1154,7 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
                                            ; SOURCE LINE # 433
 0038 900000      E     MOV     DPTR,#Timer5msCnt
 003B E0                MOVX    A,@DPTR
-C51 COMPILER V7.50   CORE_MAIN                                                             09/17/2020 21:06:51 PAGE 20  
+C51 COMPILER V7.50   CORE_MAIN                                                             09/20/2020 10:56:17 PAGE 20  
 
 003C 24FC              ADD     A,#0FCH
 003E 6011              JZ      ?C0033
@@ -1218,7 +1218,7 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
 007A 900000      E     MOV     DPTR,#Timer100msCnt
 007D E0                MOVX    A,@DPTR
 007E 04                INC     A
-C51 COMPILER V7.50   CORE_MAIN                                                             09/17/2020 21:06:51 PAGE 21  
+C51 COMPILER V7.50   CORE_MAIN                                                             09/20/2020 10:56:17 PAGE 21  
 
 007F F0                MOVX    @DPTR,A
                                            ; SOURCE LINE # 459
@@ -1282,7 +1282,7 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
                                            ; SOURCE LINE # 478
                                            ; SOURCE LINE # 479
 00BC         ?C0049:
-C51 COMPILER V7.50   CORE_MAIN                                                             09/17/2020 21:06:51 PAGE 22  
+C51 COMPILER V7.50   CORE_MAIN                                                             09/20/2020 10:56:17 PAGE 22  
 
 00BC         ?C0071:
 00BC 020000      E     LJMP    Oem_Hook_500MS_EventB
@@ -1346,7 +1346,7 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
                                            ; SOURCE LINE # 525
                                            ; SOURCE LINE # 562
 0000 22                RET     
-C51 COMPILER V7.50   CORE_MAIN                                                             09/17/2020 21:06:51 PAGE 23  
+C51 COMPILER V7.50   CORE_MAIN                                                             09/20/2020 10:56:17 PAGE 23  
 
              ; FUNCTION service_008 (END)
 
@@ -1411,7 +1411,7 @@ MODULE INFORMATION:   STATIC OVERLAYABLE
    BIT SIZE         =   ----    ----
 END OF MODULE INFORMATION.
 
-C51 COMPILER V7.50   CORE_MAIN                                                             09/17/2020 21:06:51 PAGE 24  
+C51 COMPILER V7.50   CORE_MAIN                                                             09/20/2020 10:56:17 PAGE 24  
 
 
 C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

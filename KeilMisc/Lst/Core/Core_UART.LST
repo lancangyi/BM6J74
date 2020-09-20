@@ -1,4 +1,4 @@
-C51 COMPILER V7.50   CORE_UART                                                             09/17/2020 21:06:53 PAGE 1   
+C51 COMPILER V7.50   CORE_UART                                                             09/20/2020 10:56:19 PAGE 1   
 
 
 C51 COMPILER V7.50, COMPILATION OF MODULE CORE_UART
@@ -62,7 +62,7 @@ line level    source
   52          //==============================================================================
   53          // Name:                UartSendData
   54          // Descript:    Send data from THR register
-C51 COMPILER V7.50   CORE_UART                                                             09/17/2020 21:06:53 PAGE 2   
+C51 COMPILER V7.50   CORE_UART                                                             09/20/2020 10:56:19 PAGE 2   
 
   55          //==============================================================================
   56          void UartSendData_UART1(BYTE bTxData)
@@ -117,7 +117,7 @@ line level    source
  105          {
  106   1              _nop_();
  107   1      }
-C51 COMPILER V7.50   CORE_UART                                                             09/17/2020 21:06:53 PAGE 3   
+C51 COMPILER V7.50   CORE_UART                                                             09/20/2020 10:56:19 PAGE 3   
 
 ASSEMBLY LISTING OF GENERATED OBJECT CODE
 
@@ -181,7 +181,7 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
 0004 F0                MOVX    @DPTR,A
                                            ; SOURCE LINE # 71
                                            ; SOURCE LINE # 73
-C51 COMPILER V7.50   CORE_UART                                                             09/17/2020 21:06:53 PAGE 4   
+C51 COMPILER V7.50   CORE_UART                                                             09/20/2020 10:56:19 PAGE 4   
 
 0005 E4                CLR     A
 0006 A3                INC     DPTR
@@ -245,7 +245,7 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
 0012 E4                CLR     A
 0013 F0                MOVX    @DPTR,A
                                            ; SOURCE LINE # 86
-C51 COMPILER V7.50   CORE_UART                                                             09/17/2020 21:06:53 PAGE 5   
+C51 COMPILER V7.50   CORE_UART                                                             09/20/2020 10:56:19 PAGE 5   
 
 0014 900000      E     MOV     DPTR,#UART_RxIndex
 0017 E0                MOVX    A,@DPTR
@@ -309,7 +309,7 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
 
 
 
-C51 COMPILER V7.50   CORE_UART                                                             09/17/2020 21:06:53 PAGE 6   
+C51 COMPILER V7.50   CORE_UART                                                             09/20/2020 10:56:19 PAGE 6   
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
    CODE SIZE        =    188    ----

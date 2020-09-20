@@ -1,4 +1,4 @@
-C51 COMPILER V7.50   CORE_PMC2                                                             09/17/2020 21:06:53 PAGE 1   
+C51 COMPILER V7.50   CORE_PMC2                                                             09/20/2020 10:56:18 PAGE 1   
 
 
 C51 COMPILER V7.50, COMPILATION OF MODULE CORE_PMC2
@@ -62,7 +62,7 @@ line level    source
   52          
   53          //-----------------------------------------------------------------------------
   54          // ACPI Spec.13.3.1 Read Embedded Controller, RD_EC (0x80)
-C51 COMPILER V7.50   CORE_PMC2                                                             09/17/2020 21:06:53 PAGE 2   
+C51 COMPILER V7.50   CORE_PMC2                                                             09/20/2020 10:56:18 PAGE 2   
 
   55          // Second Bytes: Port 62H -> Address Index (EC Space)
   56          // Byte #2 (Address byte to read) No Interrupt
@@ -126,7 +126,7 @@ line level    source
  114          // Byte #1 (Command byte Header) No Interrupt
  115          // The Embedded Controller sets the Burst bit of the Embedded Controller
  116          // Status Register, puts the Burst Acknowledge byte (0x90) into the SCI output
-C51 COMPILER V7.50   CORE_PMC2                                                             09/17/2020 21:06:53 PAGE 3   
+C51 COMPILER V7.50   CORE_PMC2                                                             09/20/2020 10:56:18 PAGE 3   
 
  117          // buffer, sets the OBF bit, and generates an SCI to signal OSPM that it is
  118          // in Burst mode.
@@ -190,7 +190,7 @@ line level    source
  176   1          TH1 = (T_ACPI_BurstTime)>>8;    // Set timer1 counter 2ms
  177   1          TL1 = (T_ACPI_BurstTime);       // Set timer1 counter 2ms
  178   1          TR1 = 1;                        // Enable timer1
-C51 COMPILER V7.50   CORE_PMC2                                                             09/17/2020 21:06:53 PAGE 4   
+C51 COMPILER V7.50   CORE_PMC2                                                             09/20/2020 10:56:18 PAGE 4   
 
  179   1          TF1 = 0;                        // Clear overflow flag
  180   1      }
@@ -254,7 +254,7 @@ line level    source
  238              EC68_DATA_STEP5,    // PM1Step=5 Process ACPI EC data
  239              EC68_DATA_STEP6,    // PM1Step=6 Process ACPI EC data
  240              EC68_DATA_STEP7     // PM1Step=7 Process ACPI EC data
-C51 COMPILER V7.50   CORE_PMC2                                                             09/17/2020 21:06:53 PAGE 5   
+C51 COMPILER V7.50   CORE_PMC2                                                             09/20/2020 10:56:18 PAGE 5   
 
  241          };
  242          //-----------------------------------------------------------------------------
@@ -317,7 +317,7 @@ line level    source
  299          /*-----------------------------------------------------------------------------
  300           * End
  301           *---------------------------------------------------------------------------*/
-C51 COMPILER V7.50   CORE_PMC2                                                             09/17/2020 21:06:53 PAGE 6   
+C51 COMPILER V7.50   CORE_PMC2                                                             09/20/2020 10:56:18 PAGE 6   
 
 ASSEMBLY LISTING OF GENERATED OBJECT CODE
 
@@ -381,7 +381,7 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
 0010 22                RET     
              ; FUNCTION EC68_DATA_STEP1 (END)
 
-C51 COMPILER V7.50   CORE_PMC2                                                             09/17/2020 21:06:53 PAGE 7   
+C51 COMPILER V7.50   CORE_PMC2                                                             09/20/2020 10:56:18 PAGE 7   
 
              ; FUNCTION EC686C_CMD_81 (BEGIN)
                                            ; SOURCE LINE # 76
@@ -445,7 +445,7 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
 0000 900000      E     MOV     DPTR,#PM2STS
 0003 E0                MOVX    A,@DPTR
 0004 54EF              ANL     A,#0EFH
-C51 COMPILER V7.50   CORE_PMC2                                                             09/17/2020 21:06:53 PAGE 8   
+C51 COMPILER V7.50   CORE_PMC2                                                             09/20/2020 10:56:18 PAGE 8   
 
 0006 F0                MOVX    @DPTR,A
                                            ; SOURCE LINE # 144
@@ -509,7 +509,7 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
                                            ; SOURCE LINE # 174
                                            ; SOURCE LINE # 175
 0000 C2AB              CLR     ET1
-C51 COMPILER V7.50   CORE_PMC2                                                             09/17/2020 21:06:53 PAGE 9   
+C51 COMPILER V7.50   CORE_PMC2                                                             09/20/2020 10:56:18 PAGE 9   
 
                                            ; SOURCE LINE # 176
 0002 758DFA            MOV     TH1,#0FAH
@@ -573,7 +573,7 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
 0023 E0                MOVX    A,@DPTR
 0024 F500        E     MOV     PM2Data,A
                                            ; SOURCE LINE # 269
-C51 COMPILER V7.50   CORE_PMC2                                                             09/17/2020 21:06:53 PAGE 10  
+C51 COMPILER V7.50   CORE_PMC2                                                             09/20/2020 10:56:18 PAGE 10  
 
 0026 E500        E     MOV     A,PM2Step
 0028 6015              JZ      ?C0024

@@ -1,4 +1,4 @@
-C51 COMPILER V7.50   CORE_PECI                                                             09/17/2020 21:06:53 PAGE 1   
+C51 COMPILER V7.50   CORE_PECI                                                             09/20/2020 10:56:18 PAGE 1   
 
 
 C51 COMPILER V7.50, COMPILATION OF MODULE CORE_PECI
@@ -62,7 +62,7 @@ line level    source
   51          //              (8) ReadLen read length 2 or 3 or 5
   52          //              (9) WriteLen write length 5
   53          //-----------------------------------------------------------------------
-C51 COMPILER V7.50   CORE_PECI                                                             09/17/2020 21:06:53 PAGE 2   
+C51 COMPILER V7.50   CORE_PECI                                                             09/20/2020 10:56:18 PAGE 2   
 
   54          //PECI_RdPkgConfig(0x30, &EC_PECI_RdPkgConfig_Buf, 0, 0, PECI_Index_TTR, 0, 0, 5, 5);
   55          // Tjmax : 4th byte, Tcontrol_offset : 3rd byte
@@ -126,7 +126,7 @@ line level    source
  112   1              // Start
  113   1              PECI_HOST_CTRL = 0x01 ;
  114   1      
-C51 COMPILER V7.50   CORE_PECI                                                             09/17/2020 21:06:53 PAGE 3   
+C51 COMPILER V7.50   CORE_PECI                                                             09/20/2020 10:56:18 PAGE 3   
 
  115   1              if(IS_BIT_SET(PECI_HOST_STS, 6)) return 0x0;
  116   1      
@@ -190,7 +190,7 @@ line level    source
  173   1              BYTE iTemp;
  174   1              BYTE done;
  175   1      
-C51 COMPILER V7.50   CORE_PECI                                                             09/17/2020 21:06:53 PAGE 4   
+C51 COMPILER V7.50   CORE_PECI                                                             09/20/2020 10:56:18 PAGE 4   
 
  176   1              if(AWFCS_EN == 0x01)
  177   1              {
@@ -254,7 +254,7 @@ line level    source
  235   1              if(TF1 == 1)    //Timeout
  236   1                      return 0;       //Fail
  237   1      
-C51 COMPILER V7.50   CORE_PECI                                                             09/17/2020 21:06:53 PAGE 5   
+C51 COMPILER V7.50   CORE_PECI                                                             09/20/2020 10:56:18 PAGE 5   
 
  238   1              if(  (PECI_HOST_STS&0x6C)!=0 ) return 0x00;
  239   1      
@@ -318,7 +318,7 @@ line level    source
  297   1              if(TF1 == 1)    //Timeout
  298   1                      return 0;       //Fail
  299   1              // Start
-C51 COMPILER V7.50   CORE_PECI                                                             09/17/2020 21:06:53 PAGE 6   
+C51 COMPILER V7.50   CORE_PECI                                                             09/20/2020 10:56:18 PAGE 6   
 
  300   1              PECI_HOST_CTRL = 0x01 ;
  301   1      
@@ -382,7 +382,7 @@ line level    source
  359   2                      //PECI Fail
  360   2              }
  361   1      
-C51 COMPILER V7.50   CORE_PECI                                                             09/17/2020 21:06:53 PAGE 7   
+C51 COMPILER V7.50   CORE_PECI                                                             09/20/2020 10:56:18 PAGE 7   
 
  362   1              ///////////////////////////////////////////////////////////////////
  363   1              // END : GETTING CPU TEMPERATURE FROM THE PECI FIRMWARE PROCEDURE
@@ -427,7 +427,7 @@ line level    source
  399   2              ;
  400   2          }
  401   1      }
-C51 COMPILER V7.50   CORE_PECI                                                             09/17/2020 21:06:53 PAGE 8   
+C51 COMPILER V7.50   CORE_PECI                                                             09/20/2020 10:56:18 PAGE 8   
 
 ASSEMBLY LISTING OF GENERATED OBJECT CODE
 
@@ -491,7 +491,7 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
 0040 3E                ADDC    A,R6
 0041 900000      R     MOV     DPTR,#cpu_temperature
 0044 F0                MOVX    @DPTR,A
-C51 COMPILER V7.50   CORE_PECI                                                             09/17/2020 21:06:53 PAGE 9   
+C51 COMPILER V7.50   CORE_PECI                                                             09/20/2020 10:56:18 PAGE 9   
 
 0045 A3                INC     DPTR
 0046 EF                MOV     A,R7
@@ -555,7 +555,7 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
 0031 F0                MOVX    @DPTR,A
                                            ; SOURCE LINE # 27
 0032 8005              SJMP    ?C0002
-C51 COMPILER V7.50   CORE_PECI                                                             09/17/2020 21:06:53 PAGE 10  
+C51 COMPILER V7.50   CORE_PECI                                                             09/20/2020 10:56:18 PAGE 10  
 
 0034         ?C0001:
                                            ; SOURCE LINE # 29
@@ -619,7 +619,7 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
                                            ; SOURCE LINE # 84
 0029 120000      R     LCALL   L?0087
 002C 5009              JNC     ?C0006
-C51 COMPILER V7.50   CORE_PECI                                                             09/17/2020 21:06:53 PAGE 11  
+C51 COMPILER V7.50   CORE_PECI                                                             09/20/2020 10:56:18 PAGE 11  
 
                                            ; SOURCE LINE # 85
                                            ; SOURCE LINE # 86
@@ -683,7 +683,7 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
                                            ; SOURCE LINE # 108
 0075 900000      E     MOV     DPTR,#PECI_HOST_STS
 0078 E0                MOVX    A,@DPTR
-C51 COMPILER V7.50   CORE_PECI                                                             09/17/2020 21:06:53 PAGE 12  
+C51 COMPILER V7.50   CORE_PECI                                                             09/20/2020 10:56:18 PAGE 12  
 
 0079 30E003            JNB     ACC.0,?C0011
 007C 308FF6            JNB     TF1,?C0010
@@ -747,7 +747,7 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
 00BF 900000      E     MOV     DPTR,#PECI_FIFO
 00C2 E0                MOVX    A,@DPTR
 00C3 FE                MOV     R6,A
-C51 COMPILER V7.50   CORE_PECI                                                             09/17/2020 21:06:53 PAGE 13  
+C51 COMPILER V7.50   CORE_PECI                                                             09/20/2020 10:56:18 PAGE 13  
 
 00C4 900000      R     MOV     DPTR,#ReadData
 00C7 E0                MOVX    A,@DPTR
@@ -811,7 +811,7 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
 0000 CA                XCH     A,R2
 0001 EF                MOV     A,R7
 0002 CA                XCH     A,R2
-C51 COMPILER V7.50   CORE_PECI                                                             09/17/2020 21:06:53 PAGE 14  
+C51 COMPILER V7.50   CORE_PECI                                                             09/20/2020 10:56:18 PAGE 14  
 
 ;---- Variable 'Domain' assigned to Register 'R3' ----
 ;---- Variable 'WriteData' assigned to Register 'R4/R5' ----
@@ -875,7 +875,7 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
 0040 5009              JNC     ?C0030
                                            ; SOURCE LINE # 205
                                            ; SOURCE LINE # 206
-C51 COMPILER V7.50   CORE_PECI                                                             09/17/2020 21:06:53 PAGE 15  
+C51 COMPILER V7.50   CORE_PECI                                                             09/20/2020 10:56:18 PAGE 15  
 
 0042 EF                MOV     A,R7
 0043 2402              ADD     A,#02H
@@ -939,7 +939,7 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
 008E F0                MOVX    @DPTR,A
 008F 80DD              SJMP    ?C0032
 0091         ?C0033:
-C51 COMPILER V7.50   CORE_PECI                                                             09/17/2020 21:06:53 PAGE 16  
+C51 COMPILER V7.50   CORE_PECI                                                             09/20/2020 10:56:18 PAGE 16  
 
                                            ; SOURCE LINE # 222
 0091 7F01              MOV     R7,#01H
@@ -1003,7 +1003,7 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
                                            ; SOURCE LINE # 245
 00DD 120000      R     LCALL   L?0074
 00E0 74FE              MOV     A,#0FEH
-C51 COMPILER V7.50   CORE_PECI                                                             09/17/2020 21:06:53 PAGE 17  
+C51 COMPILER V7.50   CORE_PECI                                                             09/20/2020 10:56:18 PAGE 17  
 
 00E2 F0                MOVX    @DPTR,A
                                            ; SOURCE LINE # 247
@@ -1067,7 +1067,7 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
 0019 7401              MOV     A,#01H
 001B F0                MOVX    @DPTR,A
                                            ; SOURCE LINE # 289
-C51 COMPILER V7.50   CORE_PECI                                                             09/17/2020 21:06:53 PAGE 18  
+C51 COMPILER V7.50   CORE_PECI                                                             09/20/2020 10:56:18 PAGE 18  
 
 001C 900000      E     MOV     DPTR,#PECI_RD_LENGTH
 001F 04                INC     A
@@ -1131,7 +1131,7 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
 0067 120000      R     LCALL   L?0089
 006A 6003              JZ      ?C0060
 006C 7F00              MOV     R7,#00H
-C51 COMPILER V7.50   CORE_PECI                                                             09/17/2020 21:06:53 PAGE 19  
+C51 COMPILER V7.50   CORE_PECI                                                             09/20/2020 10:56:18 PAGE 19  
 
 006E 22                RET     
 006F         ?C0060:
@@ -1195,7 +1195,7 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
 0028 FF                MOV     R7,A
 0029 E4                CLR     A
                                            ; SOURCE LINE # 343
-C51 COMPILER V7.50   CORE_PECI                                                             09/17/2020 21:06:53 PAGE 20  
+C51 COMPILER V7.50   CORE_PECI                                                             09/20/2020 10:56:18 PAGE 20  
 
 002A 120000      R     LCALL   L?0084
 002D E0                MOVX    A,@DPTR
@@ -1259,7 +1259,7 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
                                            ; SOURCE LINE # 375
                                            ; SOURCE LINE # 376
 000E 900000      E     MOV     DPTR,#PECI_readBuffer+02H
-C51 COMPILER V7.50   CORE_PECI                                                             09/17/2020 21:06:53 PAGE 21  
+C51 COMPILER V7.50   CORE_PECI                                                             09/20/2020 10:56:18 PAGE 21  
 
 0011 E0                MOVX    A,@DPTR
 0012 900000      E     MOV     DPTR,#CPUTcontrol
@@ -1324,7 +1324,7 @@ MODULE INFORMATION:   STATIC OVERLAYABLE
    BIT SIZE         =   ----    ----
 END OF MODULE INFORMATION.
 
-C51 COMPILER V7.50   CORE_PECI                                                             09/17/2020 21:06:53 PAGE 22  
+C51 COMPILER V7.50   CORE_PECI                                                             09/20/2020 10:56:18 PAGE 22  
 
 
 C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

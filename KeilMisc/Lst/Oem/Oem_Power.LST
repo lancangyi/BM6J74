@@ -1,4 +1,4 @@
-C51 COMPILER V7.50   OEM_POWER                                                             09/17/2020 21:06:55 PAGE 1   
+C51 COMPILER V7.50   OEM_POWER                                                             09/20/2020 10:56:20 PAGE 1   
 
 
 C51 COMPILER V7.50, COMPILATION OF MODULE OEM_POWER
@@ -62,7 +62,7 @@ line level    source
   52          Max:1.6171875
   53          Min:1.453125
   54          Assume: 1.4V => 478d => 1DEh
-C51 COMPILER V7.50   OEM_POWER                                                             09/17/2020 21:06:55 PAGE 2   
+C51 COMPILER V7.50   OEM_POWER                                                             09/20/2020 10:56:20 PAGE 2   
 
   55          
   56          
@@ -126,7 +126,7 @@ line level    source
  114   2                      {
  115   3                      Oem_ChkS5Shutdown();
  116   3                      }
-C51 COMPILER V7.50   OEM_POWER                                                             09/17/2020 21:06:55 PAGE 3   
+C51 COMPILER V7.50   OEM_POWER                                                             09/20/2020 10:56:20 PAGE 3   
 
  117   2                      break;
  118   2      
@@ -190,7 +190,7 @@ line level    source
  176   3                  else
  177   3                  {
  178   4                      ColdBootTimer--;
-C51 COMPILER V7.50   OEM_POWER                                                             09/17/2020 21:06:55 PAGE 4   
+C51 COMPILER V7.50   OEM_POWER                                                             09/20/2020 10:56:20 PAGE 4   
 
  179   4      
  180   4                      if ( ColdBootTimer == 0x00 )
@@ -254,7 +254,7 @@ line level    source
  238          //-----------------------------------------------------------------------------
  239          void Oem_TriggerPowerOff(void)
  240          {
-C51 COMPILER V7.50   OEM_POWER                                                             09/17/2020 21:06:55 PAGE 5   
+C51 COMPILER V7.50   OEM_POWER                                                             09/20/2020 10:56:20 PAGE 5   
 
  241   1          CtrlPowStep = 0;    //Reset Power Step Control Register
  242   1          PowSeqDelay = 0;    //Clear Sequence Delay Register
@@ -318,7 +318,7 @@ line level    source
  300          //-----------------------------------------------------------------------------
  301          
  302          //-----------------------------------------------------------------------------
-C51 COMPILER V7.50   OEM_POWER                                                             09/17/2020 21:06:55 PAGE 6   
+C51 COMPILER V7.50   OEM_POWER                                                             09/20/2020 10:56:20 PAGE 6   
 
  303          // Power Switch Control
  304          //-----------------------------------------------------------------------------
@@ -382,7 +382,7 @@ line level    source
  362   2              PowSeqDelay = 0;    //Clear Sequence Delay Register
  363   2              // Trigger S0 -> S3  system suspend power off sequence
  364   2              SysPowState = _GO_SUSPNED_OFF;
-C51 COMPILER V7.50   OEM_POWER                                                             09/17/2020 21:06:55 PAGE 7   
+C51 COMPILER V7.50   OEM_POWER                                                             09/20/2020 10:56:20 PAGE 7   
 
  365   2          }
  366   1      
@@ -446,7 +446,7 @@ line level    source
                       SET_BIT(PM1CTL, 0);
               
                       //PMC2  
-C51 COMPILER V7.50   OEM_POWER                                                             09/17/2020 21:06:55 PAGE 8   
+C51 COMPILER V7.50   OEM_POWER                                                             09/20/2020 10:56:20 PAGE 8   
 
                       Index_07H = 0x12;
                       Index_30H = 0x01;
@@ -510,7 +510,7 @@ line level    source
  486   2              PowSeqDelay-=5; //5mSec count base
  487   2              if ( PowSeqDelay < 4 )
  488   2              {
-C51 COMPILER V7.50   OEM_POWER                                                             09/17/2020 21:06:55 PAGE 9   
+C51 COMPILER V7.50   OEM_POWER                                                             09/20/2020 10:56:20 PAGE 9   
 
  489   3                  PowSeqDelay=0;
  490   3              }
@@ -574,7 +574,7 @@ line level    source
  548   2                      #if PWR_ON_SEQ_DEBUG
                               RamDebug(0xE5) ;
                               #endif
-C51 COMPILER V7.50   OEM_POWER                                                             09/17/2020 21:06:55 PAGE 10  
+C51 COMPILER V7.50   OEM_POWER                                                             09/20/2020 10:56:20 PAGE 10  
 
  551   2      
  552   2                      PowSeqDelay = 5 ;               
@@ -638,7 +638,7 @@ line level    source
  610   2                      Oem_SysOnInit();
  611   2      
  612   2      
-C51 COMPILER V7.50   OEM_POWER                                                             09/17/2020 21:06:55 PAGE 11  
+C51 COMPILER V7.50   OEM_POWER                                                             09/20/2020 10:56:20 PAGE 11  
 
  613   2                      break;
  614   2      
@@ -702,7 +702,7 @@ line level    source
                               #endif
  673   2      
  674   2      
-C51 COMPILER V7.50   OEM_POWER                                                             09/17/2020 21:06:55 PAGE 12  
+C51 COMPILER V7.50   OEM_POWER                                                             09/20/2020 10:56:20 PAGE 12  
 
  675   2                      PowSeqDelay = 5 ;
  676   2                      
@@ -766,7 +766,7 @@ line level    source
  734   2                      #if PWR_ON_SEQ_DEBUG
                               RamDebug(0xC7) ;
                               #endif
-C51 COMPILER V7.50   OEM_POWER                                                             09/17/2020 21:06:55 PAGE 13  
+C51 COMPILER V7.50   OEM_POWER                                                             09/20/2020 10:56:20 PAGE 13  
 
  737   2                      
  738   2                      break;
@@ -830,7 +830,7 @@ line level    source
  796          //-----------------------------------------------------------------------------
  797          void Oem_SysOffSequence(void)
  798          {
-C51 COMPILER V7.50   OEM_POWER                                                             09/17/2020 21:06:55 PAGE 14  
+C51 COMPILER V7.50   OEM_POWER                                                             09/20/2020 10:56:20 PAGE 14  
 
  799   1          //bit   bTemp;
  800   1          //-------------------------------------------------------------------------
@@ -894,7 +894,7 @@ line level    source
  858   2                      #if PWR_OFF_SEQ_DEBUG
                               RamDebug(0xF4) ;
                               #endif
-C51 COMPILER V7.50   OEM_POWER                                                             09/17/2020 21:06:55 PAGE 15  
+C51 COMPILER V7.50   OEM_POWER                                                             09/20/2020 10:56:20 PAGE 15  
 
  861   2      
  862   2      
@@ -958,7 +958,7 @@ line level    source
  920   2      
  921   2                      #if PWR_OFF_SEQ_DEBUG
                               RamDebug(0xFA) ;
-C51 COMPILER V7.50   OEM_POWER                                                             09/17/2020 21:06:55 PAGE 16  
+C51 COMPILER V7.50   OEM_POWER                                                             09/20/2020 10:56:20 PAGE 16  
 
                               #endif
  924   2      
@@ -1022,7 +1022,7 @@ line level    source
  982   1      
  983   1          //-------------------------------------------------------------------------
  984   1      
-C51 COMPILER V7.50   OEM_POWER                                                             09/17/2020 21:06:55 PAGE 17  
+C51 COMPILER V7.50   OEM_POWER                                                             09/20/2020 10:56:20 PAGE 17  
 
  985   1              CtrlPowStep++;
  986   1      
@@ -1086,7 +1086,7 @@ line level    source
 1044   2      
 1045   2                      break;
 1046   2      
-C51 COMPILER V7.50   OEM_POWER                                                             09/17/2020 21:06:55 PAGE 18  
+C51 COMPILER V7.50   OEM_POWER                                                             09/20/2020 10:56:20 PAGE 18  
 
 1047   2              case 3:
 1048   2      
@@ -1150,7 +1150,7 @@ line level    source
 1106   2                              
 1107   2                      #if SUSPEND_SEQ_DEBUG
                               RamDebug(0xB9) ;
-C51 COMPILER V7.50   OEM_POWER                                                             09/17/2020 21:06:55 PAGE 19  
+C51 COMPILER V7.50   OEM_POWER                                                             09/20/2020 10:56:20 PAGE 19  
 
                               #endif
 1110   2                      
@@ -1214,7 +1214,7 @@ line level    source
 1167   3                              {
 1168   4      
 1169   4                                      Oem_SysOnInit();
-C51 COMPILER V7.50   OEM_POWER                                                             09/17/2020 21:06:55 PAGE 20  
+C51 COMPILER V7.50   OEM_POWER                                                             09/20/2020 10:56:20 PAGE 20  
 
 1170   4                                      
 1171   4                                      CLR_BIT(Index_23H, 0);  //Enable 48M clock                              
@@ -1278,7 +1278,7 @@ line level    source
 1228                  //      S0      S3      S4      S5      index4  index5                                           
 1229                  //--------------------------------------------------------------------------
 1230                          0xFFFF, 0x5555, 0x0000, 0x0000, 0x0000, 0x0000,         //      Power LED1
-C51 COMPILER V7.50   OEM_POWER                                                             09/17/2020 21:06:55 PAGE 21  
+C51 COMPILER V7.50   OEM_POWER                                                             09/20/2020 10:56:20 PAGE 21  
 
 1231          };
 1232          
@@ -1330,7 +1330,7 @@ line level    source
 1278           * End
 1279           *---------------------------------------------------------------------------*/
 1280          
-C51 COMPILER V7.50   OEM_POWER                                                             09/17/2020 21:06:55 PAGE 22  
+C51 COMPILER V7.50   OEM_POWER                                                             09/20/2020 10:56:20 PAGE 22  
 
 ASSEMBLY LISTING OF GENERATED OBJECT CODE
 
@@ -1394,7 +1394,7 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
 004B 7800        E     MOV     R0,#LOW CORE_PMFLAG
 004D F6                MOV     @R0,A
 004E E6                MOV     A,@R0
-C51 COMPILER V7.50   OEM_POWER                                                             09/17/2020 21:06:55 PAGE 23  
+C51 COMPILER V7.50   OEM_POWER                                                             09/20/2020 10:56:20 PAGE 23  
 
 004F 22                RET     
 0050         L?0208:
@@ -1458,7 +1458,7 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
                                            ; SOURCE LINE # 93
 0032 120000      R     LCALL   Oem_ChkS5Shutdown
                                            ; SOURCE LINE # 95
-C51 COMPILER V7.50   OEM_POWER                                                             09/17/2020 21:06:55 PAGE 24  
+C51 COMPILER V7.50   OEM_POWER                                                             09/20/2020 10:56:20 PAGE 24  
 
 0035 900000      E     MOV     DPTR,#SysPowState
 0038 E0                MOVX    A,@DPTR
@@ -1522,7 +1522,7 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
                                            ; SOURCE LINE # 138
 006F         ?C0014:
                                            ; SOURCE LINE # 139
-C51 COMPILER V7.50   OEM_POWER                                                             09/17/2020 21:06:55 PAGE 25  
+C51 COMPILER V7.50   OEM_POWER                                                             09/20/2020 10:56:20 PAGE 25  
 
 006F 120000      R     LCALL   Oem_SysResumeSequence
                                            ; SOURCE LINE # 140
@@ -1586,7 +1586,7 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
 0018 900000      E     MOV     DPTR,#ColdBootTimer
 001B E0                MOVX    A,@DPTR
 001C 14                DEC     A
-C51 COMPILER V7.50   OEM_POWER                                                             09/17/2020 21:06:55 PAGE 26  
+C51 COMPILER V7.50   OEM_POWER                                                             09/20/2020 10:56:20 PAGE 26  
 
 001D F0                MOVX    @DPTR,A
                                            ; SOURCE LINE # 180
@@ -1650,7 +1650,7 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
                                            ; SOURCE LINE # 217
                                            ; SOURCE LINE # 218
 002D 120000      R     LCALL   Oem_TriggerPowerOn
-C51 COMPILER V7.50   OEM_POWER                                                             09/17/2020 21:06:55 PAGE 27  
+C51 COMPILER V7.50   OEM_POWER                                                             09/20/2020 10:56:20 PAGE 27  
 
                                            ; SOURCE LINE # 219
                                            ; SOURCE LINE # 221
@@ -1714,7 +1714,7 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
                                            ; SOURCE LINE # 273
                                            ; SOURCE LINE # 275
                                            ; SOURCE LINE # 277
-C51 COMPILER V7.50   OEM_POWER                                                             09/17/2020 21:06:55 PAGE 28  
+C51 COMPILER V7.50   OEM_POWER                                                             09/20/2020 10:56:20 PAGE 28  
 
 0018         ?C0037:
 0018 22                RET     
@@ -1778,7 +1778,7 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
 ;---- Variable 'BTemp' assigned to Register 'R7' ----
                                            ; SOURCE LINE # 320
 0023 EF                MOV     A,R7
-C51 COMPILER V7.50   OEM_POWER                                                             09/17/2020 21:06:55 PAGE 29  
+C51 COMPILER V7.50   OEM_POWER                                                             09/20/2020 10:56:20 PAGE 29  
 
 0024 B40310            CJNE    A,#03H,?C0047
                                            ; SOURCE LINE # 321
@@ -1842,7 +1842,7 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
 0004 30E503            JNB     ACC.5,?C0054
 0007 D3                SETB    C
 0008 8001              SJMP    ?C0055
-C51 COMPILER V7.50   OEM_POWER                                                             09/17/2020 21:06:55 PAGE 30  
+C51 COMPILER V7.50   OEM_POWER                                                             09/20/2020 10:56:20 PAGE 30  
 
 000A         ?C0054:
 000A C3                CLR     C
@@ -1906,7 +1906,7 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
 000B 7800        E     MOV     R0,#LOW CORE_PMFLAG
 000D F6                MOV     @R0,A
                                            ; SOURCE LINE # 399
-C51 COMPILER V7.50   OEM_POWER                                                             09/17/2020 21:06:55 PAGE 31  
+C51 COMPILER V7.50   OEM_POWER                                                             09/20/2020 10:56:20 PAGE 31  
 
 000E E6                MOV     A,@R0
 000F 4401              ORL     A,#01H
@@ -1970,7 +1970,7 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
              ; FUNCTION InitShareMemory (BEGIN)
                                            ; SOURCE LINE # 466
                                            ; SOURCE LINE # 467
-C51 COMPILER V7.50   OEM_POWER                                                             09/17/2020 21:06:55 PAGE 32  
+C51 COMPILER V7.50   OEM_POWER                                                             09/20/2020 10:56:20 PAGE 32  
 
                                            ; SOURCE LINE # 470
 0000 900000      E     MOV     DPTR,#FMSSR
@@ -2034,7 +2034,7 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
 0033 09                DB      09H
 0034 0000        R     DW      ?C0081
 0036 0A                DB      0AH
-C51 COMPILER V7.50   OEM_POWER                                                             09/17/2020 21:06:55 PAGE 33  
+C51 COMPILER V7.50   OEM_POWER                                                             09/20/2020 10:56:20 PAGE 33  
 
 0037 0000        R     DW      ?C0083
 0039 0B                DB      0BH
@@ -2098,7 +2098,7 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
                                            ; SOURCE LINE # 593
 0062         ?C0181:
 0062 120000      R     LCALL   L?0202
-C51 COMPILER V7.50   OEM_POWER                                                             09/17/2020 21:06:55 PAGE 34  
+C51 COMPILER V7.50   OEM_POWER                                                             09/20/2020 10:56:20 PAGE 34  
 
 0065 740A              MOV     A,#0AH
 0067 F0                MOVX    @DPTR,A
@@ -2162,7 +2162,7 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
 001F 0000        R     DW      ?C0093
 0021 03                DB      03H
 0022 0000        R     DW      ?C0094
-C51 COMPILER V7.50   OEM_POWER                                                             09/17/2020 21:06:55 PAGE 35  
+C51 COMPILER V7.50   OEM_POWER                                                             09/20/2020 10:56:20 PAGE 35  
 
 0024 04                DB      04H
 0025 0000        R     DW      ?C0094
@@ -2226,7 +2226,7 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
                                            ; SOURCE LINE # 756
 004E 120000      R     LCALL   Oem_SysOnInit
                                            ; SOURCE LINE # 758
-C51 COMPILER V7.50   OEM_POWER                                                             09/17/2020 21:06:55 PAGE 36  
+C51 COMPILER V7.50   OEM_POWER                                                             09/20/2020 10:56:20 PAGE 36  
 
 0051 8005              SJMP    ?C0089
                                            ; SOURCE LINE # 760
@@ -2290,7 +2290,7 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
                                            ; SOURCE LINE # 807
 000B E4                CLR     A
 000C F0                MOVX    @DPTR,A
-C51 COMPILER V7.50   OEM_POWER                                                             09/17/2020 21:06:55 PAGE 37  
+C51 COMPILER V7.50   OEM_POWER                                                             09/20/2020 10:56:20 PAGE 37  
 
 000D A3                INC     DPTR
 000E F0                MOVX    @DPTR,A
@@ -2354,7 +2354,7 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
 0049 120000      R     LCALL   L?0202
 004C 740A              MOV     A,#0AH
 004E F0                MOVX    @DPTR,A
-C51 COMPILER V7.50   OEM_POWER                                                             09/17/2020 21:06:55 PAGE 38  
+C51 COMPILER V7.50   OEM_POWER                                                             09/20/2020 10:56:20 PAGE 38  
 
                                            ; SOURCE LINE # 865
 004F 8013              SJMP    ?C0109
@@ -2418,7 +2418,7 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
 000B E4                CLR     A
 000C F0                MOVX    @DPTR,A
 000D A3                INC     DPTR
-C51 COMPILER V7.50   OEM_POWER                                                             09/17/2020 21:06:55 PAGE 39  
+C51 COMPILER V7.50   OEM_POWER                                                             09/20/2020 10:56:20 PAGE 39  
 
 000E F0                MOVX    @DPTR,A
                                            ; SOURCE LINE # 1008
@@ -2482,7 +2482,7 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
                                            ; SOURCE LINE # 1122
 0036 120000      R     LCALL   L?0209
                                            ; SOURCE LINE # 1126
-C51 COMPILER V7.50   OEM_POWER                                                             09/17/2020 21:06:55 PAGE 40  
+C51 COMPILER V7.50   OEM_POWER                                                             09/20/2020 10:56:20 PAGE 40  
 
 0039         ?C0129:
 0039 22                RET     
@@ -2546,7 +2546,7 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
 0000 900000      E     MOV     DPTR,#GPIO_5x
 0003 E0                MOVX    A,@DPTR
 0004 30E304            JNB     ACC.3,?C0149
-C51 COMPILER V7.50   OEM_POWER                                                             09/17/2020 21:06:55 PAGE 41  
+C51 COMPILER V7.50   OEM_POWER                                                             09/20/2020 10:56:20 PAGE 41  
 
 0007 7F01              MOV     R7,#01H
 0009 8002              SJMP    ?C0150
@@ -2610,7 +2610,7 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
                                            ; SOURCE LINE # 1183
 0053         ?C0151:
                                            ; SOURCE LINE # 1185
-C51 COMPILER V7.50   OEM_POWER                                                             09/17/2020 21:06:55 PAGE 42  
+C51 COMPILER V7.50   OEM_POWER                                                             09/20/2020 10:56:20 PAGE 42  
 
                                            ; SOURCE LINE # 1186
 0053 900000      E     MOV     DPTR,#SysPowState
@@ -2674,7 +2674,7 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
 0004 25E0              ADD     A,ACC
 0006 F0                MOVX    @DPTR,A
                                            ; SOURCE LINE # 1247
-C51 COMPILER V7.50   OEM_POWER                                                             09/17/2020 21:06:55 PAGE 43  
+C51 COMPILER V7.50   OEM_POWER                                                             09/20/2020 10:56:20 PAGE 43  
 
 0007 E0                MOVX    A,@DPTR
 0008 7002              JNZ     ?C0166
@@ -2738,7 +2738,7 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
 0045 020000      E     LJMP    PWR_LED_ON
                                            ; SOURCE LINE # 1269
 0048         ?C0170:
-C51 COMPILER V7.50   OEM_POWER                                                             09/17/2020 21:06:55 PAGE 44  
+C51 COMPILER V7.50   OEM_POWER                                                             09/20/2020 10:56:20 PAGE 44  
 
                                            ; SOURCE LINE # 1271
                                            ; SOURCE LINE # 1272

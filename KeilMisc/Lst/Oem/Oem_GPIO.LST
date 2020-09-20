@@ -1,4 +1,4 @@
-C51 COMPILER V7.50   OEM_GPIO                                                              09/17/2020 21:06:54 PAGE 1   
+C51 COMPILER V7.50   OEM_GPIO                                                              09/20/2020 10:56:20 PAGE 1   
 
 
 C51 COMPILER V7.50, COMPILATION OF MODULE OEM_GPIO
@@ -52,50 +52,66 @@ line level    source
   42   1      
   43   1              Index_07H= 0x00;
   44   1      
-  45   1              SET_BIT(GP33_SEL_REG,3);                //Set GP33
-  46   1              SET_BIT(GP3X_IOMODE_REG,3);             //Set GP33 output
-  47   1              SET_BIT(GP3X_FUNC_REG,3);               //Set GP33 simple IO function
-  48   1      
-  49   1              
-  50   1              //J74_001++>>
-  51   1              Index_07H = 0x07;
-  52   1              SET_BIT(GP36_SEL_REG,6);                //Set GP36
-  53   1              SET_BIT(GP3X_FUNC_REG,6);               //Set GP36 simple IO function
-  54   1              SET_BIT(GP3X_IOMODE_REG,6);     //Set GP36 output
-C51 COMPILER V7.50   OEM_GPIO                                                              09/17/2020 21:06:54 PAGE 2   
+  45   1          Index_07H = 0x07;   //J74_003++
+  46   1              SET_BIT(GP33_SEL_REG,3);                //Set GP33
+  47   1              SET_BIT(GP3X_IOMODE_REG,3);             //Set GP33 output
+  48   1              SET_BIT(GP3X_FUNC_REG,3);               //Set GP33 simple IO function
+  49   1          Index_07H = 0x00;   //J74_003++
+  50   1              
+  51   1              //J74_001++>>
+  52   1              Index_07H = 0x07;
+  53   1              SET_BIT(GP36_SEL_REG,6);                //Set GP36
+  54   1              SET_BIT(GP3X_FUNC_REG,6);               //Set GP36 simple IO function
+C51 COMPILER V7.50   OEM_GPIO                                                              09/20/2020 10:56:20 PAGE 2   
 
-  55   1              GP36_LO();
-  56   1                      
-  57   1              SET_BIT(GP14_SEL_REG,4);                //Set GP14
-  58   1              SET_BIT(GP1X_IOMODE_REG,4);     //Set GP14 output
-  59   1              SET_BIT(GP1X_FUNC_REG,4);               //Set GP14 simple IO function
-  60   1              GP14_LO();
-  61   1              
-  62   1                      
-  63   1              SET_BIT(GP37_SEL_REG,7);                //Set GP37
-  64   1              SET_BIT(GP3X_IOMODE_REG,7);     //Set GP37 output
-  65   1              SET_BIT(GP3X_FUNC_REG,7);               //Set GP37 simple IO function
-  66   1              GP37_LO();
-  67   1                      
-  68   1              SET_BIT(GP24_SEL_REG,4);                //Set GP24
-  69   1              SET_BIT(GP2X_IOMODE_REG,4);     //Set GP24 output
-  70   1              SET_BIT(GP2X_FUNC_REG,4);               //Set GP24 simple IO function
-  71   1              GP24_LO();
-  72   1              Index_07H = 0x00;
-  73   1      
-  74   1              //Index_07H = 0x06;
-  75   1              //Index_30H = 0x01;
-  76   1              //Index_70H = 0x0C;
-  77   1              //Index_07H = 0x00;             
-  78   1              //J74_001++<< 
-  79   1      }
-  80          
-  81          
-  82          
-C51 COMPILER V7.50   OEM_GPIO                                                              09/17/2020 21:06:54 PAGE 3   
+  55   1              SET_BIT(GP3X_IOMODE_REG,6);     //Set GP36 output
+  56   1              //J74_001A--    GP36_HI();
+  57   1              GP36_LO();      //J74_001A++
+  58   1                      
+  59   1              SET_BIT(GP14_SEL_REG,4);                //Set GP14
+  60   1              SET_BIT(GP1X_IOMODE_REG,4);     //Set GP14 output
+  61   1              SET_BIT(GP1X_FUNC_REG,4);               //Set GP14 simple IO function
+  62   1              //J74_001A--    GP14_HI();
+  63   1              GP14_LO();      //J74_001A++
+  64   1              
+  65   1                      
+  66   1              SET_BIT(GP37_SEL_REG,7);                //Set GP37
+  67   1              SET_BIT(GP3X_IOMODE_REG,7);     //Set GP37 output
+  68   1              SET_BIT(GP3X_FUNC_REG,7);               //Set GP37 simple IO function
+  69   1              //J74_001A--    GP37_HI();
+  70   1              GP37_LO();      //J74_001A++
+  71   1                      
+  72   1              SET_BIT(GP24_SEL_REG,4);                //Set GP24
+  73   1              SET_BIT(GP2X_IOMODE_REG,4);     //Set GP24 output
+  74   1              SET_BIT(GP2X_FUNC_REG,4);               //Set GP24 simple IO function
+  75   1              //J74_001A--    GP24_HI();
+  76   1              GP24_LO();      //J74_001A++
+  77   1              Index_07H = 0x00;
+  78   1      
+  79   1              //Index_07H = 0x06;
+  80   1              //Index_30H = 0x01;
+  81   1              //Index_70H = 0x0C;
+  82   1              //Index_07H = 0x00;             
+  83   1              //J74_001++<< 
+  84   1      }
+  85          
+  86          
+  87          
+C51 COMPILER V7.50   OEM_GPIO                                                              09/20/2020 10:56:20 PAGE 3   
 
 ASSEMBLY LISTING OF GENERATED OBJECT CODE
 
+
+             ; FUNCTION Com0004 (BEGIN)
+0000         L?0005:
+0000 900000      E     MOV     DPTR,#Index_07H
+0003 F0                MOVX    @DPTR,A
+0004 7407              MOV     A,#07H
+0006 F0                MOVX    @DPTR,A
+0007 900000      E     MOV     DPTR,#Index_27H
+000A E0                MOVX    A,@DPTR
+000B 22                RET     
+             ; FUNCTION Com0004 (END)
 
              ; FUNCTION PWR_LED_ON (BEGIN)
                                            ; SOURCE LINE # 23
@@ -141,123 +157,119 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
 0013 900000      E     MOV     DPTR,#GPIO_7x
 0016 F0                MOVX    @DPTR,A
                                            ; SOURCE LINE # 43
-0017 900000      E     MOV     DPTR,#Index_07H
-001A F0                MOVX    @DPTR,A
                                            ; SOURCE LINE # 45
-001B 900000      E     MOV     DPTR,#Index_27H
-001E E0                MOVX    A,@DPTR
-001F 4408              ORL     A,#08H
-0021 F0                MOVX    @DPTR,A
                                            ; SOURCE LINE # 46
-0022 900000      E     MOV     DPTR,#Index_CAH
-0025 E0                MOVX    A,@DPTR
-0026 4408              ORL     A,#08H
-0028 F0                MOVX    @DPTR,A
+0017 120000      R     LCALL   L?0005
+001A 4408              ORL     A,#08H
+C51 COMPILER V7.50   OEM_GPIO                                                              09/20/2020 10:56:20 PAGE 4   
+
+001C F0                MOVX    @DPTR,A
                                            ; SOURCE LINE # 47
-0029 900000      E     MOV     DPTR,#Index_C2H
-002C E0                MOVX    A,@DPTR
-C51 COMPILER V7.50   OEM_GPIO                                                              09/17/2020 21:06:54 PAGE 4   
-
-002D 4408              ORL     A,#08H
-002F F0                MOVX    @DPTR,A
-                                           ; SOURCE LINE # 51
-0030 900000      E     MOV     DPTR,#Index_07H
-0033 7407              MOV     A,#07H
-0035 F0                MOVX    @DPTR,A
+001D 900000      E     MOV     DPTR,#Index_CAH
+0020 E0                MOVX    A,@DPTR
+0021 4408              ORL     A,#08H
+0023 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 48
+0024 900000      E     MOV     DPTR,#Index_C2H
+0027 E0                MOVX    A,@DPTR
+0028 4408              ORL     A,#08H
+002A F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 49
+002B E4                CLR     A
                                            ; SOURCE LINE # 52
-0036 900000      E     MOV     DPTR,#Index_27H
-0039 E0                MOVX    A,@DPTR
-003A 4440              ORL     A,#040H
-003C F0                MOVX    @DPTR,A
                                            ; SOURCE LINE # 53
-003D 900000      E     MOV     DPTR,#Index_C2H
-0040 E0                MOVX    A,@DPTR
-0041 4440              ORL     A,#040H
-0043 F0                MOVX    @DPTR,A
+002C 120000      R     LCALL   L?0005
+002F 4440              ORL     A,#040H
+0031 F0                MOVX    @DPTR,A
                                            ; SOURCE LINE # 54
-0044 900000      E     MOV     DPTR,#Index_CAH
-0047 E0                MOVX    A,@DPTR
-0048 4440              ORL     A,#040H
-004A F0                MOVX    @DPTR,A
+0032 900000      E     MOV     DPTR,#Index_C2H
+0035 E0                MOVX    A,@DPTR
+0036 4440              ORL     A,#040H
+0038 F0                MOVX    @DPTR,A
                                            ; SOURCE LINE # 55
-004B 900000      E     MOV     DPTR,#GPIO_3x
-004E E0                MOVX    A,@DPTR
-004F 54BF              ANL     A,#0BFH
-0051 F0                MOVX    @DPTR,A
+0039 900000      E     MOV     DPTR,#Index_CAH
+003C E0                MOVX    A,@DPTR
+003D 4440              ORL     A,#040H
+003F F0                MOVX    @DPTR,A
                                            ; SOURCE LINE # 57
-0052 900000      E     MOV     DPTR,#Index_25H
-0055 E0                MOVX    A,@DPTR
-0056 4410              ORL     A,#010H
-0058 F0                MOVX    @DPTR,A
-                                           ; SOURCE LINE # 58
-0059 900000      E     MOV     DPTR,#Index_C8H
-005C E0                MOVX    A,@DPTR
-005D 4410              ORL     A,#010H
-005F F0                MOVX    @DPTR,A
+0040 900000      E     MOV     DPTR,#GPIO_3x
+0043 E0                MOVX    A,@DPTR
+0044 54BF              ANL     A,#0BFH
+0046 F0                MOVX    @DPTR,A
                                            ; SOURCE LINE # 59
-0060 900000      E     MOV     DPTR,#Index_C0H
-0063 E0                MOVX    A,@DPTR
-0064 4410              ORL     A,#010H
-0066 F0                MOVX    @DPTR,A
+0047 900000      E     MOV     DPTR,#Index_25H
+004A E0                MOVX    A,@DPTR
+004B 4410              ORL     A,#010H
+004D F0                MOVX    @DPTR,A
                                            ; SOURCE LINE # 60
-0067 900000      E     MOV     DPTR,#GPIO_1x
-006A E0                MOVX    A,@DPTR
-006B 54EF              ANL     A,#0EFH
-006D F0                MOVX    @DPTR,A
+004E 900000      E     MOV     DPTR,#Index_C8H
+0051 E0                MOVX    A,@DPTR
+0052 4410              ORL     A,#010H
+0054 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 61
+0055 900000      E     MOV     DPTR,#Index_C0H
+0058 E0                MOVX    A,@DPTR
+0059 4410              ORL     A,#010H
+005B F0                MOVX    @DPTR,A
                                            ; SOURCE LINE # 63
-006E 900000      E     MOV     DPTR,#Index_27H
-0071 E0                MOVX    A,@DPTR
-0072 4480              ORL     A,#080H
-0074 F0                MOVX    @DPTR,A
-                                           ; SOURCE LINE # 64
-0075 900000      E     MOV     DPTR,#Index_CAH
-0078 E0                MOVX    A,@DPTR
-0079 4480              ORL     A,#080H
-007B F0                MOVX    @DPTR,A
-                                           ; SOURCE LINE # 65
-007C 900000      E     MOV     DPTR,#Index_C2H
-007F E0                MOVX    A,@DPTR
-0080 4480              ORL     A,#080H
-0082 F0                MOVX    @DPTR,A
+005C 900000      E     MOV     DPTR,#GPIO_1x
+005F E0                MOVX    A,@DPTR
+0060 54EF              ANL     A,#0EFH
+0062 F0                MOVX    @DPTR,A
                                            ; SOURCE LINE # 66
-C51 COMPILER V7.50   OEM_GPIO                                                              09/17/2020 21:06:54 PAGE 5   
+0063 900000      E     MOV     DPTR,#Index_27H
+0066 E0                MOVX    A,@DPTR
+0067 4480              ORL     A,#080H
+0069 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 67
+006A 900000      E     MOV     DPTR,#Index_CAH
+006D E0                MOVX    A,@DPTR
+006E 4480              ORL     A,#080H
+C51 COMPILER V7.50   OEM_GPIO                                                              09/20/2020 10:56:20 PAGE 5   
 
-0083 900000      E     MOV     DPTR,#GPIO_3x
-0086 E0                MOVX    A,@DPTR
-0087 547F              ANL     A,#07FH
-0089 F0                MOVX    @DPTR,A
+0070 F0                MOVX    @DPTR,A
                                            ; SOURCE LINE # 68
-008A 900000      E     MOV     DPTR,#Index_26H
-008D E0                MOVX    A,@DPTR
-008E 4410              ORL     A,#010H
-0090 F0                MOVX    @DPTR,A
-                                           ; SOURCE LINE # 69
-0091 900000      E     MOV     DPTR,#Index_C9H
-0094 E0                MOVX    A,@DPTR
-0095 4410              ORL     A,#010H
-0097 F0                MOVX    @DPTR,A
+0071 900000      E     MOV     DPTR,#Index_C2H
+0074 E0                MOVX    A,@DPTR
+0075 4480              ORL     A,#080H
+0077 F0                MOVX    @DPTR,A
                                            ; SOURCE LINE # 70
-0098 900000      E     MOV     DPTR,#Index_C1H
-009B E0                MOVX    A,@DPTR
-009C 4410              ORL     A,#010H
-009E F0                MOVX    @DPTR,A
-                                           ; SOURCE LINE # 71
-009F 900000      E     MOV     DPTR,#GPIO_2x
-00A2 E0                MOVX    A,@DPTR
-00A3 54EF              ANL     A,#0EFH
-00A5 F0                MOVX    @DPTR,A
+0078 900000      E     MOV     DPTR,#GPIO_3x
+007B E0                MOVX    A,@DPTR
+007C 547F              ANL     A,#07FH
+007E F0                MOVX    @DPTR,A
                                            ; SOURCE LINE # 72
-00A6 E4                CLR     A
-00A7 900000      E     MOV     DPTR,#Index_07H
-00AA F0                MOVX    @DPTR,A
-                                           ; SOURCE LINE # 79
-00AB 22                RET     
+007F 900000      E     MOV     DPTR,#Index_26H
+0082 E0                MOVX    A,@DPTR
+0083 4410              ORL     A,#010H
+0085 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 73
+0086 900000      E     MOV     DPTR,#Index_C9H
+0089 E0                MOVX    A,@DPTR
+008A 4410              ORL     A,#010H
+008C F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 74
+008D 900000      E     MOV     DPTR,#Index_C1H
+0090 E0                MOVX    A,@DPTR
+0091 4410              ORL     A,#010H
+0093 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 76
+0094 900000      E     MOV     DPTR,#GPIO_2x
+0097 E0                MOVX    A,@DPTR
+0098 54EF              ANL     A,#0EFH
+009A F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 77
+009B E4                CLR     A
+009C 900000      E     MOV     DPTR,#Index_07H
+009F F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 84
+00A0 22                RET     
              ; FUNCTION Initialize_GPIO_Pin_State (END)
 
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    188    ----
+   CODE SIZE        =    189    ----
    CONSTANT SIZE    =   ----    ----
    XDATA SIZE       =   ----    ----
    PDATA SIZE       =   ----    ----

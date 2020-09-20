@@ -42,10 +42,11 @@ void Initialize_GPIO_Pin_State(void)
 
 	Index_07H= 0x00;
 
+    Index_07H = 0x07;	//J74_003++
 	SET_BIT(GP33_SEL_REG,3);		//Set GP33
 	SET_BIT(GP3X_IOMODE_REG,3);		//Set GP33 output
 	SET_BIT(GP3X_FUNC_REG,3);		//Set GP33 simple IO function
-
+    Index_07H = 0x00;	//J74_003++
 	
 	//J74_001++>>
 	Index_07H = 0x07;

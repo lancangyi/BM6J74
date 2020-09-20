@@ -1,4 +1,4 @@
-C51 COMPILER V7.50   OEM_SWKBC                                                             09/17/2020 21:06:56 PAGE 1   
+C51 COMPILER V7.50   OEM_SWKBC                                                             09/20/2020 10:56:21 PAGE 1   
 
 
 C51 COMPILER V7.50, COMPILATION OF MODULE OEM_SWKBC
@@ -62,7 +62,7 @@ line level    source
                   KBHISR = 0x1C;
                   
                   KBHIKDOR = data_byte;
-C51 COMPILER V7.50   OEM_SWKBC                                                             09/17/2020 21:06:56 PAGE 2   
+C51 COMPILER V7.50   OEM_SWKBC                                                             09/20/2020 10:56:21 PAGE 2   
 
                   //SET_MASK(SCCTRL,SCSTART);
                   SCCTRL = 0x02;
@@ -126,7 +126,7 @@ line level    source
                           xbKbf_Head = 0;
                       }
                   }
-C51 COMPILER V7.50   OEM_SWKBC                                                             09/17/2020 21:06:56 PAGE 3   
+C51 COMPILER V7.50   OEM_SWKBC                                                             09/20/2020 10:56:21 PAGE 3   
 
                   else
                   {   
@@ -185,7 +185,7 @@ line level    source
               }
               
               #endif
-C51 COMPILER V7.50   OEM_SWKBC                                                             09/17/2020 21:06:56 PAGE 4   
+C51 COMPILER V7.50   OEM_SWKBC                                                             09/20/2020 10:56:21 PAGE 4   
 
 ASSEMBLY LISTING OF GENERATED OBJECT CODE
 
