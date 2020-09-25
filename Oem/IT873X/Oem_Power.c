@@ -411,6 +411,7 @@ void Oem_SysOffInit(void)
 
     _CORE_PMFLAG = 0;
     CORE_PMFLAG_S5 = 1;
+	S3_FLAG = 0;   //J74_001B++
     CtrlPowStep = 0;    //Reset Power Step Control Register
     PowSeqDelay = 0;    //Clear Sequence Delay Register
     
@@ -444,8 +445,7 @@ void Oem_SysSuspendInit(void)
 
     _CORE_PMFLAG = 0;
     CORE_PMFLAG_S3 = 1;
-
-
+	S3_FLAG = 1;   //J74_001B++
 }
 //-----------------------------------------------------------------------------
 

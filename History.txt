@@ -1,12 +1,25 @@
 --------------------------------------------------------------------------
+* EC version:  BM6J74 Project EC Source Code rev.08 update from rev.07
+**************************************************************************
+Author          : Tracy
+Modify Date     : 2020/09/23
+--------------------------------------------------------------------------
+1.[J74_001B]Fix the issue of suto S4
+	File Modify:       
+		.\Core\Core_Init.c
+		.\Oem\IT873X\Oem_6266.c
+		.\Oem\IT873X\Oem_Main.c
+		.\Oem\IT873X\Oem_Power.c
+
+--------------------------------------------------------------------------
 * EC version:  BM6J74 Project EC Source Code rev.07 update from rev.06
 **************************************************************************
 Author          : ROMAI
 Modify Date     : 2020/09/20
 --------------------------------------------------------------------------
 1.[J74_003]Modify the power lamp abnormal problem
-	       File Modify:                   
-                       .\Oem\IT873X\OEM_GPIO.C                    
+	File Modify:                   
+                       	.\Oem\IT873X\OEM_GPIO.C                    
 
 --------------------------------------------------------------------------
 * EC version:  BM6J74 Project EC Source Code rev.06 update from rev.05
@@ -15,15 +28,15 @@ Author          : ROMAI
 Modify Date     : 2020/09/17
 --------------------------------------------------------------------------
 1.[J74_001A]Modification of DDR control
-	       File Modify:
-                       .\Oem\IT873X\Core_Flash.c
-                       .\Oem\IT873X\Core_Init.c
-                       .\Oem\IT873X\OEM_GPIO.C
-                       .\Oem\IT873X\OEM_6266.C 
-                       .\Oem\IT873X\OEM_MAIN.C
-                       .\Oem\IT873X\OME_Ram.c
-                       .\Oem\IT873X\Reg_EC.c
-                       .\Oem\IT873X\Reg_EC.H
+	  File Modify:
+                       	.\Oem\IT873X\Core_Flash.c
+                       	.\Oem\IT873X\Core_Init.c
+                       	.\Oem\IT873X\OEM_GPIO.C
+                       	.\Oem\IT873X\OEM_6266.C 
+                      	.\Oem\IT873X\OEM_MAIN.C
+                      	.\Oem\IT873X\OME_Ram.c
+                       	.\Oem\IT873X\Reg_EC.c
+                       	.\Oem\IT873X\Reg_EC.H
                                          
 --------------------------------------------------------------------------
 * EC version:  BM6J74 Project EC Source Code rev.05 update from rev.04
@@ -32,15 +45,15 @@ Author          : ROMAI
 Modify Date     : 2020/09/16
 --------------------------------------------------------------------------
 1.[J74_001]Add the control of DDR in S3.
-	       File Modify:
-                       .\Oem\IT873X\OEM_GPIO.C
-                       .\Oem\IT873X\OEM_GPIO.H
-                       .\Oem\IT873X\OEM_6266.C
-                       .\Oem\IT873X\OEM_MAIN.C
-                       .\Oem\IT873X\OEM_PROJECT.H
+	File Modify:
+                       	.\Oem\IT873X\OEM_GPIO.C
+                       	.\Oem\IT873X\OEM_GPIO.H
+                       	.\Oem\IT873X\OEM_6266.C
+                       	.\Oem\IT873X\OEM_MAIN.C
+                       	.\Oem\IT873X\OEM_PROJECT.H
 2.[J74_002]Modified fan speed
-	       File Modify:
-                       .\Oem\IT873X\OEM_GPIO.C   
+	File Modify:
+                       	.\Oem\IT873X\OEM_GPIO.C   
 
 --------------------------------------------------------------------------
 * EC version:  BM6J74 Project EC Source Code rev.04 (XXXXXX)

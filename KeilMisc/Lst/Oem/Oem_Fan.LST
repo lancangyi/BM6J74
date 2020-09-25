@@ -1,4 +1,4 @@
-C51 COMPILER V7.50   OEM_FAN                                                               09/20/2020 10:56:20 PAGE 1   
+C51 COMPILER V7.50   OEM_FAN                                                               09/25/2020 15:06:33 PAGE 1   
 
 
 C51 COMPILER V7.50, COMPILATION OF MODULE OEM_FAN
@@ -62,7 +62,7 @@ line level    source
   52   1              WORD    FanRPMSpd, FanRPMDiv;
   53   1              WORD    FnTWRR; 
   54   1      
-C51 COMPILER V7.50   OEM_FAN                                                               09/20/2020 10:56:20 PAGE 2   
+C51 COMPILER V7.50   OEM_FAN                                                               09/25/2020 15:06:33 PAGE 2   
 
   55   1              if( (FnTMRR == 0xFF)&&(FnTLRR == 0xFF) )
   56   1                      return 0;
@@ -124,7 +124,7 @@ line level    source
  110   1              CFG_REG |= 0x80;                                // Restore EC registers to their default values
  111   1              CFG_REG &= 0xFE;                                // Put EC in standby mode
  112   1      }
-C51 COMPILER V7.50   OEM_FAN                                                               09/20/2020 10:56:20 PAGE 3   
+C51 COMPILER V7.50   OEM_FAN                                                               09/25/2020 15:06:33 PAGE 3   
 
 ASSEMBLY LISTING OF GENERATED OBJECT CODE
 
@@ -188,7 +188,7 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
 002C 7E4C              MOV     R6,#04CH
 002E 7D0A              MOV     R5,#0AH
 0030 120000      E     LCALL   ?C?SLDIV
-C51 COMPILER V7.50   OEM_FAN                                                               09/20/2020 10:56:20 PAGE 4   
+C51 COMPILER V7.50   OEM_FAN                                                               09/25/2020 15:06:33 PAGE 4   
 
 0033 900000      R     MOV     DPTR,#FanRPMSpd
 0036 EE                MOV     A,R6
@@ -252,7 +252,7 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
 0033 F0                MOVX    @DPTR,A
                                            ; SOURCE LINE # 83
 0034 902A64            MOV     DPTR,#FAN1_CTRL
-C51 COMPILER V7.50   OEM_FAN                                                               09/20/2020 10:56:20 PAGE 5   
+C51 COMPILER V7.50   OEM_FAN                                                               09/25/2020 15:06:33 PAGE 5   
 
 0037 7485              MOV     A,#085H
 0039 F0                MOVX    @DPTR,A

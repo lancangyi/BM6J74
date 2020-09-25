@@ -1,4 +1,4 @@
-C51 COMPILER V7.50   REG_EC                                                                09/20/2020 10:56:19 PAGE 1   
+C51 COMPILER V7.50   REG_EC                                                                09/25/2020 15:06:32 PAGE 1   
 
 
 C51 COMPILER V7.50, COMPILATION OF MODULE REG_EC
@@ -62,7 +62,7 @@ line level    source
   52          ECReg IER0               _at_    (INTC_BASE_ADDR + 0x04);
   53          ECReg IER1                      _at_    (INTC_BASE_ADDR + 0x05);
   54          ECReg IER2               _at_    (INTC_BASE_ADDR + 0x06);
-C51 COMPILER V7.50   REG_EC                                                                09/20/2020 10:56:19 PAGE 2   
+C51 COMPILER V7.50   REG_EC                                                                09/25/2020 15:06:32 PAGE 2   
 
   55          ECReg IER3               _at_    (INTC_BASE_ADDR + 0x07);
   56          ECReg IELMR0           _at_    (INTC_BASE_ADDR + 0x08);
@@ -126,7 +126,7 @@ line level    source
  114          ECReg PM2DI               _at_    (PMC_BASE_ADDR + 0x14);
  115          ECReg PM2DISCI            _at_    (PMC_BASE_ADDR + 0x15);
  116          ECReg PM2CTL              _at_    (PMC_BASE_ADDR + 0x16);
-C51 COMPILER V7.50   REG_EC                                                                09/20/2020 10:56:19 PAGE 3   
+C51 COMPILER V7.50   REG_EC                                                                09/25/2020 15:06:32 PAGE 3   
 
  117          ECReg PM2IC               _at_    (PMC_BASE_ADDR + 0x17);
  118          ECReg PM2IE               _at_    (PMC_BASE_ADDR + 0x18);
@@ -190,7 +190,7 @@ line level    source
  176          ECReg  TRASLA_A         _at_    (SMB_BASE_ADDR + 0x03);         // Transmit Slave Address
  177          ECReg  D0REG_A          _at_    (SMB_BASE_ADDR + 0x04);         // HOST Data0
  178          ECReg  D1REG_A          _at_    (SMB_BASE_ADDR + 0x05);         // HOST Data1
-C51 COMPILER V7.50   REG_EC                                                                09/20/2020 10:56:19 PAGE 4   
+C51 COMPILER V7.50   REG_EC                                                                09/25/2020 15:06:32 PAGE 4   
 
  179          ECReg  HOBDB_A          _at_    (SMB_BASE_ADDR + 0x06);         // HOST Block Data Byte
  180          ECReg  PECERC_A         _at_    (SMB_BASE_ADDR + 0x07);         // Packet Error Check
@@ -254,7 +254,7 @@ line level    source
  238          ECReg  AUTOCG           _at_    (ECPM_BASE_ADDR + 0x04);        // Auto Clock Gatting
  239          ECReg  CGCTRL3R                 _at_    (ECPM_BASE_ADDR + 0x05);        // Clock Gating Control3
  240          ECReg  EC_1E06          _at_    (ECPM_BASE_ADDR + 0x06);
-C51 COMPILER V7.50   REG_EC                                                                09/20/2020 10:56:19 PAGE 5   
+C51 COMPILER V7.50   REG_EC                                                                09/25/2020 15:06:32 PAGE 5   
 
  241          ECReg  PLLCSS           _at_    (ECPM_BASE_ADDR + 0x08);
  242          
@@ -318,7 +318,7 @@ line level    source
  300          /******************************************************************************
  301          Define
  302          Description: Define SPI_BASE_ADDR
-C51 COMPILER V7.50   REG_EC                                                                09/20/2020 10:56:19 PAGE 6   
+C51 COMPILER V7.50   REG_EC                                                                09/25/2020 15:06:32 PAGE 6   
 
  303          Footnote:
  304          ******************************************************************************/
@@ -382,7 +382,7 @@ line level    source
  362          ECReg      Index_28H      _at_    (GLOBAL_BASE_ADDR + 0x28);    //
  363          ECReg      Index_29H      _at_    (GLOBAL_BASE_ADDR + 0x29);    //
  364          ECReg      Index_2AH      _at_    (GLOBAL_BASE_ADDR + 0x2A);    //
-C51 COMPILER V7.50   REG_EC                                                                09/20/2020 10:56:19 PAGE 7   
+C51 COMPILER V7.50   REG_EC                                                                09/25/2020 15:06:32 PAGE 7   
 
  365          ECReg      Index_2BH      _at_    (GLOBAL_BASE_ADDR + 0x2B);    //
  366          ECReg      Index_2CH      _at_    (GLOBAL_BASE_ADDR + 0x2C);    //
@@ -446,7 +446,7 @@ line level    source
  404          ECReg      Index_CBH      _at_    (GLOBAL_BASE_ADDR + 0xCB);    // (LDN=07)SIMPLE I/O SET 4 OUTPUT ENABLE 
              -REGISTER
  405          ECReg      Index_CCH      _at_    (GLOBAL_BASE_ADDR + 0xCC);    // (LDN=07)SIMPLE I/O SET 5 OUTPUT ENABLE 
-C51 COMPILER V7.50   REG_EC                                                                09/20/2020 10:56:19 PAGE 8   
+C51 COMPILER V7.50   REG_EC                                                                09/25/2020 15:06:32 PAGE 8   
 
              -REGISTER
  406          ECReg      Index_CDH      _at_    (GLOBAL_BASE_ADDR + 0xCD);    // (LDN=07)SIMPLE I/O SET 6 OUTPUT ENABLE 
@@ -510,7 +510,7 @@ line level    source
  461          
  462          ECReg   PWM_FAN_CTL1                    _at_ (GEE_BASE_ADDR + 0x63);
  463          ECReg   PWM_FAN_CTL2                    _at_ (GEE_BASE_ADDR + 0x6B);
-C51 COMPILER V7.50   REG_EC                                                                09/20/2020 10:56:19 PAGE 9   
+C51 COMPILER V7.50   REG_EC                                                                09/25/2020 15:06:32 PAGE 9   
 
  464          ECReg   PWM_FAN_CTL3                    _at_ (GEE_BASE_ADDR + 0x73);
  465          
@@ -568,7 +568,7 @@ line level    source
  517          
  518          
  519          
-C51 COMPILER V7.50   REG_EC                                                                09/20/2020 10:56:19 PAGE 10  
+C51 COMPILER V7.50   REG_EC                                                                09/25/2020 15:06:32 PAGE 10  
 
 ASSEMBLY LISTING OF GENERATED OBJECT CODE
 

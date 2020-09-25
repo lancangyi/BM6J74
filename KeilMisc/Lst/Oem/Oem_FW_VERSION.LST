@@ -1,4 +1,4 @@
-C51 COMPILER V7.50   OEM_FW_VERSION                                                        09/20/2020 10:56:20 PAGE 1   
+C51 COMPILER V7.50   OEM_FW_VERSION                                                        09/25/2020 15:06:33 PAGE 1   
 
 
 C51 COMPILER V7.50, COMPILATION OF MODULE OEM_FW_VERSION
@@ -23,7 +23,7 @@ line level    source
   13                  OEM_Version_MSB, OEM_Version_LSB,       0x00,0x00,      //For OEM version
   14                  0xFF,0xFF,0xFF,0xFF                                                     //For Checksum *******Do not modify*********** // 
   15          };
-C51 COMPILER V7.50   OEM_FW_VERSION                                                        09/20/2020 10:56:20 PAGE 2   
+C51 COMPILER V7.50   OEM_FW_VERSION                                                        09/25/2020 15:06:33 PAGE 2   
 
 ASSEMBLY LISTING OF GENERATED OBJECT CODE
 

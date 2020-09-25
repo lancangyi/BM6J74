@@ -202,7 +202,8 @@ void EC6266_CMD_8A(void)
    GP37_HI();
    GP24_HI();  
    //J74_001A--  DDRSIGN=0;
-   S3_FLAG = 1;	  //J74_001A++
+   //J74_001B--	S3_FLAG = 1;	  //J74_001A++
+   S3_FLAG = 0;	  //J74_001B++
    //J74_001++<<
 }
 

@@ -123,6 +123,8 @@ void Oem_Hook_1MS_Event(void)
 	*/
    //J74_001A--<<
    //J74_001A++>>
+   //J74_001B-->>
+   /*
 	if(!STATE_PM_SLP_S4())
     {
 	    GP36_HI();	
@@ -137,7 +139,7 @@ void Oem_Hook_1MS_Event(void)
 		GP37_LO();
 	    GP24_LO();
 	}
-
+	
 	if(IS_PM_SLP_S4())
     {
 		if(IS_PANSHW())
@@ -173,7 +175,25 @@ void Oem_Hook_1MS_Event(void)
 		S3_FLAG = 0;
 	}
    //J74_001A++<<
+   */
+   //J74_001B--<<
    //J74_001++<<
+    //J74_001B++>>
+	if(SystemIsS0 && !S3_FLAG) 
+	{
+		GP36_HI();	
+		GP14_HI();
+	    GP37_HI();
+		GP24_HI();
+	}
+	else if(SystemNotS0)
+	{
+		GP36_LO();	
+		GP14_LO();
+		GP37_LO();
+	    GP24_LO();
+	}	
+	//J74_001B++<<
 
 }
 

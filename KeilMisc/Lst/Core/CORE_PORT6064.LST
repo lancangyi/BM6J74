@@ -1,4 +1,4 @@
-C51 COMPILER V7.50   CORE_PORT6064                                                         09/20/2020 10:56:19 PAGE 1   
+C51 COMPILER V7.50   CORE_PORT6064                                                         09/25/2020 15:06:32 PAGE 1   
 
 
 C51 COMPILER V7.50, COMPILATION OF MODULE CORE_PORT6064
@@ -62,7 +62,7 @@ line level    source
                           }
                           else
                           {
-C51 COMPILER V7.50   CORE_PORT6064                                                         09/20/2020 10:56:19 PAGE 2   
+C51 COMPILER V7.50   CORE_PORT6064                                                         09/25/2020 15:06:32 PAGE 2   
 
                               Hook_A20OFF();
                           }
@@ -126,7 +126,7 @@ line level    source
                   ResponseKBData(Pass_Off);
               }
               
-C51 COMPILER V7.50   CORE_PORT6064                                                         09/20/2020 10:56:19 PAGE 3   
+C51 COMPILER V7.50   CORE_PORT6064                                                         09/25/2020 15:06:32 PAGE 3   
 
               //-----------------------------------------------------------------------
               // Handle command 36 - Send Reject make code 1 to host
@@ -190,7 +190,7 @@ line level    source
                       SetHandleCmdData(1);
               }
               
-C51 COMPILER V7.50   CORE_PORT6064                                                         09/20/2020 10:56:19 PAGE 4   
+C51 COMPILER V7.50   CORE_PORT6064                                                         09/25/2020 15:06:32 PAGE 4   
 
               //-----------------------------------------------------------------------
               // Handle 64 port command 9x.
@@ -254,7 +254,7 @@ line level    source
               {
                       Tmp_Load = 0x00;
                       SetHandleCmdData(8);
-C51 COMPILER V7.50   CORE_PORT6064                                                         09/20/2020 10:56:19 PAGE 5   
+C51 COMPILER V7.50   CORE_PORT6064                                                         09/25/2020 15:06:32 PAGE 5   
 
               }
               
@@ -318,7 +318,7 @@ line level    source
                   //#else
                   //ScanAUXDevice(ScanAllPS2Channel);   // Scan all PS2 channels
                   //#endif
-C51 COMPILER V7.50   CORE_PORT6064                                                         09/20/2020 10:56:19 PAGE 6   
+C51 COMPILER V7.50   CORE_PORT6064                                                         09/25/2020 15:06:32 PAGE 6   
 
                   
                   MULPX_Multiplex = 0;                // Dino MUX ps2
@@ -382,7 +382,7 @@ line level    source
               // Handle 64 port command Cx.
               // Return: Byte from input port.
               //     Bit 7 = Keyboard not inhibited via switch.
-C51 COMPILER V7.50   CORE_PORT6064                                                         09/20/2020 10:56:19 PAGE 7   
+C51 COMPILER V7.50   CORE_PORT6064                                                         09/25/2020 15:06:32 PAGE 7   
 
               //     Bit 6 = Monochrome adapter (0 = Color/Graphics adapter).
               //     Bit 5 = Manufacturing jumper not installed.
@@ -446,7 +446,7 @@ line level    source
                           if(IS_MASK_CLEAR(KBHISR,C_D))   // Data Port
                           {
                               KBHIData = KBHIDIR;
-C51 COMPILER V7.50   CORE_PORT6064                                                         09/20/2020 10:56:19 PAGE 8   
+C51 COMPILER V7.50   CORE_PORT6064                                                         09/25/2020 15:06:32 PAGE 8   
 
                               Data_To_Host(KBHIData);
                           }
@@ -510,7 +510,7 @@ line level    source
               //-----------------------------------------------------------------------
               void Cmd_D4(void)        
               {
-C51 COMPILER V7.50   CORE_PORT6064                                                         09/20/2020 10:56:19 PAGE 9   
+C51 COMPILER V7.50   CORE_PORT6064                                                         09/25/2020 15:06:32 PAGE 9   
 
                       SetHandleCmdData(1);
                       MULPX_Multiplex = 0;            // Dino MUX ps2
@@ -574,7 +574,7 @@ line level    source
                           Cmd_AD();           // Disable keyboard interface. 
                       }
                       else 
-C51 COMPILER V7.50   CORE_PORT6064                                                         09/20/2020 10:56:19 PAGE 10  
+C51 COMPILER V7.50   CORE_PORT6064                                                         09/25/2020 15:06:32 PAGE 10  
 
                       {
                           Cmd_AE();           // Enable keyboard interface. 
@@ -638,7 +638,7 @@ line level    source
                           printf("\nMS 90Port CMD : 0X%bX\n",KBHIData);
                       #endif
                   }
-C51 COMPILER V7.50   CORE_PORT6064                                                         09/20/2020 10:56:19 PAGE 11  
+C51 COMPILER V7.50   CORE_PORT6064                                                         09/25/2020 15:06:32 PAGE 11  
 
                   
                   #if !TouchPad_only
@@ -702,7 +702,7 @@ line level    source
               //-----------------------------------------------------------------------
               void Cmd_92Data(void)
               {
-C51 COMPILER V7.50   CORE_PORT6064                                                         09/20/2020 10:56:19 PAGE 12  
+C51 COMPILER V7.50   CORE_PORT6064                                                         09/25/2020 15:06:32 PAGE 12  
 
                   if(PS2_MSCMD)
                   {
@@ -766,7 +766,7 @@ line level    source
                               Flag.PASS_READY = 0;    // clear password ready flag and exit 
                                                               // Cmd_Byte has already been set to 0.  So the code will
                                                               // NOT wait for next byte 
-C51 COMPILER V7.50   CORE_PORT6064                                                         09/20/2020 10:56:19 PAGE 13  
+C51 COMPILER V7.50   CORE_PORT6064                                                         09/25/2020 15:06:32 PAGE 13  
 
                       }
                       else
@@ -830,7 +830,7 @@ line level    source
               {
                   //if(PS2_MSCMD)
                   //{
-C51 COMPILER V7.50   CORE_PORT6064                                                         09/20/2020 10:56:19 PAGE 14  
+C51 COMPILER V7.50   CORE_PORT6064                                                         09/25/2020 15:06:32 PAGE 14  
 
                   //    #ifdef UART_Debug
                   //        printf("\nMS CMD : 0X%bX\n",KBHIData);
@@ -894,7 +894,7 @@ line level    source
                   ack = 0x00;
                   ack1 = 0x00;
                   ack2 = 0x00;
-C51 COMPILER V7.50   CORE_PORT6064                                                         09/20/2020 10:56:19 PAGE 15  
+C51 COMPILER V7.50   CORE_PORT6064                                                         09/25/2020 15:06:32 PAGE 15  
 
                   
                   //-------------------------------------------------------------------------
@@ -958,7 +958,7 @@ line level    source
                                   Send2Port((Main_KB_CHN-1), (nKB60DAT&0x07), SendCmdToKB);
                           }
                           else
-C51 COMPILER V7.50   CORE_PORT6064                                                         09/20/2020 10:56:19 PAGE 16  
+C51 COMPILER V7.50   CORE_PORT6064                                                         09/25/2020 15:06:32 PAGE 16  
 
                           {
                                   Send2Port((Main_KB_CHN-1), nKB60DAT, SendCmdToKB);
@@ -1022,7 +1022,7 @@ line level    source
                                   ack = 0xFA;
                                   break;
               
-C51 COMPILER V7.50   CORE_PORT6064                                                         09/20/2020 10:56:19 PAGE 17  
+C51 COMPILER V7.50   CORE_PORT6064                                                         09/25/2020 15:06:32 PAGE 17  
 
                       case 0xF5:  /* Default disable. */
                                   KeyboardDriverIn = 0;
@@ -1086,7 +1086,7 @@ line level    source
                           RamDebug(ack);
                                     
                           if(ack1 != 0x00)
-C51 COMPILER V7.50   CORE_PORT6064                                                         09/20/2020 10:56:19 PAGE 18  
+C51 COMPILER V7.50   CORE_PORT6064                                                         09/25/2020 15:06:32 PAGE 18  
 
                           {
                               //KBC_DataPending(ack1);
@@ -1150,7 +1150,7 @@ line level    source
                *        bit_state = 1 to set overlay/numlock bits
                *                  = 0 to clear overlay/numlock bits
                *
-C51 COMPILER V7.50   CORE_PORT6064                                                         09/20/2020 10:56:19 PAGE 19  
+C51 COMPILER V7.50   CORE_PORT6064                                                         09/25/2020 15:06:32 PAGE 19  
 
                * Return: updated LED data (num lock and overlay state updated)
                * ------------------------------------------------------------------------- */
@@ -1214,7 +1214,7 @@ line level    source
               
               BYTE Read_Output_Port_2(void)
               {
-C51 COMPILER V7.50   CORE_PORT6064                                                         09/20/2020 10:56:19 PAGE 20  
+C51 COMPILER V7.50   CORE_PORT6064                                                         09/25/2020 15:06:32 PAGE 20  
 
               #if 1
                   BYTE p2byte;
@@ -1278,7 +1278,7 @@ line level    source
                       break;
               
                       case 0x76:
-C51 COMPILER V7.50   CORE_PORT6064                                                         09/20/2020 10:56:19 PAGE 21  
+C51 COMPILER V7.50   CORE_PORT6064                                                         09/25/2020 15:06:32 PAGE 21  
 
                       Cmd_76Data();
                       break;
@@ -1342,7 +1342,7 @@ line level    source
                       case 0x33:
                       Cmd_33();
                       break;
-C51 COMPILER V7.50   CORE_PORT6064                                                         09/20/2020 10:56:19 PAGE 22  
+C51 COMPILER V7.50   CORE_PORT6064                                                         09/25/2020 15:06:32 PAGE 22  
 
               
                       case 0x34:
@@ -1406,7 +1406,7 @@ line level    source
               //        break;
               
                       case 0xA7:
-C51 COMPILER V7.50   CORE_PORT6064                                                         09/20/2020 10:56:19 PAGE 23  
+C51 COMPILER V7.50   CORE_PORT6064                                                         09/25/2020 15:06:32 PAGE 23  
 
                       Cmd_A7();
                       break;
@@ -1470,7 +1470,7 @@ line level    source
                       case 0xE0:
                       Cmd_E0();
                       break;
-C51 COMPILER V7.50   CORE_PORT6064                                                         09/20/2020 10:56:19 PAGE 24  
+C51 COMPILER V7.50   CORE_PORT6064                                                         09/25/2020 15:06:32 PAGE 24  
 
               
                       case 0xF0:
@@ -1534,7 +1534,7 @@ line level    source
               }
               
               void KBC_DataPending(BYTE nPending)
-C51 COMPILER V7.50   CORE_PORT6064                                                         09/20/2020 10:56:19 PAGE 25  
+C51 COMPILER V7.50   CORE_PORT6064                                                         09/25/2020 15:06:32 PAGE 25  
 
               {
                   if( KBPendingRXCount > 3 )  return;
@@ -1544,7 +1544,7 @@ line level    source
                   //SetServiceSendFlag();
               }
               #endif
-C51 COMPILER V7.50   CORE_PORT6064                                                         09/20/2020 10:56:19 PAGE 26  
+C51 COMPILER V7.50   CORE_PORT6064                                                         09/25/2020 15:06:32 PAGE 26  
 
 ASSEMBLY LISTING OF GENERATED OBJECT CODE
 

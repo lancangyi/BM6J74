@@ -1,4 +1,4 @@
-C51 COMPILER V7.50   OEM_GPIO                                                              09/20/2020 10:56:20 PAGE 1   
+C51 COMPILER V7.50   OEM_GPIO                                                              09/25/2020 15:06:32 PAGE 1   
 
 
 C51 COMPILER V7.50, COMPILATION OF MODULE OEM_GPIO
@@ -62,7 +62,7 @@ line level    source
   52   1              Index_07H = 0x07;
   53   1              SET_BIT(GP36_SEL_REG,6);                //Set GP36
   54   1              SET_BIT(GP3X_FUNC_REG,6);               //Set GP36 simple IO function
-C51 COMPILER V7.50   OEM_GPIO                                                              09/20/2020 10:56:20 PAGE 2   
+C51 COMPILER V7.50   OEM_GPIO                                                              09/25/2020 15:06:32 PAGE 2   
 
   55   1              SET_BIT(GP3X_IOMODE_REG,6);     //Set GP36 output
   56   1              //J74_001A--    GP36_HI();
@@ -97,7 +97,7 @@ line level    source
   85          
   86          
   87          
-C51 COMPILER V7.50   OEM_GPIO                                                              09/20/2020 10:56:20 PAGE 3   
+C51 COMPILER V7.50   OEM_GPIO                                                              09/25/2020 15:06:32 PAGE 3   
 
 ASSEMBLY LISTING OF GENERATED OBJECT CODE
 
@@ -161,7 +161,7 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
                                            ; SOURCE LINE # 46
 0017 120000      R     LCALL   L?0005
 001A 4408              ORL     A,#08H
-C51 COMPILER V7.50   OEM_GPIO                                                              09/20/2020 10:56:20 PAGE 4   
+C51 COMPILER V7.50   OEM_GPIO                                                              09/25/2020 15:06:32 PAGE 4   
 
 001C F0                MOVX    @DPTR,A
                                            ; SOURCE LINE # 47
@@ -225,7 +225,7 @@ ASSEMBLY LISTING OF GENERATED OBJECT CODE
 006A 900000      E     MOV     DPTR,#Index_CAH
 006D E0                MOVX    A,@DPTR
 006E 4480              ORL     A,#080H
-C51 COMPILER V7.50   OEM_GPIO                                                              09/20/2020 10:56:20 PAGE 5   
+C51 COMPILER V7.50   OEM_GPIO                                                              09/25/2020 15:06:32 PAGE 5   
 
 0070 F0                MOVX    @DPTR,A
                                            ; SOURCE LINE # 68

@@ -111,6 +111,8 @@ void Reset_Initialization(void)
 	Init_BRAM() ;
 	
 	Init_Timers();
+	//J74_001B-->>
+	/*
 	//J74_001A++>> 
 	if(BRAM[60] == 0x55)
 	{
@@ -118,6 +120,8 @@ void Reset_Initialization(void)
 		BRAM[60] = 0;
 	}
 	//J74_001A++<<
+	*/
+	//J74_001B--<<
 }
 
 void Init_Timers(void)
