@@ -1,3 +1,7 @@
-KeilMisc/
+*.LST
+*.OBJ
+*.MAP
+*.ABS
+*.HEX
 PRO/
 .vscode/
