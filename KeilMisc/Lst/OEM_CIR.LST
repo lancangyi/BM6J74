@@ -1,0 +1,340 @@
+C51 COMPILER V7.50   OEM_CIR                                                               09/08/2020 15:56:23 PAGE 1   
+
+
+C51 COMPILER V7.50, COMPILATION OF MODULE OEM_CIR
+OBJECT MODULE PLACED IN Code\OEM\OEM_CIR.OBJ
+COMPILER INVOKED BY: C:\Keil\C51\BIN\c51.exe Code\OEM\OEM_CIR.C LA WL(1) CD OT(9,SIZE) NOAREGS OR INCDIR(.\Code\CORE\INC
+                    -LUDE\;.\Code\OEM\INCLUDE\;.\Code\CHIP\INCLUDE\)
+
+line level    source
+
+   1          /*-----------------------------------------------------------------------------
+   2           * TITLE: OEM_CIR.C
+   3           *
+   4           * Author : Dino
+   5           *
+   6           * Note : These functions are reference only.
+   7           *        Please follow your project software specification to do some modification.
+   8           *---------------------------------------------------------------------------*/
+   9          
+  10          #include <CORE_INCLUDE.H>
+  11          #include <OEM_INCLUDE.H>
+  12          
+  13          #if CIRFuncSupport
+              #define CIRCompareOffset        7
+              
+              const BYTE code RC6PowerKey[]={ 0x95,0x55,0xA5,0xF5 };  // RC6 power key
+              
+              //----------------------------------------------------------------------------
+              // The function of CIR wake up system 
+              //----------------------------------------------------------------------------
+              void Hook_CIRWakeUp(void)
+              {
+                  BYTE cirdata;
+                  if(SystemIsS3 || SystemIsS4 || SystemIsS5)
+                      {
+                              CLEAR_MASK(C0SCK, SCKS);                // CIR unselect slow clock
+                              for(ITempB01=0x00;ITempB01<CIRCompareOffset;ITempB01++)
+                              {
+                          cirdata=C0DR;
+                                      _nop_();
+                              }
+              
+                              for(ITempB01=0x00;ITempB01<sizeof(RC6PowerKey);ITempB01++)
+                              {
+                                      cirdata=C0DR;
+                                      if(cirdata != RC6PowerKey[ITempB01])
+                                      {
+                                              ClearCIR();
+                                              return;
+                                      }
+                              }
+                      
+                              if(SystemIsS3)
+                              {
+                                      CIRS3WakeUp();
+                              }
+                              else
+                              {
+                                      CIRS4S5WakeUp();
+                              }
+                      }
+              }
+              
+              //----------------------------------------------------------------------------
+C51 COMPILER V7.50   OEM_CIR                                                               09/08/2020 15:56:23 PAGE 2   
+
+              // The function of CIR S4/S5 wake up system 
+              //----------------------------------------------------------------------------
+              void CIRS4S5WakeUp(void)
+              {
+                      //Oem_TriggerS5S0();
+                      SET_MASK(C0MSTCR, CIR_RESET);           //CIR Reset
+              }
+              
+              //----------------------------------------------------------------------------
+              // The function of CIR S3 wake up system 
+              //----------------------------------------------------------------------------
+              void CIRS3WakeUp(void)
+              {
+                      Oem_TriggerS3S0();
+                      SET_MASK(C0MSTCR, CIR_RESET);           //CIR Reset
+              }
+              #endif
+  72          
+  73          //----------------------------------------------------------------------------
+  74          // The function of CIR Initialization
+  75          //----------------------------------------------------------------------------
+  76          void Init_CIR(void)
+  77          {       
+  78   1              GPCRC0 = 0X00;                          // CIR RX (8512 only) Set GPIO to ALT function.
+  79   1              CLEAR_MASK(C0RCR, CIR_RXEN);    // RX Disable                   
+  80   1              C0BDHR = 0x00;                          // BaudRate 
+  81   1              C0BDLR = 0x33;
+  82   1              C0MSTCR = 0x08;                         // FIFO Threshold = 17 Bytes
+  83   1              C0CFR = 0x0B;                           // Carrier Freqency = 38KHz     
+  84   1      
+  85   1              bConfirmCirRIM();                       // Write receiver enter an inactive mode
+  86   1              bClearCirFIFO();                        // Clear FIFO
+  87   1      
+  88   1              C0IER = 0x82;                           // CIR Interrupt Enable
+  89   1                                                                      // CIR receive available interrupt   
+  90   1              SET_MASK(IELMR1, Int_CIR);  // CIR Interrupt must use Edge-Trig
+  91   1              SET_MASK(IER1, Int_CIR);    // Enable INT15 CIR Interrupt
+  92   1          ISR1 = Int_CIR;             // Clear INT15 pending Status
+  93   1              SET_MASK(C0RCR, CIR_RXEN);  // RX enable         
+  94   1      }
+  95          
+  96          //----------------------------------------------------------------------------
+  97          // The function of CIR module reset
+  98          //----------------------------------------------------------------------------
+  99          void Reset_CIR(void)
+ 100          {
+ 101   1              SET_MASK(RSTC2, RCIR);          // Reset CIR module
+ 102   1              CLEAR_MASK(IER1, Int_CIR);  // Disable INT15 CIR Interrupt
+ 103   1          ISR1 = Int_CIR;             // Clear INT15 pending Status
+ 104   1      }
+ 105          
+ 106          //----------------------------------------------------------------------------
+ 107          // The function of clearing CIR FIFO
+ 108          //----------------------------------------------------------------------------
+ 109          void bClearCirFIFO(void)
+ 110          {
+ 111   1              SET_MASK(C0MSTCR, CIR_FIFOCLR);                     // Write 1 for Clearing FIFO data
+ 112   1              _nop_();
+ 113   1              while(IS_MASK_SET(C0MSTCR, CIR_FIFOCLR))        // Wait FIFO Clear Done
+ 114   1              {
+ 115   2                      ;                                       
+ 116   2              }
+C51 COMPILER V7.50   OEM_CIR                                                               09/08/2020 15:56:23 PAGE 3   
+
+ 117   1      }
+ 118          
+ 119          //----------------------------------------------------------------------------
+ 120          // The function of confirming CIR receiver inactive mode
+ 121          //----------------------------------------------------------------------------
+ 122          void bConfirmCirRIM(void)
+ 123          {
+ 124   1              SET_MASK(C0RCR, CIR_RXACT);                     // Write 1 for clearing Receive Active
+ 125   1              _nop_();
+ 126   1              while(IS_MASK_SET(C0RCR, CIR_RXACT))    // Wait CIR receiver enter an inactive mode
+ 127   1              {
+ 128   2                      ;                                       
+ 129   2              }
+ 130   1      }
+ 131          
+ 132          //----------------------------------------------------------------------------
+ 133          // The function of clearing CIR
+ 134          //----------------------------------------------------------------------------
+ 135          void ClearCIR(void) 
+ 136          {
+ 137   1              CLEAR_MASK(C0RCR, CIR_RXEN);    // RX Disable   
+ 138   1              bConfirmCirRIM();                       // Write receiver enter an inactive mode
+ 139   1              bClearCirFIFO();                        // Clear FIFO
+ 140   1              SET_MASK(C0RCR, CIR_RXEN);  // RX enable 
+ 141   1      } 
+ 142          
+ 143          //----------------------------------------------------------------------------
+ 144          // The function of CIR Interrupt service routine
+ 145          //----------------------------------------------------------------------------
+ 146          void service_cir(void)
+ 147          {
+ 148   1      #if CIRFuncSupport
+                      Hook_CIRWakeUp();
+              #endif
+ 151   1      }
+C51 COMPILER V7.50   OEM_CIR                                                               09/08/2020 15:56:23 PAGE 4   
+
+ASSEMBLY LISTING OF GENERATED OBJECT CODE
+
+
+             ; FUNCTION Init_CIR (BEGIN)
+                                           ; SOURCE LINE # 76
+                                           ; SOURCE LINE # 77
+                                           ; SOURCE LINE # 78
+0000 E4                CLR     A
+0001 900000      E     MOV     DPTR,#GPCRC0
+0004 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 79
+0005 900000      E     MOV     DPTR,#C0RCR
+0008 E0                MOVX    A,@DPTR
+0009 547F              ANL     A,#07FH
+000B F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 80
+000C E4                CLR     A
+000D 900000      E     MOV     DPTR,#C0BDHR
+0010 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 81
+0011 900000      E     MOV     DPTR,#C0BDLR
+0014 7433              MOV     A,#033H
+0016 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 82
+0017 900000      E     MOV     DPTR,#C0MSTCR
+001A 7408              MOV     A,#08H
+001C F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 83
+001D 900000      E     MOV     DPTR,#C0CFR
+0020 740B              MOV     A,#0BH
+0022 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 85
+0023 120000      R     LCALL   bConfirmCirRIM
+                                           ; SOURCE LINE # 86
+0026 120000      R     LCALL   bClearCirFIFO
+                                           ; SOURCE LINE # 88
+0029 900000      E     MOV     DPTR,#C0IER
+002C 7482              MOV     A,#082H
+002E F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 90
+002F 900000      E     MOV     DPTR,#IELMR1
+0032 E0                MOVX    A,@DPTR
+0033 4480              ORL     A,#080H
+0035 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 91
+0036 900000      E     MOV     DPTR,#IER1
+0039 E0                MOVX    A,@DPTR
+003A 4480              ORL     A,#080H
+003C F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 92
+003D 900000      E     MOV     DPTR,#ISR1
+0040 7480              MOV     A,#080H
+0042 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 93
+0043 900000      E     MOV     DPTR,#C0RCR
+0046 E0                MOVX    A,@DPTR
+0047 4480              ORL     A,#080H
+0049 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 94
+004A 22                RET     
+             ; FUNCTION Init_CIR (END)
+
+C51 COMPILER V7.50   OEM_CIR                                                               09/08/2020 15:56:23 PAGE 5   
+
+             ; FUNCTION Reset_CIR (BEGIN)
+                                           ; SOURCE LINE # 99
+                                           ; SOURCE LINE # 100
+                                           ; SOURCE LINE # 101
+0000 900000      E     MOV     DPTR,#RSTC2
+0003 E0                MOVX    A,@DPTR
+0004 4402              ORL     A,#02H
+0006 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 102
+0007 900000      E     MOV     DPTR,#IER1
+000A E0                MOVX    A,@DPTR
+000B 547F              ANL     A,#07FH
+000D F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 103
+000E 900000      E     MOV     DPTR,#ISR1
+0011 7480              MOV     A,#080H
+0013 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 104
+0014 22                RET     
+             ; FUNCTION Reset_CIR (END)
+
+             ; FUNCTION bClearCirFIFO (BEGIN)
+                                           ; SOURCE LINE # 109
+                                           ; SOURCE LINE # 110
+                                           ; SOURCE LINE # 111
+0000 900000      E     MOV     DPTR,#C0MSTCR
+0003 E0                MOVX    A,@DPTR
+0004 4402              ORL     A,#02H
+0006 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 112
+0007 00                NOP     
+0008         ?C0003:
+                                           ; SOURCE LINE # 113
+0008 900000      E     MOV     DPTR,#C0MSTCR
+000B E0                MOVX    A,@DPTR
+000C 20E1F9            JB      ACC.1,?C0003
+                                           ; SOURCE LINE # 114
+                                           ; SOURCE LINE # 116
+                                           ; SOURCE LINE # 117
+000F         ?C0005:
+000F 22                RET     
+             ; FUNCTION bClearCirFIFO (END)
+
+             ; FUNCTION bConfirmCirRIM (BEGIN)
+                                           ; SOURCE LINE # 122
+                                           ; SOURCE LINE # 123
+                                           ; SOURCE LINE # 124
+0000 900000      E     MOV     DPTR,#C0RCR
+0003 E0                MOVX    A,@DPTR
+0004 4408              ORL     A,#08H
+0006 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 125
+0007 00                NOP     
+0008         ?C0006:
+                                           ; SOURCE LINE # 126
+0008 900000      E     MOV     DPTR,#C0RCR
+000B E0                MOVX    A,@DPTR
+000C 20E3F9            JB      ACC.3,?C0006
+                                           ; SOURCE LINE # 127
+                                           ; SOURCE LINE # 129
+                                           ; SOURCE LINE # 130
+000F         ?C0008:
+C51 COMPILER V7.50   OEM_CIR                                                               09/08/2020 15:56:23 PAGE 6   
+
+000F 22                RET     
+             ; FUNCTION bConfirmCirRIM (END)
+
+             ; FUNCTION ClearCIR (BEGIN)
+                                           ; SOURCE LINE # 135
+                                           ; SOURCE LINE # 136
+                                           ; SOURCE LINE # 137
+0000 900000      E     MOV     DPTR,#C0RCR
+0003 E0                MOVX    A,@DPTR
+0004 547F              ANL     A,#07FH
+0006 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 138
+0007 120000      R     LCALL   bConfirmCirRIM
+                                           ; SOURCE LINE # 139
+000A 120000      R     LCALL   bClearCirFIFO
+                                           ; SOURCE LINE # 140
+000D 900000      E     MOV     DPTR,#C0RCR
+0010 E0                MOVX    A,@DPTR
+0011 4480              ORL     A,#080H
+0013 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 141
+0014 22                RET     
+             ; FUNCTION ClearCIR (END)
+
+             ; FUNCTION service_cir (BEGIN)
+                                           ; SOURCE LINE # 146
+                                           ; SOURCE LINE # 147
+                                           ; SOURCE LINE # 151
+0000 22                RET     
+             ; FUNCTION service_cir (END)
+
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    150    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

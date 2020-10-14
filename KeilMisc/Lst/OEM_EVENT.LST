@@ -1,0 +1,1141 @@
+C51 COMPILER V7.50   OEM_EVENT                                                             09/08/2020 15:56:22 PAGE 1   
+
+
+C51 COMPILER V7.50, COMPILATION OF MODULE OEM_EVENT
+OBJECT MODULE PLACED IN Code\OEM\OEM_EVENT.OBJ
+COMPILER INVOKED BY: C:\Keil\C51\BIN\c51.exe Code\OEM\OEM_EVENT.C LA WL(1) CD OT(9,SIZE) NOAREGS OR INCDIR(.\Code\CORE\I
+                    -NCLUDE\;.\Code\OEM\INCLUDE\;.\Code\CHIP\INCLUDE\)
+
+line level    source
+
+   1          /*-----------------------------------------------------------------------------
+   2           * TITLE: OEM_EVENT.C
+   3           *
+   4           * Author : Dino
+   5           *
+   6           * Note : These functions are reference only.
+   7           *        Please follow your project software specification to do some modification.
+   8           *---------------------------------------------------------------------------*/
+   9          
+  10          #include <CORE_INCLUDE.H>
+  11          #include <OEM_INCLUDE.H>
+  12          
+  13          
+  14          void Auto_NOTIFY_EM(BYTE adata)
+  15          {
+  16   1              VPC_Lenovo|=Genenal_Bit_vpc;
+  17   1              
+  18   1              if(adata)
+  19   1              {
+  20   2                      Lenvo_general_f|=auto_mode_f;
+  21   2              }
+  22   1              else
+  23   1              {
+  24   2                      Lenvo_general_f&=~auto_mode_f;
+  25   2              }
+  26   1              ECQEvent(NOTIFY_EM_EVT,SCIMode_Normal);
+  27   1      }
+  28          void Check_notify_em(void)
+  29          {
+  30   1              if(Device_Status_AllRF&Super_performance_F)
+  31   1              {
+  32   2                      VPC_Lenovo|=Genenal_Bit_vpc;
+  33   2                      Lenvo_general_f|=super_temp_f;
+  34   2                      ECQEvent(NOTIFY_EM_EVT,SCIMode_Normal);
+  35   2              }
+  36   1      }
+  37          
+  38          //-----------------------------------------------------------------------------
+  39          // no change function
+  40          
+  41          //-----------------------------------------------------------------------------
+  42          void NullEvent(void)
+  43          {
+  44   1      
+  45   1      }
+  46          
+  47          //-----------------------------------------------------------------------------
+  48          // Adapter in function
+  49          //-----------------------------------------------------------------------------
+  50          void AdapterIn(void)
+  51          {
+  52   1              UART_Print_Str("AC plug IN!\n");
+  53   1              
+  54   1              SET_MASK(BAT1_STATUS,OS_AC_IN);
+C51 COMPILER V7.50   OEM_EVENT                                                             09/08/2020 15:56:22 PAGE 2   
+
+  55   1              SET_MASK(BAT1_CHG,AC_IN);
+  56   1      }
+  57          
+  58          //-----------------------------------------------------------------------------
+  59          // Adapter out function
+  60          //-----------------------------------------------------------------------------
+  61          void AdapterOut(void)
+  62          {
+  63   1              UART_Print_Str("AC plug OUT!\n");
+  64   1              
+  65   1              CLEAR_MASK(BAT1_STATUS,OS_AC_IN);
+  66   1              CLEAR_MASK(BAT1_CHG,AC_IN);
+  67   1      }
+  68          
+  69          //-----------------------------------------------------------------------------
+  70          //power button was pressed
+  71          //-----------------------------------------------------------------------------
+  72          void PSWPressed(void)
+  73          {
+  74   1              if(Read_LID())
+  75   1             return;
+  76   1              UART_Print_Str("\nPower button is pressed!\n");
+  77   1              
+  78   1              #if BRAM_Debug  
+                      Copy_BRAM_SRAM();
+                      #endif
+  81   1      
+  82   1          PSW_COUNTER = T_PSWPAUSE;  //T_PSWOFF;                      // initialize counter
+  83   1      
+  84   1              CLEAR_MASK(Oem_Globe_Flag1,Oem_PCHBTN_En);
+  85   1          switch (SysPowState)
+  86   1          {
+  87   2              case SYSTEM_S5 :
+  88   2                              {
+  89   3                                      Oem_TriggerS5S0();
+  90   3                                      SET_MASK(Oem_Globe_Flag1,Oem_PCHBTN_En);
+  91   3                              }
+  92   2                              break;
+  93   2              case SYSTEM_S3 :
+  94   2                              {
+  95   3                                      Oem_TriggerS3S0();
+  96   3                                      SET_MASK(Oem_Globe_Flag1,Oem_PCHBTN_En);
+  97   3                              }
+  98   2                              break;
+  99   2                      case SYSTEM_S0 :
+ 100   2                              SHUT_COUNT = 0;
+ 101   2                              SET_MASK(Oem_Globe_Flag1,Oem_PCHBTN_En);
+ 102   2                              PWR_ON_LO();    //TF_010++
+ 103   2                              break;
+ 104   2              default :
+ 105   2                  break;
+ 106   2          }
+ 107   1      }
+ 108          
+ 109          
+ 110          //-----------------------------------------------------------------------------
+ 111          //power button was released
+ 112          //-----------------------------------------------------------------------------
+ 113          void PSWReleased(void)
+ 114          {
+ 115   1              UART_Print_Str("\nPower button is released!\n");
+ 116   1              PWR_ON_HI();    //TF_010++
+C51 COMPILER V7.50   OEM_EVENT                                                             09/08/2020 15:56:22 PAGE 3   
+
+ 117   1      }
+ 118          
+ 119          //-----------------------------------------------------------------------------
+ 120          //power button was overrided (press or release)   10ms time base
+ 121          //-----------------------------------------------------------------------------
+ 122          void PSWOverrided(void)
+ 123          {
+ 124   1              if(Read_LID())
+ 125   1             return;
+ 126   1              if(PSW_COUNTER != 0 )   
+ 127   1              {                                                                        
+ 128   2                      PSW_COUNTER--;   // PSW_COUNTER count down, EC to South Bridge 200ms
+ 129   2              }
+ 130   1      
+ 131   1              if(SystemIsS0 && (IS_MASK_SET(POWER_FLAG1,wait_PSW_off)))
+ 132   1              {
+ 133   2                      if(SHUT_COUNT<400)
+ 134   2                      {
+ 135   3                              SHUT_COUNT++;
+ 136   3                      }
+ 137   2                      else
+ 138   2                      {
+ 139   3                              Oem_TriggerS0S5(SC_PSW_PRESS);
+ 140   3                      }
+ 141   2              }
+ 142   1              else
+ 143   1              {
+ 144   2                      SHUT_COUNT=0;
+ 145   2              }
+ 146   1      }
+ 147          //-----------------------------------------------------------------------------
+ 148          
+ 149          
+ 150          void HW_Reset_Press(void)
+ 151          {
+ 152   1      }
+ 153          
+ 154          void HW_Reset_Released(void)
+ 155          {
+ 156   1              if(SystemIsS0)
+ 157   1              {
+ 158   2                      if(IS_MASK_SET(EVT_STATUS2,Sys_ResetPowerOn_f))
+ 159   2                      {
+ 160   3                              Oem_TriggerS0S5(SC_Sys_Reset);
+ 161   3                              SET_MASK(EVT_STATUS2,Sys_ResetPowerOff_f);
+ 162   3                              CLEAR_MASK(EVT_STATUS2,Sys_ResetPowerOn_f);
+ 163   3                      }
+ 164   2              }
+ 165   1      }
+ 166          
+ 167          //-----------------------------------------------------------------------------
+ 168          // LID  close
+ 169          //-----------------------------------------------------------------------------
+ 170          void LID_CLOSE(void)
+ 171          {
+ 172   1      
+ 173   1              SET_MASK(EC_EXT_SOURCE_STATE,LID_CLOSE_Act);
+ 174   1              if(SysPowState == SYSTEM_S0)
+ 175   1              {
+ 176   2                      ECQEvent(LID_EVT,SCIMode_Normal);
+ 177   2                      Device_Status_Lenovo &= ~Inverter_S_B;
+ 178   2              }
+C51 COMPILER V7.50   OEM_EVENT                                                             09/08/2020 15:56:22 PAGE 4   
+
+ 179   1              BAT1_CHG &= ~Lid_close;
+ 180   1      }
+ 181          
+ 182          //-----------------------------------------------------------------------------
+ 183          // LID  close
+ 184          //-----------------------------------------------------------------------------
+ 185          void LID_OPEN(void)
+ 186          {
+ 187   1              EC_EXT_SOURCE_STATE &= ~LID_CLOSE_Act;
+ 188   1                                      
+ 189   1              ECQEvent(LID_EVT,SCIMode_Normal);               
+ 190   1              Device_Status_Lenovo |= Inverter_S_B;
+ 191   1              
+ 192   1              if(SysPowState == SYSTEM_S3)            
+ 193   1                      PulseSBPowerButton();
+ 194   1              BAT1_CHG |= Lid_close;
+ 195   1      }
+ 196          
+ 197          
+ 198          // ----------------------------------------------------------------------------
+ 199          // Device insert/remove debounce routine.
+ 200          // input:   device_id
+ 201          // ----------------------------------------------------------------------------
+ 202          const struct sDebounce code Debounce_TBL[] =
+ 203          {/*
+ 204          0*/     {&POWER_FLAG1 ,wait_PSW_off      ,&DEBOUNCE_CONT1 ,T_PSW_DEBOUNCE     ,PSWPressed  ,PSWReleased ,PSWOv
+             -errided }, /*
+ 205          1*/     {&POWER_FLAG1 ,adapter_in                ,&DEBOUNCE_CONT2 ,T_AC_DEBOUNCE      ,AdapterIn   ,AdapterOut  ,NullEvent  
+             -  }, /*
+ 206          2*/     {&BT1_STATUS1 ,bat_in                    ,&DEBOUNCE_CONT3 ,T_BAT_DEBOUNCE         ,NullEvent   ,NullEvent       ,NullEvent    }, /
+             -*
+ 207          3*/     {&EVT_STATUS1 ,Lid_close_f               ,&DEBOUNCE_CONT4 ,T_LID_DEBOUNCE     ,LID_CLOSE   ,LID_OPEN    ,NullEvent
+             -    },/*
+ 208          4*/     {&EVT_STATUS1 ,PCI_Wake_f                ,&DEBOUNCE_CONT5 ,T_PCIWake_DEBOUNCE ,NullEvent   ,NullEvent   ,NullEvent 
+             -   }, /*
+ 209          5*/     {&POWER_FLAG1 ,wait_NovoBtn_off  ,&DEBOUNCE_CONT6 ,T_PSW_DEBOUNCE     ,HW_Reset_Press, HW_Reset_Releas
+             -ed   ,NullEvent    }, /*
+ 210          6*/     {&EVT_STATUS1 ,GPU_BLK_f                 ,&DEBOUNCE_CONT7 ,T_10ms_DEBOUNCE    ,NullEvent   ,NullEvent   ,NullEvent  
+             -  }, /*
+ 211          7*/     {&EVT_STATUS1 ,DelKey_f                  ,&DEBOUNCE_CONT8 ,T_10ms_DEBOUNCE    ,NullEvent   ,NullEvent   ,NullEvent  
+             -  }, /*
+ 212          8*/     {&EVT_STATUS1 ,Read_VOLUME_DOWN_f,&DEBOUNCE_CONT9 ,T_key_DEBOUNCE     ,NullEvent   ,NullEvent   ,NullE
+             -vent    }, /*
+ 213          9*/     {&EVT_STATUS1 ,Read_VOLUME_UP_f  ,&DEBOUNCE_CONT10,T_key_DEBOUNCE     ,NullEvent   ,NullEvent   ,NullE
+             -vent    },
+ 214          };
+ 215          
+ 216          
+ 217          // ----------------------------------------------------------------------------
+ 218          // EventManager function
+ 219          // ----------------------------------------------------------------------------
+ 220          #pragma OT(8, SPEED)
+ 221          void EventManager(BYTE device_id)
+ 222          {
+ 223   1              BYTE new_state,old_state;
+ 224   1              BYTE device_flag;
+ 225   1      
+ 226   1              switch(device_id)       
+ 227   1              {
+ 228   2                      case 0 :        
+ 229   2                              new_state = Read_NBSW();    
+ 230   2                              break;
+C51 COMPILER V7.50   OEM_EVENT                                                             09/08/2020 15:56:22 PAGE 5   
+
+ 231   2                              
+ 232   2                      case 1 :                                                        
+ 233   2                              new_state = Read_ACIN();   // AC
+ 234   2                              break;
+ 235   2                              
+ 236   2                      case 2 :
+ 237   2                              new_state = Read_BatIN();  // battery
+ 238   2                              break;
+ 239   2                              
+ 240   2                      case 3 :
+ 241   2                              new_state = Read_LID();    // Lid
+ 242   2                              break;
+ 243   2                              
+ 244   2                      case 4 :
+ 245   2                              new_state = 0;
+ 246   2                              break;
+ 247   2                              
+ 248   2                      case 5 :
+ 249   2                              new_state = 0;
+ 250   2                              break;
+ 251   2                              
+ 252   2                      case 6 :
+ 253   2                              new_state = 0;
+ 254   2                              break;
+ 255   2                                      
+ 256   2                      case 7: 
+ 257   2                  new_state = 0;
+ 258   2                              break;
+ 259   2      
+ 260   2                      case 8:  
+ 261   2                              new_state = 0;
+ 262   2                              break;  
+ 263   2      
+ 264   2                      case 9: 
+ 265   2                  new_state = 0;
+ 266   2                              break;
+ 267   2              
+ 268   2                      default :
+ 269   2                              new_state = 0x00;
+ 270   2                              break;
+ 271   2              }
+ 272   1      
+ 273   1              Tmp_XPntr = Debounce_TBL[device_id].REG;
+ 274   1              Tmp_XPntr1 = Debounce_TBL[device_id].Cunter;
+ 275   1              device_flag = Debounce_TBL[device_id].Flag;
+ 276   1      
+ 277   1              old_state = ((*Tmp_XPntr & device_flag) != 0x00);
+ 278   1              if(new_state != old_state)
+ 279   1              {                
+ 280   2                      if((*Tmp_XPntr1) == 0x00)       
+ 281   2                      {       
+ 282   3                              (*Tmp_XPntr1) = Debounce_TBL[device_id].Time;   
+ 283   3                      }        
+ 284   2                      else 
+ 285   2                      {       
+ 286   3                              (*Tmp_XPntr1) --;  //Keys away shaking
+ 287   3                              if((*Tmp_XPntr1) == 0)  
+ 288   3                              {        
+ 289   4                                      if(new_state)
+ 290   4                                      {       
+ 291   5                                              (Debounce_TBL[device_id].press)();
+ 292   5                                              SET_MASK(*Tmp_XPntr,device_flag);
+C51 COMPILER V7.50   OEM_EVENT                                                             09/08/2020 15:56:22 PAGE 6   
+
+ 293   5                                      }
+ 294   4                                      else 
+ 295   4                                      {       
+ 296   5                                              (Debounce_TBL[device_id].release)();
+ 297   5                                              CLEAR_MASK(*Tmp_XPntr,device_flag);
+ 298   5                                      }
+ 299   4                              }  
+ 300   3                      }  
+ 301   2              }
+ 302   1              else
+ 303   1              {       
+ 304   2                      *Tmp_XPntr1 = 0x00;
+ 305   2              }
+ 306   1              
+ 307   1              (Debounce_TBL[device_id].nochange)();
+ 308   1      }
+ 309          
+C51 COMPILER V7.50   OEM_EVENT                                                             09/08/2020 15:56:22 PAGE 7   
+
+ASSEMBLY LISTING OF GENERATED OBJECT CODE
+
+
+             ; FUNCTION _Auto_NOTIFY_EM (BEGIN)
+                                           ; SOURCE LINE # 14
+;---- Variable 'adata' assigned to Register 'R5' ----
+                                           ; SOURCE LINE # 15
+                                           ; SOURCE LINE # 16
+0000 900000      E     MOV     DPTR,#VPC_Lenovo
+0003 E0                MOVX    A,@DPTR
+0004 4402              ORL     A,#02H
+0006 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 18
+0007 EF                MOV     A,R7
+0008 900000      E     MOV     DPTR,#Lenvo_general_f
+000B 6006              JZ      ?C0001
+                                           ; SOURCE LINE # 19
+                                           ; SOURCE LINE # 20
+000D E0                MOVX    A,@DPTR
+000E 4401              ORL     A,#01H
+0010 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 21
+0011 8004              SJMP    ?C0002
+0013         ?C0001:
+                                           ; SOURCE LINE # 23
+                                           ; SOURCE LINE # 24
+0013 E0                MOVX    A,@DPTR
+0014 54FE              ANL     A,#0FEH
+0016 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 25
+0017         ?C0002:
+                                           ; SOURCE LINE # 26
+0017 E4                CLR     A
+0018 FD                MOV     R5,A
+0019 7F44              MOV     R7,#044H
+001B 020000      E     LJMP    _ECQEvent
+             ; FUNCTION _Auto_NOTIFY_EM (END)
+
+             ; FUNCTION Check_notify_em (BEGIN)
+                                           ; SOURCE LINE # 28
+                                           ; SOURCE LINE # 29
+                                           ; SOURCE LINE # 30
+0000 900000      E     MOV     DPTR,#Device_Status_AllRF
+0003 E0                MOVX    A,@DPTR
+0004 30E215            JNB     ACC.2,?C0005
+                                           ; SOURCE LINE # 31
+                                           ; SOURCE LINE # 32
+0007 900000      E     MOV     DPTR,#VPC_Lenovo
+000A E0                MOVX    A,@DPTR
+000B 4402              ORL     A,#02H
+000D F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 33
+000E 900000      E     MOV     DPTR,#Lenvo_general_f
+0011 E0                MOVX    A,@DPTR
+0012 4402              ORL     A,#02H
+0014 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 34
+0015 E4                CLR     A
+0016 FD                MOV     R5,A
+0017 7F44              MOV     R7,#044H
+0019 120000      E     LCALL   _ECQEvent
+                                           ; SOURCE LINE # 35
+C51 COMPILER V7.50   OEM_EVENT                                                             09/08/2020 15:56:22 PAGE 8   
+
+                                           ; SOURCE LINE # 36
+001C         ?C0005:
+001C 22                RET     
+             ; FUNCTION Check_notify_em (END)
+
+             ; FUNCTION NullEvent (BEGIN)
+                                           ; SOURCE LINE # 42
+                                           ; SOURCE LINE # 43
+                                           ; SOURCE LINE # 45
+0000 22                RET     
+             ; FUNCTION NullEvent (END)
+
+             ; FUNCTION AdapterIn (BEGIN)
+                                           ; SOURCE LINE # 50
+                                           ; SOURCE LINE # 51
+                                           ; SOURCE LINE # 52
+0000 7BFF              MOV     R3,#0FFH
+0002 7A00        R     MOV     R2,#HIGH ?SC_0
+0004 7900        R     MOV     R1,#LOW ?SC_0
+0006 120000      E     LCALL   _UART_Print_Str
+                                           ; SOURCE LINE # 54
+0009 900000      E     MOV     DPTR,#BAT1_STATUS
+000C E0                MOVX    A,@DPTR
+000D 4401              ORL     A,#01H
+000F F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 55
+0010 900000      E     MOV     DPTR,#BAT1_CHG
+0013 E0                MOVX    A,@DPTR
+0014 4480              ORL     A,#080H
+0016 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 56
+0017 22                RET     
+             ; FUNCTION AdapterIn (END)
+
+             ; FUNCTION AdapterOut (BEGIN)
+                                           ; SOURCE LINE # 61
+                                           ; SOURCE LINE # 62
+                                           ; SOURCE LINE # 63
+0000 7BFF              MOV     R3,#0FFH
+0002 7A00        R     MOV     R2,#HIGH ?SC_13
+0004 7900        R     MOV     R1,#LOW ?SC_13
+0006 120000      E     LCALL   _UART_Print_Str
+                                           ; SOURCE LINE # 65
+0009 900000      E     MOV     DPTR,#BAT1_STATUS
+000C E0                MOVX    A,@DPTR
+000D 54FE              ANL     A,#0FEH
+000F F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 66
+0010 900000      E     MOV     DPTR,#BAT1_CHG
+0013 E0                MOVX    A,@DPTR
+0014 547F              ANL     A,#07FH
+0016 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 67
+0017 22                RET     
+             ; FUNCTION AdapterOut (END)
+
+             ; FUNCTION PSWPressed (BEGIN)
+                                           ; SOURCE LINE # 72
+                                           ; SOURCE LINE # 73
+                                           ; SOURCE LINE # 74
+0000 900000      E     MOV     DPTR,#GPDRE
+0003 E0                MOVX    A,@DPTR
+C51 COMPILER V7.50   OEM_EVENT                                                             09/08/2020 15:56:22 PAGE 9   
+
+0004 20E706            JB      ACC.7,?C0009
+0007 900000      E     MOV     DPTR,#lidflag
+000A E0                MOVX    A,@DPTR
+000B 604E              JZ      ?C0010
+000D         ?C0009:
+                                           ; SOURCE LINE # 76
+000D 7BFF              MOV     R3,#0FFH
+000F 7A00        R     MOV     R2,#HIGH ?SC_27
+0011 7900        R     MOV     R1,#LOW ?SC_27
+0013 120000      E     LCALL   _UART_Print_Str
+                                           ; SOURCE LINE # 82
+0016 900000      E     MOV     DPTR,#PSW_COUNTER
+0019 E4                CLR     A
+001A F0                MOVX    @DPTR,A
+001B A3                INC     DPTR
+001C 7414              MOV     A,#014H
+001E F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 84
+001F 900000      E     MOV     DPTR,#Oem_Globe_Flag1
+0022 E0                MOVX    A,@DPTR
+0023 54BF              ANL     A,#0BFH
+0025 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 85
+0026 900000      E     MOV     DPTR,#SysPowState
+0029 E0                MOVX    A,@DPTR
+002A 24F0              ADD     A,#0F0H
+002C 6018              JZ      ?C0014
+002E 24DD              ADD     A,#0DDH
+0030 6009              JZ      ?C0013
+0032 24DE              ADD     A,#0DEH
+0034 7025              JNZ     ?C0010
+                                           ; SOURCE LINE # 86
+                                           ; SOURCE LINE # 87
+0036         ?C0012:
+                                           ; SOURCE LINE # 88
+                                           ; SOURCE LINE # 89
+0036 120000      E     LCALL   Oem_TriggerS5S0
+                                           ; SOURCE LINE # 90
+                                           ; SOURCE LINE # 91
+                                           ; SOURCE LINE # 92
+0039 8003              SJMP    ?C0065
+                                           ; SOURCE LINE # 93
+003B         ?C0013:
+                                           ; SOURCE LINE # 94
+                                           ; SOURCE LINE # 95
+003B 120000      E     LCALL   Oem_TriggerS3S0
+                                           ; SOURCE LINE # 96
+003E         ?C0065:
+003E 900000      E     MOV     DPTR,#Oem_Globe_Flag1
+0041 E0                MOVX    A,@DPTR
+0042 4440              ORL     A,#040H
+0044 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 97
+                                           ; SOURCE LINE # 98
+0045 22                RET     
+                                           ; SOURCE LINE # 99
+0046         ?C0014:
+                                           ; SOURCE LINE # 100
+0046 E4                CLR     A
+0047 900000      E     MOV     DPTR,#SHUT_COUNT
+004A F0                MOVX    @DPTR,A
+004B A3                INC     DPTR
+C51 COMPILER V7.50   OEM_EVENT                                                             09/08/2020 15:56:22 PAGE 10  
+
+004C F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 101
+004D 900000      E     MOV     DPTR,#Oem_Globe_Flag1
+0050 E0                MOVX    A,@DPTR
+0051 4440              ORL     A,#040H
+0053 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 102
+0054 900000      E     MOV     DPTR,#GPDRE
+0057 E0                MOVX    A,@DPTR
+0058 54F7              ANL     A,#0F7H
+005A F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 103
+                                           ; SOURCE LINE # 104
+                                           ; SOURCE LINE # 105
+                                           ; SOURCE LINE # 106
+                                           ; SOURCE LINE # 107
+005B         ?C0010:
+005B 22                RET     
+             ; FUNCTION PSWPressed (END)
+
+             ; FUNCTION PSWReleased (BEGIN)
+                                           ; SOURCE LINE # 113
+                                           ; SOURCE LINE # 114
+                                           ; SOURCE LINE # 115
+0000 7BFF              MOV     R3,#0FFH
+0002 7A00        R     MOV     R2,#HIGH ?SC_54
+0004 7900        R     MOV     R1,#LOW ?SC_54
+0006 120000      E     LCALL   _UART_Print_Str
+                                           ; SOURCE LINE # 116
+0009 900000      E     MOV     DPTR,#GPDRE
+000C E0                MOVX    A,@DPTR
+000D 4408              ORL     A,#08H
+000F F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 117
+0010 22                RET     
+             ; FUNCTION PSWReleased (END)
+
+             ; FUNCTION PSWOverrided (BEGIN)
+                                           ; SOURCE LINE # 122
+                                           ; SOURCE LINE # 123
+                                           ; SOURCE LINE # 124
+0000 900000      E     MOV     DPTR,#GPDRE
+0003 E0                MOVX    A,@DPTR
+0004 20E706            JB      ACC.7,?C0017
+0007 900000      E     MOV     DPTR,#lidflag
+000A E0                MOVX    A,@DPTR
+000B 6044              JZ      ?C0018
+000D         ?C0017:
+                                           ; SOURCE LINE # 126
+000D 900000      E     MOV     DPTR,#PSW_COUNTER
+0010 E0                MOVX    A,@DPTR
+0011 7002              JNZ     ?C0062
+0013 A3                INC     DPTR
+0014 E0                MOVX    A,@DPTR
+0015         ?C0062:
+0015 600A              JZ      ?C0019
+                                           ; SOURCE LINE # 127
+                                           ; SOURCE LINE # 128
+0017 900000      E     MOV     DPTR,#PSW_COUNTER
+001A 74FF              MOV     A,#0FFH
+001C F5F0              MOV     B,A
+001E 120000      E     LCALL   ?C?IILDX
+C51 COMPILER V7.50   OEM_EVENT                                                             09/08/2020 15:56:22 PAGE 11  
+
+                                           ; SOURCE LINE # 129
+0021         ?C0019:
+                                           ; SOURCE LINE # 131
+0021 900000      E     MOV     DPTR,#SysPowState
+0024 E0                MOVX    A,@DPTR
+0025 B41022            CJNE    A,#010H,?C0020
+0028 900000      E     MOV     DPTR,#POWER_FLAG1
+002B E0                MOVX    A,@DPTR
+002C 30E11B            JNB     ACC.1,?C0020
+                                           ; SOURCE LINE # 132
+                                           ; SOURCE LINE # 133
+002F C3                CLR     C
+0030 900000      E     MOV     DPTR,#SHUT_COUNT+01H
+0033 E0                MOVX    A,@DPTR
+0034 9490              SUBB    A,#090H
+0036 900000      E     MOV     DPTR,#SHUT_COUNT
+0039 E0                MOVX    A,@DPTR
+003A 9401              SUBB    A,#01H
+003C 5007              JNC     ?C0021
+                                           ; SOURCE LINE # 134
+                                           ; SOURCE LINE # 135
+003E E4                CLR     A
+003F 75F001            MOV     B,#01H
+0042 020000      E     LJMP    ?C?IILDX
+                                           ; SOURCE LINE # 136
+0045         ?C0021:
+                                           ; SOURCE LINE # 138
+                                           ; SOURCE LINE # 139
+0045 7F09              MOV     R7,#09H
+0047 020000      E     LJMP    _Oem_TriggerS0S5
+                                           ; SOURCE LINE # 140
+                                           ; SOURCE LINE # 141
+004A         ?C0020:
+                                           ; SOURCE LINE # 143
+                                           ; SOURCE LINE # 144
+004A E4                CLR     A
+004B 900000      E     MOV     DPTR,#SHUT_COUNT
+004E F0                MOVX    @DPTR,A
+004F A3                INC     DPTR
+0050 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 145
+                                           ; SOURCE LINE # 146
+0051         ?C0018:
+0051 22                RET     
+             ; FUNCTION PSWOverrided (END)
+
+             ; FUNCTION HW_Reset_Press (BEGIN)
+                                           ; SOURCE LINE # 150
+                                           ; SOURCE LINE # 151
+                                           ; SOURCE LINE # 152
+0000 22                RET     
+             ; FUNCTION HW_Reset_Press (END)
+
+             ; FUNCTION HW_Reset_Released (BEGIN)
+                                           ; SOURCE LINE # 154
+                                           ; SOURCE LINE # 155
+                                           ; SOURCE LINE # 156
+0000 900000      E     MOV     DPTR,#SysPowState
+0003 E0                MOVX    A,@DPTR
+0004 B41017            CJNE    A,#010H,?C0027
+                                           ; SOURCE LINE # 157
+                                           ; SOURCE LINE # 158
+C51 COMPILER V7.50   OEM_EVENT                                                             09/08/2020 15:56:22 PAGE 12  
+
+0007 900000      E     MOV     DPTR,#EVT_STATUS2
+000A E0                MOVX    A,@DPTR
+000B 30E110            JNB     ACC.1,?C0027
+                                           ; SOURCE LINE # 159
+                                           ; SOURCE LINE # 160
+000E 7F0A              MOV     R7,#0AH
+0010 120000      E     LCALL   _Oem_TriggerS0S5
+                                           ; SOURCE LINE # 161
+0013 900000      E     MOV     DPTR,#EVT_STATUS2
+0016 E0                MOVX    A,@DPTR
+0017 4404              ORL     A,#04H
+0019 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 162
+001A E0                MOVX    A,@DPTR
+001B 54FD              ANL     A,#0FDH
+001D F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 163
+                                           ; SOURCE LINE # 164
+                                           ; SOURCE LINE # 165
+001E         ?C0027:
+001E 22                RET     
+             ; FUNCTION HW_Reset_Released (END)
+
+             ; FUNCTION LID_CLOSE (BEGIN)
+                                           ; SOURCE LINE # 170
+                                           ; SOURCE LINE # 171
+                                           ; SOURCE LINE # 173
+0000 900000      E     MOV     DPTR,#EC_EXT_SOURCE_STATE
+0003 E0                MOVX    A,@DPTR
+0004 4401              ORL     A,#01H
+0006 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 174
+0007 900000      E     MOV     DPTR,#SysPowState
+000A E0                MOVX    A,@DPTR
+000B B4100E            CJNE    A,#010H,?C0028
+                                           ; SOURCE LINE # 175
+                                           ; SOURCE LINE # 176
+000E E4                CLR     A
+000F FD                MOV     R5,A
+0010 7F21              MOV     R7,#021H
+0012 120000      E     LCALL   _ECQEvent
+                                           ; SOURCE LINE # 177
+0015 900000      E     MOV     DPTR,#Device_Status_Lenovo
+0018 E0                MOVX    A,@DPTR
+0019 54FB              ANL     A,#0FBH
+001B F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 178
+001C         ?C0028:
+                                           ; SOURCE LINE # 179
+001C 900000      E     MOV     DPTR,#BAT1_CHG
+001F E0                MOVX    A,@DPTR
+0020 54DF              ANL     A,#0DFH
+0022 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 180
+0023 22                RET     
+             ; FUNCTION LID_CLOSE (END)
+
+             ; FUNCTION LID_OPEN (BEGIN)
+                                           ; SOURCE LINE # 185
+                                           ; SOURCE LINE # 186
+                                           ; SOURCE LINE # 187
+0000 900000      E     MOV     DPTR,#EC_EXT_SOURCE_STATE
+C51 COMPILER V7.50   OEM_EVENT                                                             09/08/2020 15:56:22 PAGE 13  
+
+0003 E0                MOVX    A,@DPTR
+0004 54FE              ANL     A,#0FEH
+0006 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 189
+0007 E4                CLR     A
+0008 FD                MOV     R5,A
+0009 7F21              MOV     R7,#021H
+000B 120000      E     LCALL   _ECQEvent
+                                           ; SOURCE LINE # 190
+000E 900000      E     MOV     DPTR,#Device_Status_Lenovo
+0011 E0                MOVX    A,@DPTR
+0012 4404              ORL     A,#04H
+0014 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 192
+0015 900000      E     MOV     DPTR,#SysPowState
+0018 E0                MOVX    A,@DPTR
+0019 B43303            CJNE    A,#033H,?C0030
+                                           ; SOURCE LINE # 193
+001C 120000      E     LCALL   PulseSBPowerButton
+001F         ?C0030:
+                                           ; SOURCE LINE # 194
+001F 900000      E     MOV     DPTR,#BAT1_CHG
+0022 E0                MOVX    A,@DPTR
+0023 4420              ORL     A,#020H
+0025 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 195
+0026 22                RET     
+             ; FUNCTION LID_OPEN (END)
+
+             ; FUNCTION _EventManager (BEGIN)
+                                           ; SOURCE LINE # 221
+0000 900000      R     MOV     DPTR,#device_id
+0003 EF                MOV     A,R7
+0004 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 222
+                                           ; SOURCE LINE # 226
+0005 B40A00            CJNE    A,#0AH,?C0063
+0008         ?C0063:
+0008 506E              JNC     ?C0051
+000A 900000      R     MOV     DPTR,#?C0064
+000D F8                MOV     R0,A
+000E 28                ADD     A,R0
+000F 28                ADD     A,R0
+0010 73                JMP     @A+DPTR
+0011         ?C0064:
+0011 020000      R     LJMP    ?C0033
+0014 020000      R     LJMP    ?C0036
+0017 020000      R     LJMP    ?C0039
+001A 020000      R     LJMP    ?C0042
+001D 020000      R     LJMP    ?C0049
+0020 020000      R     LJMP    ?C0049
+0023 020000      R     LJMP    ?C0049
+0026 020000      R     LJMP    ?C0049
+0029 020000      R     LJMP    ?C0049
+002C 020000      R     LJMP    ?C0049
+                                           ; SOURCE LINE # 227
+                                           ; SOURCE LINE # 228
+002F         ?C0033:
+                                           ; SOURCE LINE # 229
+002F 900000      E     MOV     DPTR,#GPDRE
+0032 E0                MOVX    A,@DPTR
+0033 20E404            JB      ACC.4,?C0034
+C51 COMPILER V7.50   OEM_EVENT                                                             09/08/2020 15:56:22 PAGE 14  
+
+0036 7F01              MOV     R7,#01H
+0038 8035              SJMP    ?C0069
+003A         ?C0034:
+003A 7F00              MOV     R7,#00H
+003C         ?C0035:
+                                           ; SOURCE LINE # 230
+003C 8031              SJMP    ?C0069
+                                           ; SOURCE LINE # 232
+003E         ?C0036:
+                                           ; SOURCE LINE # 233
+003E 900000      E     MOV     DPTR,#GPDRI
+0041 E0                MOVX    A,@DPTR
+0042 30E304            JNB     ACC.3,?C0037
+0045 7F01              MOV     R7,#01H
+0047 8002              SJMP    ?C0038
+0049         ?C0037:
+0049 7F00              MOV     R7,#00H
+004B         ?C0038:
+004B         ?C0067:
+                                           ; SOURCE LINE # 234
+004B 8022              SJMP    ?C0069
+                                           ; SOURCE LINE # 236
+004D         ?C0039:
+                                           ; SOURCE LINE # 237
+004D 900000      E     MOV     DPTR,#GPDRI
+0050 E0                MOVX    A,@DPTR
+0051 20E404            JB      ACC.4,?C0040
+0054 7F01              MOV     R7,#01H
+0056 8002              SJMP    ?C0041
+0058         ?C0040:
+0058 7F00              MOV     R7,#00H
+005A         ?C0041:
+005A         ?C0068:
+                                           ; SOURCE LINE # 238
+005A 8013              SJMP    ?C0069
+                                           ; SOURCE LINE # 240
+005C         ?C0042:
+                                           ; SOURCE LINE # 241
+005C 900000      E     MOV     DPTR,#GPDRE
+005F E0                MOVX    A,@DPTR
+0060 20E70A            JB      ACC.7,?C0043
+0063 900000      E     MOV     DPTR,#lidflag
+0066 E0                MOVX    A,@DPTR
+0067 7004              JNZ     ?C0043
+0069 7F01              MOV     R7,#01H
+006B 8002              SJMP    ?C0044
+006D         ?C0043:
+006D 7F00              MOV     R7,#00H
+006F         ?C0044:
+006F         ?C0069:
+006F 900000      R     MOV     DPTR,#new_state
+0072 EF                MOV     A,R7
+0073 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 242
+0074 8007              SJMP    ?C0032
+                                           ; SOURCE LINE # 244
+                                           ; SOURCE LINE # 248
+                                           ; SOURCE LINE # 252
+                                           ; SOURCE LINE # 256
+                                           ; SOURCE LINE # 260
+0076         ?C0049:
+                                           ; SOURCE LINE # 261
+C51 COMPILER V7.50   OEM_EVENT                                                             09/08/2020 15:56:22 PAGE 15  
+
+0076         ?C0073:
+                                           ; SOURCE LINE # 262
+0076 8000              SJMP    ?C0075
+                                           ; SOURCE LINE # 264
+                                           ; SOURCE LINE # 268
+0078         ?C0051:
+                                           ; SOURCE LINE # 269
+0078         ?C0075:
+0078 E4                CLR     A
+0079 900000      R     MOV     DPTR,#new_state
+007C F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 270
+                                           ; SOURCE LINE # 271
+007D         ?C0032:
+                                           ; SOURCE LINE # 273
+007D 900000      R     MOV     DPTR,#device_id
+0080 E0                MOVX    A,@DPTR
+0081 FF                MOV     R7,A
+0082 75F00C            MOV     B,#0CH
+0085 A4                MUL     AB
+0086 2400        R     ADD     A,#LOW Debounce_TBL
+0088 F582              MOV     DPL,A
+008A E4                CLR     A
+008B 3400        R     ADDC    A,#HIGH Debounce_TBL
+008D F583              MOV     DPH,A
+008F E4                CLR     A
+0090 93                MOVC    A,@A+DPTR
+0091 FC                MOV     R4,A
+0092 7401              MOV     A,#01H
+0094 93                MOVC    A,@A+DPTR
+0095 FD                MOV     R5,A
+0096 7800        E     MOV     R0,#LOW Tmp_XPntr
+0098 EC                MOV     A,R4
+0099 F6                MOV     @R0,A
+009A 08                INC     R0
+009B ED                MOV     A,R5
+009C F6                MOV     @R0,A
+                                           ; SOURCE LINE # 274
+009D EF                MOV     A,R7
+009E 75F00C            MOV     B,#0CH
+00A1 A4                MUL     AB
+00A2 2400        R     ADD     A,#LOW Debounce_TBL+03H
+00A4 F582              MOV     DPL,A
+00A6 E4                CLR     A
+00A7 3400        R     ADDC    A,#HIGH Debounce_TBL+03H
+00A9 F583              MOV     DPH,A
+00AB E4                CLR     A
+00AC 93                MOVC    A,@A+DPTR
+00AD FF                MOV     R7,A
+00AE 7401              MOV     A,#01H
+00B0 93                MOVC    A,@A+DPTR
+00B1 7800        E     MOV     R0,#LOW Tmp_XPntr1
+00B3 CF                XCH     A,R7
+00B4 F6                MOV     @R0,A
+00B5 08                INC     R0
+00B6 EF                MOV     A,R7
+00B7 F6                MOV     @R0,A
+                                           ; SOURCE LINE # 275
+00B8 900000      R     MOV     DPTR,#device_id
+00BB E0                MOVX    A,@DPTR
+00BC F9                MOV     R1,A
+00BD 75F00C            MOV     B,#0CH
+C51 COMPILER V7.50   OEM_EVENT                                                             09/08/2020 15:56:22 PAGE 16  
+
+00C0 A4                MUL     AB
+00C1 2400        R     ADD     A,#LOW Debounce_TBL+02H
+00C3 F582              MOV     DPL,A
+00C5 E4                CLR     A
+00C6 3400        R     ADDC    A,#HIGH Debounce_TBL+02H
+00C8 F583              MOV     DPH,A
+00CA E4                CLR     A
+00CB 93                MOVC    A,@A+DPTR
+00CC FF                MOV     R7,A
+00CD 900000      R     MOV     DPTR,#device_flag
+00D0 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 277
+00D1 8D82              MOV     DPL,R5
+00D3 8C83              MOV     DPH,R4
+00D5 E0                MOVX    A,@DPTR
+00D6 5F                ANL     A,R7
+00D7 6004              JZ      ?C0052
+00D9 7F01              MOV     R7,#01H
+00DB 8002              SJMP    ?C0053
+00DD         ?C0052:
+00DD 7F00              MOV     R7,#00H
+00DF         ?C0053:
+;---- Variable 'old_state' assigned to Register 'R7' ----
+                                           ; SOURCE LINE # 278
+00DF 900000      R     MOV     DPTR,#new_state
+00E2 E0                MOVX    A,@DPTR
+00E3 FE                MOV     R6,A
+00E4 6F                XRL     A,R7
+00E5 7003              JNZ     $ + 5H
+00E7 020000      R     LJMP    ?C0054
+                                           ; SOURCE LINE # 279
+                                           ; SOURCE LINE # 280
+00EA 7800        E     MOV     R0,#LOW Tmp_XPntr1
+00EC E6                MOV     A,@R0
+00ED FC                MOV     R4,A
+00EE 08                INC     R0
+00EF E6                MOV     A,@R0
+00F0 FD                MOV     R5,A
+00F1 F582              MOV     DPL,A
+00F3 8C83              MOV     DPH,R4
+00F5 E0                MOVX    A,@DPTR
+00F6 7018              JNZ     ?C0055
+                                           ; SOURCE LINE # 281
+                                           ; SOURCE LINE # 282
+00F8 E9                MOV     A,R1
+00F9 75F00C            MOV     B,#0CH
+00FC A4                MUL     AB
+00FD 2400        R     ADD     A,#LOW Debounce_TBL+05H
+00FF F582              MOV     DPL,A
+0101 E4                CLR     A
+0102 3400        R     ADDC    A,#HIGH Debounce_TBL+05H
+0104 F583              MOV     DPH,A
+0106 E4                CLR     A
+0107 93                MOVC    A,@A+DPTR
+0108 8D82              MOV     DPL,R5
+010A 8C83              MOV     DPH,R4
+010C F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 283
+010D 020000      R     LJMP    ?C0060
+0110         ?C0055:
+                                           ; SOURCE LINE # 285
+                                           ; SOURCE LINE # 286
+C51 COMPILER V7.50   OEM_EVENT                                                             09/08/2020 15:56:22 PAGE 17  
+
+0110 7800        E     MOV     R0,#LOW Tmp_XPntr1
+0112 E6                MOV     A,@R0
+0113 FC                MOV     R4,A
+0114 08                INC     R0
+0115 E6                MOV     A,@R0
+0116 F582              MOV     DPL,A
+0118 8C83              MOV     DPH,R4
+011A E0                MOVX    A,@DPTR
+011B 14                DEC     A
+011C F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 287
+011D E0                MOVX    A,@DPTR
+011E 6003              JZ      $ + 5H
+0120 020000      R     LJMP    ?C0060
+                                           ; SOURCE LINE # 288
+                                           ; SOURCE LINE # 289
+0123 EE                MOV     A,R6
+0124 6034              JZ      ?C0058
+                                           ; SOURCE LINE # 290
+                                           ; SOURCE LINE # 291
+0126 E9                MOV     A,R1
+0127 75F00C            MOV     B,#0CH
+012A A4                MUL     AB
+012B 2400        R     ADD     A,#LOW Debounce_TBL+06H
+012D F582              MOV     DPL,A
+012F E4                CLR     A
+0130 3400        R     ADDC    A,#HIGH Debounce_TBL+06H
+0132 F583              MOV     DPH,A
+0134 E4                CLR     A
+0135 93                MOVC    A,@A+DPTR
+0136 FE                MOV     R6,A
+0137 7401              MOV     A,#01H
+0139 93                MOVC    A,@A+DPTR
+013A CA                XCH     A,R2
+013B EE                MOV     A,R6
+013C CA                XCH     A,R2
+013D F9                MOV     R1,A
+013E 120000      E     LCALL   ?C?ICALL
+                                           ; SOURCE LINE # 292
+0141 7800        E     MOV     R0,#LOW Tmp_XPntr
+0143 E6                MOV     A,@R0
+0144 FE                MOV     R6,A
+0145 08                INC     R0
+0146 E6                MOV     A,@R0
+0147 F582              MOV     DPL,A
+0149 8E83              MOV     DPH,R6
+014B C083              PUSH    DPH
+014D C082              PUSH    DPL
+014F E0                MOVX    A,@DPTR
+0150 FF                MOV     R7,A
+0151 900000      R     MOV     DPTR,#device_flag
+0154 E0                MOVX    A,@DPTR
+0155 FE                MOV     R6,A
+0156 EF                MOV     A,R7
+0157 4E                ORL     A,R6
+                                           ; SOURCE LINE # 293
+0158 8036              SJMP    ?C0066
+015A         ?C0058:
+                                           ; SOURCE LINE # 295
+                                           ; SOURCE LINE # 296
+015A 900000      R     MOV     DPTR,#device_id
+015D E0                MOVX    A,@DPTR
+C51 COMPILER V7.50   OEM_EVENT                                                             09/08/2020 15:56:22 PAGE 18  
+
+015E 75F00C            MOV     B,#0CH
+0161 A4                MUL     AB
+0162 2400        R     ADD     A,#LOW Debounce_TBL+08H
+0164 F582              MOV     DPL,A
+0166 E4                CLR     A
+0167 3400        R     ADDC    A,#HIGH Debounce_TBL+08H
+0169 F583              MOV     DPH,A
+016B E4                CLR     A
+016C 93                MOVC    A,@A+DPTR
+016D FE                MOV     R6,A
+016E 7401              MOV     A,#01H
+0170 93                MOVC    A,@A+DPTR
+0171 CA                XCH     A,R2
+0172 EE                MOV     A,R6
+0173 CA                XCH     A,R2
+0174 F9                MOV     R1,A
+0175 120000      E     LCALL   ?C?ICALL
+                                           ; SOURCE LINE # 297
+0178 7800        E     MOV     R0,#LOW Tmp_XPntr
+017A E6                MOV     A,@R0
+017B FE                MOV     R6,A
+017C 08                INC     R0
+017D E6                MOV     A,@R0
+017E F582              MOV     DPL,A
+0180 8E83              MOV     DPH,R6
+0182 C083              PUSH    DPH
+0184 C082              PUSH    DPL
+0186 E0                MOVX    A,@DPTR
+0187 FF                MOV     R7,A
+0188 900000      R     MOV     DPTR,#device_flag
+018B E0                MOVX    A,@DPTR
+018C F4                CPL     A
+018D FE                MOV     R6,A
+018E EF                MOV     A,R7
+018F 5E                ANL     A,R6
+0190         ?C0066:
+0190 D082              POP     DPL
+0192 D083              POP     DPH
+0194 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 298
+                                           ; SOURCE LINE # 299
+                                           ; SOURCE LINE # 300
+                                           ; SOURCE LINE # 301
+0195 800C              SJMP    ?C0060
+0197         ?C0054:
+                                           ; SOURCE LINE # 303
+                                           ; SOURCE LINE # 304
+0197 7800        E     MOV     R0,#LOW Tmp_XPntr1
+0199 E6                MOV     A,@R0
+019A FE                MOV     R6,A
+019B 08                INC     R0
+019C E6                MOV     A,@R0
+019D F582              MOV     DPL,A
+019F 8E83              MOV     DPH,R6
+01A1 E4                CLR     A
+01A2 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 305
+01A3         ?C0060:
+                                           ; SOURCE LINE # 307
+01A3 900000      R     MOV     DPTR,#device_id
+01A6 E0                MOVX    A,@DPTR
+01A7 75F00C            MOV     B,#0CH
+C51 COMPILER V7.50   OEM_EVENT                                                             09/08/2020 15:56:22 PAGE 19  
+
+01AA A4                MUL     AB
+01AB 2400        R     ADD     A,#LOW Debounce_TBL+0AH
+01AD F582              MOV     DPL,A
+01AF E4                CLR     A
+01B0 3400        R     ADDC    A,#HIGH Debounce_TBL+0AH
+01B2 F583              MOV     DPH,A
+01B4 E4                CLR     A
+01B5 93                MOVC    A,@A+DPTR
+01B6 FE                MOV     R6,A
+01B7 7401              MOV     A,#01H
+01B9 93                MOVC    A,@A+DPTR
+01BA CA                XCH     A,R2
+01BB EE                MOV     A,R6
+01BC CA                XCH     A,R2
+01BD F9                MOV     R1,A
+01BE 020000      E     LJMP    ?C?ICALL
+             ; FUNCTION _EventManager (END)
+
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    855    ----
+   CONSTANT SIZE    =    202    ----
+   XDATA SIZE       =   ----       3
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

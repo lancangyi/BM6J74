@@ -1,0 +1,751 @@
+C51 COMPILER V7.50   OEM_ADC                                                               09/08/2020 15:56:22 PAGE 1   
+
+
+C51 COMPILER V7.50, COMPILATION OF MODULE OEM_ADC
+OBJECT MODULE PLACED IN Code\OEM\OEM_ADC.OBJ
+COMPILER INVOKED BY: C:\Keil\C51\BIN\c51.exe Code\OEM\OEM_ADC.C LA WL(1) CD OT(9,SIZE) NOAREGS OR INCDIR(.\Code\CORE\INC
+                    -LUDE\;.\Code\OEM\INCLUDE\;.\Code\CHIP\INCLUDE\)
+
+line level    source
+
+   1          /*-----------------------------------------------------------------------------
+   2           * TITLE: OEM_ADC.C
+   3           *
+   4           * Author : Dino
+   5           *
+   6           * Note : These functions are reference only.
+   7           *        Please follow your project software specification to do some modification.
+   8           *---------------------------------------------------------------------------*/
+   9           
+  10          #include <CORE_INCLUDE.H>
+  11          #include <OEM_INCLUDE.H>
+  12          
+  13          #define ADC_RAM_DEBUG 0
+  14          //prefix code ADC_RAM_DEBUG(0xB0);
+  15          #if ADC_RAM_DEBUG
+              #define ADC_RamDebug(x)           RamDebug(x)
+              #else
+  18          #define ADC_RamDebug(x)           {}
+  19          #endif
+  20          
+  21          //----------------------------------------------------------------------------
+  22          // The function of disabling ADC channel
+  23          //----------------------------------------------------------------------------
+  24          //----------------------------------------------------------------------------
+  25          // Disable ADC module
+  26          //----------------------------------------------------------------------------
+  27          void DisableADCModule(void)
+  28          {
+  29   1          VCH0CTL=0x1F;
+  30   1              //VCH1CTL=0x1F;
+  31   1              //VCH2CTL=0x1F;
+  32   1              //VCH3CTL=0x1F;
+  33   1      
+  34   1          //VCH4CTL = 0x80;     // Voltage Channel 4 Disable
+  35   1          //VCH5CTL = 0x80;   // Voltage Channel 5 Disable
+  36   1          //VCH6CTL = 0x80;   // Voltage Channel 6 Disable
+  37   1          VCH7CTL = 0x80;   // Voltage Channel 7 Disable
+  38   1          
+  39   1              CLEAR_MASK(ADCCFG, ADCEN);
+  40   1      }
+  41          
+  42          //----------------------------------------------------------------------------
+  43          // Enable ADC module
+  44          //----------------------------------------------------------------------------
+  45          void EnableADCModule(void)
+  46          {
+  47   1          VCH0CTL = ADCChannel_0;   // Clear data vaild flag, and select Channel 0
+  48   1          //VCH1CTL = ADCChannel_1;   // Clear data vaild flag, and select Channel 1
+  49   1          //VCH2CTL = ADCChannel_2;   // Clear data vaild flag, and select Channel 2
+  50   1          //VCH3CTL = ADCChannel_3;   // Clear data vaild flag, and select Channel 3
+  51   1      
+  52   1          //VCH4CTL = ADCChannel_4;     // Voltage Channel 4 Enable
+  53   1          //VCH5CTL = ADCChannel_5;   // Voltage Channel 5 Enable
+  54   1          //VCH6CTL = ADCChannel_6;   // Voltage Channel 6 Enable
+C51 COMPILER V7.50   OEM_ADC                                                               09/08/2020 15:56:22 PAGE 2   
+
+  55   1          VCH7CTL = ADCChannel_7;   // Voltage Channel 7 Enable
+  56   1          
+  57   1              SET_MASK(ADCCFG, ADCEN);
+  58   1      }
+  59          
+  60          void ScanAll_ADCChannel(void)
+  61          {
+  62   1      #if Used_Ch0
+  63   1          if(IS_MASK_SET(VCH0CTL, DATVAL))
+  64   1          {
+  65   2              SET_MASK(VCH0CTL,DATVAL);        // write 1, to clear data vaild flag
+  66   2              ADCAvg0 = (XWORD)((VCH0DATM<<8)+VCH0DATL);
+  67   2          }
+  68   1      #endif
+  69   1      
+  70   1      #if Used_Ch1
+  71   1          if(IS_MASK_SET(VCH1CTL, DATVAL))
+  72   1          {
+  73   2              SET_MASK(VCH1CTL,DATVAL);        // write 1, to clear data vaild flag
+  74   2              ADCAvg1 = (XWORD)((VCH1DATM<<8)+VCH1DATL);
+  75   2          }
+  76   1      #endif
+  77   1      
+  78   1      #if Used_Ch2
+  79   1          if(IS_MASK_SET(VCH2CTL, DATVAL))
+  80   1          {
+  81   2              SET_MASK(VCH2CTL,DATVAL);        // write 1, to clear data vaild flag
+  82   2              ADCAvg2 = (XWORD)((VCH2DATM<<8)+VCH2DATL);
+  83   2          }
+  84   1      #endif
+  85   1      
+  86   1      #if Used_Ch3
+  87   1          if(IS_MASK_SET(VCH3CTL, DATVAL))
+  88   1          {
+  89   2              SET_MASK(VCH3CTL,DATVAL);        // write 1, to clear data vaild flag
+  90   2              ADCAvg3 = (VCH3DATM*0xFF)+VCH3DATL;
+  91   2          }
+  92   1      #endif
+  93   1      
+  94   1      #if Used_Ch4
+  95   1          if(IS_MASK_SET(VCH4CTL, DATVAL))
+  96   1          {
+  97   2              SET_MASK(VCH4CTL,DATVAL);        // write 1, to clear data vaild flag
+  98   2              ADCAvg4 = (VCH4DATM*0xFF)+VCH4DATL;
+  99   2          }
+ 100   1      #endif  
+ 101   1      
+ 102   1      #if Used_Ch5
+ 103   1          if(IS_MASK_SET(VCH5CTL, DATVAL))
+ 104   1          {
+ 105   2              SET_MASK(VCH5CTL,DATVAL);        // write 1, to clear data vaild flag
+ 106   2              ADCAvg5 = (VCH5DATM*0xFF)+VCH5DATL;
+ 107   2          }
+ 108   1      #endif
+ 109   1      
+ 110   1      #if Used_Ch6
+ 111   1          if(IS_MASK_SET(VCH6CTL, DATVAL))
+ 112   1          {
+ 113   2              SET_MASK(VCH6CTL,DATVAL);        // write 1, to clear data vaild flag
+ 114   2              ADCAvg6 = (VCH6DATM*0xFF)+VCH6DATL;
+ 115   2          }
+ 116   1      #endif
+C51 COMPILER V7.50   OEM_ADC                                                               09/08/2020 15:56:22 PAGE 3   
+
+ 117   1      
+ 118   1      #if Used_Ch7
+ 119   1          if(IS_MASK_SET(VCH7CTL, DATVAL))
+ 120   1          {
+ 121   2              SET_MASK(VCH7CTL,DATVAL);        // write 1, to clear data vaild flag
+ 122   2              ADCAvg7 = (VCH7DATM*0xFF)+VCH7DATL;
+ 123   2          }
+ 124   1      #endif
+ 125   1      }
+ 126          
+ 127          
+ 128          //----------------------------------------------------------------------------
+ 129          // Init ADC module
+ 130          //----------------------------------------------------------------------------
+ 131          void Init_ADC(void)
+ 132          {
+ 133   1          // Initial ADC registers
+ 134   1          SET_MASK(ADCSTS, AINITB);    // Analog Accuracy Initialization start
+ 135   1          CLEAR_MASK(ADCSTS, AINITB);  // Analog Accuracy Initialization stop
+ 136   1          SET_MASK(ADCSTS, DOVE);      // Data Overflow Event
+ 137   1          SET_MASK(ADCSTS, EOCE);      // End-of-Cycle Event
+ 138   1          CLEAR_MASK(ADCSTS, SDIVSRC); // Clock Source Select, EC clock(9.2MHz)
+ 139   1          
+ 140   1          // ADC Conversion Time set
+ 141   1          //
+ 142   1          // {ADCCTS1, ADCCTS0}     =11b              =01b                =00b/10b
+ 143   1          // Conversion Time (us)   200*(SCLKDIV+1)   103.2*(SCLKDIV+1)   30.8*(SCLKDIV+1)
+ 144   1          //
+ 145   1          // According to the following Settings, the Conversion time is :
+ 146   1          // 200*(0xFA+1) = 50200us = 50.2ms
+ 147   1          SET_MASK(ADCCFG, DFILEN);    // ADC Conversion Time Select 0, ADCCTS0
+ 148   1          SET_MASK(ADCSTS, DFILEN);    // ADC Conversion Time Select 1, ADCCTS1
+ 149   1          ADCCTL = 0xFA;               // Default is 0x15
+ 150   1      
+ 151   1          CLEAR_MASK(ADCCFG, BIT0);    // ADC Module disable
+ 152   1      
+ 153   1      
+ 154   1          VCH0CTL = ADCChannel_0;   // Clear data vaild flag, and select Channel 0
+ 155   1          //VCH1CTL = ADCChannel_1;   // Clear data vaild flag, and select Channel 1
+ 156   1          //VCH2CTL = ADCChannel_2;   // Clear data vaild flag, and select Channel 2
+ 157   1          //VCH3CTL = ADCChannel_3;   // Clear data vaild flag, and select Channel 3
+ 158   1      
+ 159   1          //VCH4CTL = ADCChannel_4;     // Voltage Channel 4 Enable
+ 160   1          //VCH5CTL = ADCChannel_5;   // Voltage Channel 5 Enable
+ 161   1          //VCH6CTL = ADCChannel_6;   // Voltage Channel 6 Enable
+ 162   1          VCH7CTL = ADCChannel_7;   // Voltage Channel 7 Enable
+ 163   1          
+ 164   1          SET_MASK(ADCCFG, BIT0);      // ADC Module Enable
+ 165   1      }
+ 166          
+ 167          
+ 168          
+ 169          #if 1
+ 170          
+ 171          const unsigned char code NTC110K[]=
+ 172          {
+ 173          //0   1        2        3        4        5        6        7       8        9        A       B        C  
+             -      D       E      F
+ 174          110, 110, 110, 110, 110, 110, 110, 110, 110, 110, 110, 107, 105, 102, 99, 97,
+ 175          95,  93,  92,  90,  89,  87,  85,  84,  83,  82,  80,  79,  78,  77,  76, 75,
+ 176          74,  73,  72,  71,  70,  70,  69,  68,  67,  66,  66,  65,  64,  64,  63, 62,
+ 177          62,  61,  60,  60,  59,  58,  58,  57,  57,  56,  56,  55,  55,  54,  53, 53,
+C51 COMPILER V7.50   OEM_ADC                                                               09/08/2020 15:56:22 PAGE 4   
+
+ 178          52,  52,  51,  51,  51,  50,  50,  49,  49,  48,  48,  47,  47,  47,  46, 46,
+ 179          45,  45,  44,  44,  44,  43,  43,  43,  42,  42,  41,  41,  41,  40,  40, 39,
+ 180          39,  39,  39,  38,  38,  37,  37,  37,  37,  36,  36,  36,  35,  35,  35, 34,
+ 181          34,  33,  33,  33,  33,  32,  32,  32,  31,  31,  30,  30,  30,  30,  29, 29,
+ 182          28,  28,  28,  28,  27,  27,  27,  27,  26,  26,  26,  25,  25,  25,  24, 24,
+ 183          24,  23,  23,  23,  22,  22,  22,  22,  21,  21,  21,  21,  20,  20,  20, 19,
+ 184          19,  19,  18,  18,  18,  18,  17,  17,  17,  16,  16,  16,  15,  15,  15, 15,
+ 185          14,  14,  14,  13,  13,  13,  12,  12,  12,  12,  11,  11,  11,  10,  10, 10,
+ 186          9,   9,   9,   8,   8,   8,   7,   7,   7,   6,   6,   6,   5,   5,   5,  4,
+ 187          4,   4,   3,   3,   3,   2,   2,   2,   1,   1,   1,   0,   0,   0,   0,  0,
+ 188          };
+ 189          void Get_Thermistor0_data(void)
+ 190          {
+ 191   1              BYTE index;
+ 192   1      
+ 193   1              index = ADCAvg0>>2;
+ 194   1              if(index>220)
+ 195   1              {
+ 196   2                      index=220;
+ 197   2              }
+ 198   1      
+ 199   1              ADC0_NTC_T = NTC110K[index];
+ 200   1      
+ 201   1              if(ADC0_NTC_T>13) // Dennis required to correction error
+ 202   1              {
+ 203   2                      ADC0_NTC_T = ADC0_NTC_T-13;
+ 204   2              }
+ 205   1              else
+ 206   1              {
+ 207   2                      ADC0_NTC_T=0;
+ 208   2              }
+ 209   1      }
+ 210          
+ 211          void Get_Thermistor1_data(void)
+ 212          {
+ 213   1              BYTE index;
+ 214   1      
+ 215   1              index = ADCAvg1>>2;
+ 216   1              if(index>220)
+ 217   1              {
+ 218   2                      index=220;
+ 219   2              }
+ 220   1      
+ 221   1              ADC1_NTC_T = NTC110K[index];
+ 222   1      }
+ 223          
+ 224          void Get_Thermistor7_data(void)
+ 225          {
+ 226   1              BYTE index;
+ 227   1      
+ 228   1              index = ADCAvg7>>2;
+ 229   1              if(index>220)
+ 230   1              {
+ 231   2                      index=220;
+ 232   2              }
+ 233   1              
+ 234   1              ADC7_NTC_T = NTC110K[index];
+ 235   1      
+ 236   1              if(ADC7_NTC_T>13) // Dennis required to correction error
+ 237   1              {
+ 238   2                      ADC7_NTC_T = ADC7_NTC_T-13;
+ 239   2              }
+C51 COMPILER V7.50   OEM_ADC                                                               09/08/2020 15:56:22 PAGE 5   
+
+ 240   1              else
+ 241   1              {
+ 242   2                      ADC7_NTC_T=0;
+ 243   2              }
+ 244   1      }
+ 245          #endif
+C51 COMPILER V7.50   OEM_ADC                                                               09/08/2020 15:56:22 PAGE 6   
+
+ASSEMBLY LISTING OF GENERATED OBJECT CODE
+
+
+             ; FUNCTION Com001A (BEGIN)
+0000         L?0027:
+0000 75F0FF            MOV     B,#0FFH
+0003 A4                MUL     AB
+0004 FF                MOV     R7,A
+0005         L?0028:
+0005 E0                MOVX    A,@DPTR
+0006 7C00              MOV     R4,#00H
+0008 2F                ADD     A,R7
+0009 FE                MOV     R6,A
+000A EC                MOV     A,R4
+000B 35F0              ADDC    A,B
+000D 22                RET     
+000E         L?0029:
+000E 900000      E     MOV     DPTR,#VCH0CTL
+0011 7480              MOV     A,#080H
+0013 F0                MOVX    @DPTR,A
+0014 7490              MOV     A,#090H
+0016         L?0030:
+0016 900000      E     MOV     DPTR,#VCH7CTL
+0019 F0                MOVX    @DPTR,A
+001A 900000      E     MOV     DPTR,#ADCCFG
+001D E0                MOVX    A,@DPTR
+001E 22                RET     
+001F         L?0031:
+001F 7C00              MOV     R4,#00H
+0021 2400              ADD     A,#00H
+0023 FF                MOV     R7,A
+0024 EC                MOV     A,R4
+0025 3E                ADDC    A,R6
+0026 F0                MOVX    @DPTR,A
+0027 A3                INC     DPTR
+0028 EF                MOV     A,R7
+0029 F0                MOVX    @DPTR,A
+002A 22                RET     
+002B         L?0032:
+002B         L?0033:
+002B E0                MOVX    A,@DPTR
+002C 75F0FF            MOV     B,#0FFH
+002F A4                MUL     AB
+0030 FF                MOV     R7,A
+0031 22                RET     
+0032         L?0034:
+0032         L?0035:
+0032 E0                MOVX    A,@DPTR
+0033 FE                MOV     R6,A
+0034 A3                INC     DPTR
+0035 E0                MOVX    A,@DPTR
+0036 7802              MOV     R0,#02H
+0038 22                RET     
+             ; FUNCTION Com001A (END)
+
+             ; FUNCTION DisableADCModule (BEGIN)
+                                           ; SOURCE LINE # 27
+                                           ; SOURCE LINE # 28
+                                           ; SOURCE LINE # 29
+0000 900000      E     MOV     DPTR,#VCH0CTL
+0003 741F              MOV     A,#01FH
+0005 F0                MOVX    @DPTR,A
+C51 COMPILER V7.50   OEM_ADC                                                               09/08/2020 15:56:22 PAGE 7   
+
+                                           ; SOURCE LINE # 37
+0006 7480              MOV     A,#080H
+                                           ; SOURCE LINE # 39
+0008 120000      R     LCALL   L?0030
+000B 54FE              ANL     A,#0FEH
+000D F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 40
+000E 22                RET     
+             ; FUNCTION DisableADCModule (END)
+
+             ; FUNCTION EnableADCModule (BEGIN)
+                                           ; SOURCE LINE # 45
+                                           ; SOURCE LINE # 46
+                                           ; SOURCE LINE # 47
+                                           ; SOURCE LINE # 55
+                                           ; SOURCE LINE # 57
+0000 120000      R     LCALL   L?0029
+0003 4401              ORL     A,#01H
+0005 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 58
+0006 22                RET     
+             ; FUNCTION EnableADCModule (END)
+
+             ; FUNCTION ScanAll_ADCChannel (BEGIN)
+                                           ; SOURCE LINE # 60
+                                           ; SOURCE LINE # 61
+                                           ; SOURCE LINE # 63
+0000 900000      E     MOV     DPTR,#VCH0CTL
+0003 E0                MOVX    A,@DPTR
+0004 30E713            JNB     ACC.7,?C0003
+                                           ; SOURCE LINE # 64
+                                           ; SOURCE LINE # 65
+0007 E0                MOVX    A,@DPTR
+0008 4480              ORL     A,#080H
+000A F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 66
+000B 900000      E     MOV     DPTR,#VCH0DATM
+000E E0                MOVX    A,@DPTR
+000F FE                MOV     R6,A
+0010 900000      E     MOV     DPTR,#VCH0DATL
+0013 E0                MOVX    A,@DPTR
+0014 900000      E     MOV     DPTR,#ADCAvg0
+0017 120000      R     LCALL   L?0031
+                                           ; SOURCE LINE # 67
+001A         ?C0003:
+                                           ; SOURCE LINE # 71
+001A 900000      E     MOV     DPTR,#VCH1CTL
+001D E0                MOVX    A,@DPTR
+001E 30E713            JNB     ACC.7,?C0004
+                                           ; SOURCE LINE # 72
+                                           ; SOURCE LINE # 73
+0021 E0                MOVX    A,@DPTR
+0022 4480              ORL     A,#080H
+0024 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 74
+0025 900000      E     MOV     DPTR,#VCH1DATM
+0028 E0                MOVX    A,@DPTR
+0029 FE                MOV     R6,A
+002A 900000      E     MOV     DPTR,#VCH1DATL
+002D E0                MOVX    A,@DPTR
+002E 900000      E     MOV     DPTR,#ADCAvg1
+0031 120000      R     LCALL   L?0031
+C51 COMPILER V7.50   OEM_ADC                                                               09/08/2020 15:56:22 PAGE 8   
+
+                                           ; SOURCE LINE # 75
+0034         ?C0004:
+                                           ; SOURCE LINE # 79
+0034 900000      E     MOV     DPTR,#VCH2CTL
+0037 E0                MOVX    A,@DPTR
+0038 30E71B            JNB     ACC.7,?C0005
+                                           ; SOURCE LINE # 80
+                                           ; SOURCE LINE # 81
+003B E0                MOVX    A,@DPTR
+003C 4480              ORL     A,#080H
+003E F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 82
+003F 900000      E     MOV     DPTR,#VCH2DATM
+0042 E0                MOVX    A,@DPTR
+0043 FE                MOV     R6,A
+0044 900000      E     MOV     DPTR,#VCH2DATL
+0047 E0                MOVX    A,@DPTR
+0048 7C00              MOV     R4,#00H
+004A 2400              ADD     A,#00H
+004C FF                MOV     R7,A
+004D EC                MOV     A,R4
+004E 3E                ADDC    A,R6
+004F 900000      E     MOV     DPTR,#ADCAvg2
+0052 F0                MOVX    @DPTR,A
+0053 A3                INC     DPTR
+0054 EF                MOV     A,R7
+0055 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 83
+0056         ?C0005:
+                                           ; SOURCE LINE # 87
+0056 900000      E     MOV     DPTR,#VCH3CTL
+0059 E0                MOVX    A,@DPTR
+005A 30E715            JNB     ACC.7,?C0006
+                                           ; SOURCE LINE # 88
+                                           ; SOURCE LINE # 89
+005D E0                MOVX    A,@DPTR
+005E 4480              ORL     A,#080H
+0060 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 90
+0061 900000      E     MOV     DPTR,#VCH3DATM
+0064 E0                MOVX    A,@DPTR
+0065 900000      E     MOV     DPTR,#VCH3DATL
+0068 120000      R     LCALL   L?0027
+006B 900000      E     MOV     DPTR,#ADCAvg3
+006E F0                MOVX    @DPTR,A
+006F A3                INC     DPTR
+0070 CE                XCH     A,R6
+0071 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 91
+0072         ?C0006:
+                                           ; SOURCE LINE # 95
+0072 900000      E     MOV     DPTR,#VCH4CTL
+0075 E0                MOVX    A,@DPTR
+0076 30E715            JNB     ACC.7,?C0007
+                                           ; SOURCE LINE # 96
+                                           ; SOURCE LINE # 97
+0079 E0                MOVX    A,@DPTR
+007A 4480              ORL     A,#080H
+007C F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 98
+007D 900000      E     MOV     DPTR,#VCH4DATM
+0080 E0                MOVX    A,@DPTR
+C51 COMPILER V7.50   OEM_ADC                                                               09/08/2020 15:56:22 PAGE 9   
+
+0081 900000      E     MOV     DPTR,#VCH4DATL
+0084 120000      R     LCALL   L?0027
+0087 900000      E     MOV     DPTR,#ADCAvg4
+008A F0                MOVX    @DPTR,A
+008B A3                INC     DPTR
+008C CE                XCH     A,R6
+008D F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 99
+008E         ?C0007:
+                                           ; SOURCE LINE # 103
+008E 900000      E     MOV     DPTR,#VCH5CTL
+0091 E0                MOVX    A,@DPTR
+0092 30E717            JNB     ACC.7,?C0008
+                                           ; SOURCE LINE # 104
+                                           ; SOURCE LINE # 105
+0095 E0                MOVX    A,@DPTR
+0096 4480              ORL     A,#080H
+0098 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 106
+0099 900000      E     MOV     DPTR,#VCH5DATM
+009C 120000      R     LCALL   L?0032
+009F 900000      E     MOV     DPTR,#VCH5DATL
+00A2 120000      R     LCALL   L?0028
+00A5 900000      E     MOV     DPTR,#ADCAvg5
+00A8 F0                MOVX    @DPTR,A
+00A9 A3                INC     DPTR
+00AA CE                XCH     A,R6
+00AB F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 107
+00AC         ?C0008:
+                                           ; SOURCE LINE # 111
+00AC 900000      E     MOV     DPTR,#VCH6CTL
+00AF E0                MOVX    A,@DPTR
+00B0 30E717            JNB     ACC.7,?C0009
+                                           ; SOURCE LINE # 112
+                                           ; SOURCE LINE # 113
+00B3 E0                MOVX    A,@DPTR
+00B4 4480              ORL     A,#080H
+00B6 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 114
+00B7 900000      E     MOV     DPTR,#VCH6DATM
+00BA 120000      R     LCALL   L?0032
+00BD 900000      E     MOV     DPTR,#VCH6DATL
+00C0 120000      R     LCALL   L?0028
+00C3 900000      E     MOV     DPTR,#ADCAvg6
+00C6 F0                MOVX    @DPTR,A
+00C7 A3                INC     DPTR
+00C8 CE                XCH     A,R6
+00C9 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 115
+00CA         ?C0009:
+                                           ; SOURCE LINE # 119
+00CA 900000      E     MOV     DPTR,#VCH7CTL
+00CD E0                MOVX    A,@DPTR
+00CE 30E717            JNB     ACC.7,?C0011
+                                           ; SOURCE LINE # 120
+                                           ; SOURCE LINE # 121
+00D1 E0                MOVX    A,@DPTR
+00D2 4480              ORL     A,#080H
+00D4 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 122
+00D5 900000      E     MOV     DPTR,#VCH7DATM
+C51 COMPILER V7.50   OEM_ADC                                                               09/08/2020 15:56:22 PAGE 10  
+
+00D8 120000      R     LCALL   L?0033
+00DB 900000      E     MOV     DPTR,#VCH7DATL
+00DE 120000      R     LCALL   L?0028
+00E1 900000      E     MOV     DPTR,#ADCAvg7
+00E4 F0                MOVX    @DPTR,A
+00E5 A3                INC     DPTR
+00E6 CE                XCH     A,R6
+00E7 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 123
+                                           ; SOURCE LINE # 125
+00E8         ?C0011:
+00E8 22                RET     
+             ; FUNCTION ScanAll_ADCChannel (END)
+
+             ; FUNCTION Init_ADC (BEGIN)
+                                           ; SOURCE LINE # 131
+                                           ; SOURCE LINE # 132
+                                           ; SOURCE LINE # 134
+0000 900000      E     MOV     DPTR,#ADCSTS
+0003 E0                MOVX    A,@DPTR
+0004 4408              ORL     A,#08H
+0006 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 135
+0007 E0                MOVX    A,@DPTR
+0008 54F7              ANL     A,#0F7H
+000A F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 136
+000B E0                MOVX    A,@DPTR
+000C 4402              ORL     A,#02H
+000E F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 137
+000F E0                MOVX    A,@DPTR
+0010 4401              ORL     A,#01H
+0012 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 138
+0013 E0                MOVX    A,@DPTR
+0014 54DF              ANL     A,#0DFH
+0016 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 147
+0017 900000      E     MOV     DPTR,#ADCCFG
+001A E0                MOVX    A,@DPTR
+001B 4420              ORL     A,#020H
+001D F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 148
+001E 900000      E     MOV     DPTR,#ADCSTS
+0021 E0                MOVX    A,@DPTR
+0022 4420              ORL     A,#020H
+0024 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 149
+0025 900000      E     MOV     DPTR,#ADCCTL
+0028 74FA              MOV     A,#0FAH
+002A F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 151
+002B 900000      E     MOV     DPTR,#ADCCFG
+002E E0                MOVX    A,@DPTR
+002F 54FE              ANL     A,#0FEH
+0031 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 154
+                                           ; SOURCE LINE # 162
+                                           ; SOURCE LINE # 164
+0032 120000      R     LCALL   L?0029
+0035 4401              ORL     A,#01H
+C51 COMPILER V7.50   OEM_ADC                                                               09/08/2020 15:56:22 PAGE 11  
+
+0037 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 165
+0038 22                RET     
+             ; FUNCTION Init_ADC (END)
+
+             ; FUNCTION Get_Thermistor0_data (BEGIN)
+                                           ; SOURCE LINE # 189
+                                           ; SOURCE LINE # 190
+                                           ; SOURCE LINE # 193
+0000 900000      E     MOV     DPTR,#ADCAvg0
+0003 120000      R     LCALL   L?0034
+0006         ?C0023:
+0006 CE                XCH     A,R6
+0007 C3                CLR     C
+0008 13                RRC     A
+0009 CE                XCH     A,R6
+000A 13                RRC     A
+000B D8F9              DJNZ    R0,?C0023
+000D FF                MOV     R7,A
+;---- Variable 'index' assigned to Register 'R7' ----
+                                           ; SOURCE LINE # 194
+000E D3                SETB    C
+000F 94DC              SUBB    A,#0DCH
+0011 4002              JC      ?C0013
+                                           ; SOURCE LINE # 195
+                                           ; SOURCE LINE # 196
+0013 7FDC              MOV     R7,#0DCH
+                                           ; SOURCE LINE # 197
+0015         ?C0013:
+                                           ; SOURCE LINE # 199
+0015 EF                MOV     A,R7
+0016 900000      R     MOV     DPTR,#NTC110K
+0019 93                MOVC    A,@A+DPTR
+001A 900000      E     MOV     DPTR,#ADC0_NTC_T
+001D F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 201
+001E E0                MOVX    A,@DPTR
+001F D3                SETB    C
+0020 940D              SUBB    A,#0DH
+0022 4005              JC      ?C0014
+                                           ; SOURCE LINE # 202
+                                           ; SOURCE LINE # 203
+0024 E0                MOVX    A,@DPTR
+0025 24F3              ADD     A,#0F3H
+0027 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 204
+0028 22                RET     
+0029         ?C0014:
+                                           ; SOURCE LINE # 206
+                                           ; SOURCE LINE # 207
+0029 E4                CLR     A
+002A 900000      E     MOV     DPTR,#ADC0_NTC_T
+002D F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 208
+                                           ; SOURCE LINE # 209
+002E         ?C0016:
+002E 22                RET     
+             ; FUNCTION Get_Thermistor0_data (END)
+
+             ; FUNCTION Get_Thermistor1_data (BEGIN)
+                                           ; SOURCE LINE # 211
+                                           ; SOURCE LINE # 212
+C51 COMPILER V7.50   OEM_ADC                                                               09/08/2020 15:56:22 PAGE 12  
+
+                                           ; SOURCE LINE # 215
+0000 900000      E     MOV     DPTR,#ADCAvg1
+0003 120000      R     LCALL   L?0034
+0006         ?C0024:
+0006 CE                XCH     A,R6
+0007 C3                CLR     C
+0008 13                RRC     A
+0009 CE                XCH     A,R6
+000A 13                RRC     A
+000B D8F9              DJNZ    R0,?C0024
+000D FF                MOV     R7,A
+;---- Variable 'index' assigned to Register 'R7' ----
+                                           ; SOURCE LINE # 216
+000E D3                SETB    C
+000F 94DC              SUBB    A,#0DCH
+0011 4002              JC      ?C0017
+                                           ; SOURCE LINE # 217
+                                           ; SOURCE LINE # 218
+0013 7FDC              MOV     R7,#0DCH
+                                           ; SOURCE LINE # 219
+0015         ?C0017:
+                                           ; SOURCE LINE # 221
+0015 EF                MOV     A,R7
+0016 900000      R     MOV     DPTR,#NTC110K
+0019 93                MOVC    A,@A+DPTR
+001A 900000      E     MOV     DPTR,#ADC1_NTC_T
+001D F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 222
+001E 22                RET     
+             ; FUNCTION Get_Thermistor1_data (END)
+
+             ; FUNCTION Get_Thermistor7_data (BEGIN)
+                                           ; SOURCE LINE # 224
+                                           ; SOURCE LINE # 225
+                                           ; SOURCE LINE # 228
+0000 900000      E     MOV     DPTR,#ADCAvg7
+0003 120000      R     LCALL   L?0035
+0006         ?C0025:
+0006 CE                XCH     A,R6
+0007 C3                CLR     C
+0008 13                RRC     A
+0009 CE                XCH     A,R6
+000A 13                RRC     A
+000B D8F9              DJNZ    R0,?C0025
+000D FF                MOV     R7,A
+;---- Variable 'index' assigned to Register 'R7' ----
+                                           ; SOURCE LINE # 229
+000E D3                SETB    C
+000F 94DC              SUBB    A,#0DCH
+0011 4002              JC      ?C0019
+                                           ; SOURCE LINE # 230
+                                           ; SOURCE LINE # 231
+0013 7FDC              MOV     R7,#0DCH
+                                           ; SOURCE LINE # 232
+0015         ?C0019:
+                                           ; SOURCE LINE # 234
+0015 EF                MOV     A,R7
+0016 900000      R     MOV     DPTR,#NTC110K
+0019 93                MOVC    A,@A+DPTR
+001A 900000      E     MOV     DPTR,#ADC7_NTC_T
+001D F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 236
+C51 COMPILER V7.50   OEM_ADC                                                               09/08/2020 15:56:22 PAGE 13  
+
+001E E0                MOVX    A,@DPTR
+001F D3                SETB    C
+0020 940D              SUBB    A,#0DH
+0022 4005              JC      ?C0020
+                                           ; SOURCE LINE # 237
+                                           ; SOURCE LINE # 238
+0024 E0                MOVX    A,@DPTR
+0025 24F3              ADD     A,#0F3H
+0027 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 239
+0028 22                RET     
+0029         ?C0020:
+                                           ; SOURCE LINE # 241
+                                           ; SOURCE LINE # 242
+0029 E4                CLR     A
+002A 900000      E     MOV     DPTR,#ADC7_NTC_T
+002D F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 243
+                                           ; SOURCE LINE # 244
+002E         ?C0022:
+002E 22                RET     
+             ; FUNCTION Get_Thermistor7_data (END)
+
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    494    ----
+   CONSTANT SIZE    =    224    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

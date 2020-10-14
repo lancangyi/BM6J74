@@ -1,0 +1,463 @@
+C51 COMPILER V7.50   OEM_UART                                                              09/08/2020 15:56:28 PAGE 1   
+
+
+C51 COMPILER V7.50, COMPILATION OF MODULE OEM_UART
+OBJECT MODULE PLACED IN Code\Oem\OEM_UART.OBJ
+COMPILER INVOKED BY: C:\Keil\C51\BIN\c51.exe Code\Oem\OEM_UART.C LA WL(1) CD OT(9,SIZE) NOAREGS OR INCDIR(.\Code\CORE\IN
+                    -CLUDE\;.\Code\OEM\INCLUDE\;.\Code\CHIP\INCLUDE\)
+
+line level    source
+
+   1          #include <CORE_INCLUDE.H>
+   2          #include <OEM_INCLUDE.H>
+   3          
+   4          
+   5          void uart_Initial_Host(void)
+   6          {
+   7   1              BADRSEL = 0x01;
+   8   1        //  RSTDMMC = 0x00;
+   9   1              GCR1 = 0x05;
+  10   1              GPCRB0 = ALT;
+  11   1              GPCRB1 = ALT;
+  12   1      }
+  13          
+  14          
+  15          void uart_Initial(void)
+  16          {
+  17   1      #if UART_Debug
+              
+                      SCON=0x40;         // Mode 1
+                      SCON |= BIT4;      // Receive data enable
+                  T2CON &= 0xF0;     // EXEN2=0; TR2=0; C/T2#=0; CP/RL2#=0;
+                  T2CON |= 0x30;     // RCLK = 1; TCLK=1;     receive and send use time2
+                  T2MOD=0x00;
+                  RCAP2H=R2HV;
+                  RCAP2L=R2LV;
+                  TR2=1;
+              
+                      UART_RX_Buffer_In = 0;
+                      
+                      SET_MASK(UART_Buffer_Status,_buffer_Empty);   // Set buffer empty flag
+                      SET_MASK(UART_Buffer_Status,_Send_Ready);     // Set send ready flag
+                      
+                      SET_MASK(IE, BIT4); // Enable UART intrrupt
+              
+              #endif  
+  36   1      }
+  37          
+  38          //------------------------------------------------------
+  39          //    Send out an char by 8032 UART from buffer
+  40          // 1. Just call in the event of 1 ms
+  41          // 2. It wil send a byte by 8032 UART when the macro UART_Debug is TRUE
+  42          //------------------------------------------------------
+  43          void UART_Send_Byte(void)
+  44          {
+  45   1      #if UART_Debug
+                      unsigned char ch;
+              
+                      if(IS_MASK_SET(UART_Buffer_Status,_buffer_Empty)) // The buffer is empty
+                      {
+                              return;
+                      }
+              
+                      CLEAR_MASK(UART_Buffer_Status,_Send_Ready);  // Set busy for send data, wait for ready when send next dat
+             -a
+C51 COMPILER V7.50   OEM_UART                                                              09/08/2020 15:56:28 PAGE 2   
+
+                      
+                      ch = (*(char xdata *)((&Uart_Base_Add)+UART_TX_Buffer_Out)); // Get a char from buffer
+                      
+                      UART_TX_Buffer_Out++;
+              
+                      if(UART_TX_Buffer_Out == DebugUartRange)
+                      {
+                              UART_TX_Buffer_Out = 0;
+                      }
+              
+                      CLEAR_MASK(UART_Buffer_Status,_buffer_Full);  // Clear buffer full flag
+              
+                      if(UART_TX_Buffer_Out == UART_TX_Buffer_In) 
+                      {
+                              SET_MASK(UART_Buffer_Status,_buffer_Empty); // Set bufer empty flag
+                      }
+                      
+                      SBUF = ch; // SBUF is the Register for UART TX
+                                 // After the success to send a char, TI will set to 1 automatically
+              #endif
+  74   1      }
+  75          
+  76          
+  77          //------------------------------------------------------
+  78          //    Print out an BYTE to UART buffer
+  79          //------------------------------------------------------
+  80          void UART_Print_Byte(unsigned char ch)
+  81          {
+  82   1      #if UART_Debug
+              
+                      if(IS_MASK_SET(UART_Buffer_Status,_buffer_Full))   // The UART buffer is full
+                      {
+                              UART_TX_Buffer_In=0x06;
+                              UART_TX_Buffer_Out=0x00;
+                              ((*(XBYTE *)((&Uart_Base_Add)+0))='\n');
+                              ((*(XBYTE *)((&Uart_Base_Add)+1))='l');
+                              ((*(XBYTE *)((&Uart_Base_Add)+2))='o');
+                              ((*(XBYTE *)((&Uart_Base_Add)+3))='s');
+                              ((*(XBYTE *)((&Uart_Base_Add)+4))='t');
+                              ((*(XBYTE *)((&Uart_Base_Add)+5))='\n');
+                              
+                              CLEAR_MASK(UART_Buffer_Status,_buffer_Empty);  // Clear buffer empty flag
+                      }
+                      else
+                      {
+                              ((*(char xdata *)((&Uart_Base_Add)+UART_TX_Buffer_In))=ch); // Put the char to buffer
+                              
+                              UART_TX_Buffer_In++;
+                              
+                              if(UART_TX_Buffer_In == DebugUartRange)
+                              {
+                                      UART_TX_Buffer_In = 0;
+                              }
+                              
+                              CLEAR_MASK(UART_Buffer_Status,_buffer_Empty);  // Clear buffer empty flag
+                              
+                              if(UART_TX_Buffer_In == UART_TX_Buffer_Out)
+                              {
+                                      SET_MASK(UART_Buffer_Status,_buffer_Full); // Set bufer full flag
+                              }
+                      }
+                      
+C51 COMPILER V7.50   OEM_UART                                                              09/08/2020 15:56:28 PAGE 3   
+
+              #endif
+ 117   1      }
+ 118          
+ 119          //------------------------------------------------------
+ 120          //    Print HEX to UART buffer
+ 121          // 1. The HEX data rang is 0--FF
+ 122          //------------------------------------------------------
+ 123          void UART_Print_HEX(unsigned char HEX_Dat)
+ 124          {
+ 125   1      #if UART_Debug
+              
+                      unsigned char ch;
+                      ch = HEX_Dat >> 4;
+                      if(ch <= 9)
+                      {
+                              ch = ch + '0';
+                      }
+                  else
+                  {
+                              ch = ch + 'A' - 10;
+                  }
+                  UART_Print_Byte(ch);
+              
+                      ch = HEX_Dat & 0x0F;
+                      if(ch <= 9)
+                      {
+                              ch = ch + '0';
+                      }
+                  else
+                  {
+                              ch = ch + 'A' - 10;
+                  }
+                  UART_Print_Byte(ch);
+                      
+              #endif
+ 151   1      }
+ 152          
+ 153          //------------------------------------------------------
+ 154          //    Print integer to UART buffer
+ 155          //------------------------------------------------------
+ 156          void UART_Print_Int(unsigned int aInt)
+ 157          {
+ 158   1      #if UART_Debug
+              
+                      unsigned char temp;
+                      
+                      temp = aInt / 10000;
+                      if (temp != 0)
+                      {
+                               UART_Print_Byte(temp + '0');
+                      }
+              
+                      temp = aInt % 10000 / 1000;
+                      if (temp != 0)
+                      {
+                              UART_Print_Byte(temp + '0');
+                      }
+              
+                      temp = aInt % 1000 / 100;
+                      if (temp != 0)
+                      {
+                              UART_Print_Byte(temp + '0');
+C51 COMPILER V7.50   OEM_UART                                                              09/08/2020 15:56:28 PAGE 4   
+
+                      }
+              
+                      temp = aInt % 100 / 10;
+                      if (temp != 0)
+                      {
+                              UART_Print_Byte(temp + '0');
+                      }
+                      
+                      temp = aInt % 10;
+                      UART_Print_Byte(temp + '0');
+                      
+              #endif
+ 190   1      }
+ 191          
+ 192          
+ 193          //------------------------------------------------------
+ 194          //    Print  an string to UART buffer
+ 195          //  1. If the string has '\n', don't care, the receive software will parse
+ 196          //------------------------------------------------------
+ 197          void UART_Print_Str(unsigned char *str)
+ 198          {
+ 199   1      #if UART_Debug
+              
+                      unsigned char i;
+                      unsigned char j;
+                      unsigned char ch;
+              
+                      for (i = 0; i < Str_MAX_Len; i++)
+                      {
+                              ch = *(str + i);
+              
+                              if (ch == '\0')  // String end
+                              {
+                                      break;
+                              }
+                              else
+                              {
+                                      UART_Print_Byte(ch);
+                              }
+                      }
+              
+              #endif
+ 220   1      }
+ 221          
+ 222          
+ 223          
+ 224          
+ 225          void Cmd_Hello(void)
+ 226          {
+ 227   1              UART_Print_Str("This is CF03-T say hello\n");
+ 228   1      }
+ 229          
+ 230          void Cmd_Battery(void)
+ 231          {
+ 232   1              UART_Print_Str("This is CF03-T say Battery\n");
+ 233   1      }
+ 234          
+ 235          void Cmd_Charger(void)
+ 236          {
+ 237   1              UART_Print_Str("This is CF03-T say Charger\n");
+ 238   1      }
+ 239          
+C51 COMPILER V7.50   OEM_UART                                                              09/08/2020 15:56:28 PAGE 5   
+
+ 240          const UART_CMD code UART_Cmd_Table[] = {
+ 241                          {"Hello",   Cmd_Hello    },
+ 242                          {"Battery", Cmd_Battery  },
+ 243                          {"Charger", Cmd_Charger  },
+ 244                          {0,0},
+ 245          };
+ 246          /*
+ 247          //------------------------------------------------------
+ 248          //    Processing of 8032 UART receiving commands
+ 249          //  1. The command must be end of '\r' & '\n', 0x0D  0x0A
+ 250          //  2. This function must be call in S0/S3/S4/S5
+ 251          //------------------------------------------------------
+ 252          void UART_RX_Command(void)
+ 253          {
+ 254                  unsigned char i;
+ 255                  unsigned char j;
+ 256                  unsigned char k;
+ 257                  unsigned char Rx_index;
+ 258          
+ 259                  Rx_index = UART_RX_Buffer_In;
+ 260                  if(Rx_index)
+ 261                  {
+ 262                          for(i=0; i<Rx_index; i++)
+ 263                          {
+ 264                                  if(0x0D == UART_RX_Buffer[i])  // 0x0D is the char '\r'
+ 265                                  {
+ 266                                          break;
+ 267                                  }
+ 268                          }
+ 269          
+ 270                          if(i<Rx_index)  // Receives the command
+ 271                          {
+ 272                                  for(j=0; 0!=(UART_Cmd_Table[j].CmdFun); j++)  // Search command
+ 273                                  {
+ 274                                          for(k=0; (0x0D!=UART_RX_Buffer[k])&&(0!=(UART_Cmd_Table[j].CmdName[k])); k++)  // Rx command end of '\
+             -r'
+ 275                                          {
+ 276                                                  if(UART_Cmd_Table[j].CmdName[k] == UART_RX_Buffer[k]) // compare command
+ 277                                                  {
+ 278                                                          continue;
+ 279                                                  }
+ 280                                                  else
+ 281                                                  {
+ 282                                                          break;
+ 283                                                  }
+ 284                                          }
+ 285          
+ 286                                          if(0x0D==UART_RX_Buffer[k])  // There is match command
+ 287                                          {
+ 288                                                  (UART_Cmd_Table[j].CmdFun)();
+ 289                                                  UART_RX_Buffer_In = 0;
+ 290                                                  break;
+ 291                                          }
+ 292                                  }
+ 293          
+ 294                                  if(0==(UART_Cmd_Table[j].CmdFun))  // There is no command match
+ 295                                  {
+ 296                                          UART_Print_Str("Command : ");
+ 297                                          for(i=0; i<Rx_index; i++)
+ 298                                          {
+ 299                                                  UART_Print_Byte(UART_RX_Buffer[i]);
+ 300                                          }
+C51 COMPILER V7.50   OEM_UART                                                              09/08/2020 15:56:28 PAGE 6   
+
+ 301                                          UART_Print_Str("\nThis command is not support!\n");
+ 302                                          UART_RX_Buffer_In = 0;
+ 303                                  }
+ 304                          }
+ 305          
+ 306                          if(i==(UART_RX_MAX_LEN-1))  // Rx Buffer overflow
+ 307                          {
+ 308                                  UART_Print_Str("The Rx buffer is overflow and it's self-reset !!!\n");
+ 309                                  UART_RX_Buffer_In = 0;
+ 310                          }
+ 311                  }
+ 312          }
+ 313          */
+ 314          
+ 315          
+C51 COMPILER V7.50   OEM_UART                                                              09/08/2020 15:56:28 PAGE 7   
+
+ASSEMBLY LISTING OF GENERATED OBJECT CODE
+
+
+             ; FUNCTION uart_Initial_Host (BEGIN)
+                                           ; SOURCE LINE # 5
+                                           ; SOURCE LINE # 6
+                                           ; SOURCE LINE # 7
+0000 900000      E     MOV     DPTR,#BADRSEL
+0003 7401              MOV     A,#01H
+0005 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 9
+0006 900000      E     MOV     DPTR,#GCR1
+0009 7405              MOV     A,#05H
+000B F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 10
+000C E4                CLR     A
+000D 900000      E     MOV     DPTR,#GPCRB0
+0010 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 11
+0011 900000      E     MOV     DPTR,#GPCRB1
+0014 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 12
+0015 22                RET     
+             ; FUNCTION uart_Initial_Host (END)
+
+             ; FUNCTION uart_Initial (BEGIN)
+                                           ; SOURCE LINE # 15
+                                           ; SOURCE LINE # 16
+                                           ; SOURCE LINE # 36
+0000 22                RET     
+             ; FUNCTION uart_Initial (END)
+
+             ; FUNCTION UART_Send_Byte (BEGIN)
+                                           ; SOURCE LINE # 43
+                                           ; SOURCE LINE # 44
+                                           ; SOURCE LINE # 74
+0000 22                RET     
+             ; FUNCTION UART_Send_Byte (END)
+
+             ; FUNCTION _UART_Print_Byte (BEGIN)
+                                           ; SOURCE LINE # 80
+0000 900000      R     MOV     DPTR,#ch
+0003 EF                MOV     A,R7
+0004 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 81
+                                           ; SOURCE LINE # 117
+0005 22                RET     
+             ; FUNCTION _UART_Print_Byte (END)
+
+             ; FUNCTION _UART_Print_HEX (BEGIN)
+                                           ; SOURCE LINE # 123
+0000 900000      R     MOV     DPTR,#HEX_Dat
+0003 EF                MOV     A,R7
+0004 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 124
+                                           ; SOURCE LINE # 151
+0005 22                RET     
+             ; FUNCTION _UART_Print_HEX (END)
+
+             ; FUNCTION _UART_Print_Int (BEGIN)
+                                           ; SOURCE LINE # 156
+0000 900000      R     MOV     DPTR,#aInt
+C51 COMPILER V7.50   OEM_UART                                                              09/08/2020 15:56:28 PAGE 8   
+
+0003 EE                MOV     A,R6
+0004 F0                MOVX    @DPTR,A
+0005 A3                INC     DPTR
+0006 EF                MOV     A,R7
+0007 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 157
+                                           ; SOURCE LINE # 190
+0008 22                RET     
+             ; FUNCTION _UART_Print_Int (END)
+
+             ; FUNCTION _UART_Print_Str (BEGIN)
+                                           ; SOURCE LINE # 197
+0000 900000      R     MOV     DPTR,#str
+0003 020000      E     LJMP    ?C?PSTXDATA
+             ; FUNCTION _UART_Print_Str (END)
+
+             ; FUNCTION Cmd_Hello (BEGIN)
+                                           ; SOURCE LINE # 225
+                                           ; SOURCE LINE # 226
+                                           ; SOURCE LINE # 227
+0000 7BFF              MOV     R3,#0FFH
+0002 7A00        R     MOV     R2,#HIGH ?SC_0
+0004 7900        R     MOV     R1,#LOW ?SC_0
+0006 020000      R     LJMP    _UART_Print_Str
+             ; FUNCTION Cmd_Hello (END)
+
+             ; FUNCTION Cmd_Battery (BEGIN)
+                                           ; SOURCE LINE # 230
+                                           ; SOURCE LINE # 231
+                                           ; SOURCE LINE # 232
+0000 7BFF              MOV     R3,#0FFH
+0002 7A00        R     MOV     R2,#HIGH ?SC_26
+0004 7900        R     MOV     R1,#LOW ?SC_26
+0006 020000      R     LJMP    _UART_Print_Str
+             ; FUNCTION Cmd_Battery (END)
+
+             ; FUNCTION Cmd_Charger (BEGIN)
+                                           ; SOURCE LINE # 235
+                                           ; SOURCE LINE # 236
+                                           ; SOURCE LINE # 237
+0000 7BFF              MOV     R3,#0FFH
+0002 7A00        R     MOV     R2,#HIGH ?SC_54
+0004 7900        R     MOV     R1,#LOW ?SC_54
+0006 020000      R     LJMP    _UART_Print_Str
+             ; FUNCTION Cmd_Charger (END)
+
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     78    ----
+   CONSTANT SIZE    =    124    ----
+   XDATA SIZE       =   ----       7
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

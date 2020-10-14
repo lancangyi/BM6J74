@@ -1,0 +1,46 @@
+C51 COMPILER V7.50   OEM_VER                                                               09/08/2020 15:56:24 PAGE 1   
+
+
+C51 COMPILER V7.50, COMPILATION OF MODULE OEM_VER
+OBJECT MODULE PLACED IN Code\Oem\OEM_Ver.OBJ
+COMPILER INVOKED BY: C:\Keil\C51\BIN\c51.exe Code\Oem\OEM_Ver.C LA WL(1) CD OT(9,SIZE) NOAREGS OR INCDIR(.\Code\CORE\INC
+                    -LUDE\;.\Code\OEM\INCLUDE\;.\Code\CHIP\INCLUDE\)
+
+line level    source
+
+   1          /*----------------------------------------------------------------------------
+   2           * Filename: OEM_Ver.C  For Chipset: ITE.IT85XX
+   3           *
+   4           * Function: Project version 
+   5           *
+   6           *---------------------------------------------------------------------------*/
+   7           
+   8          #include <CORE_INCLUDE.H>
+   9          #include <OEM_INCLUDE.H>
+  10          
+  11          //----------------------------------------------------------------------------
+  12          // Project Information
+  13          //----------------------------------------------------------------------------
+  14          BYTE code P_model[]    = "Project01$";              // Project information
+  15          BYTE code P_date[]     = "03/31/2018$";             // latest modified date
+  16          BYTE code P_rev[]      = "V01$";                    // Project revision
+  17          BYTE code P_digit[]    = {00,01};                   // Project extended rev 
+C51 COMPILER V7.50   OEM_VER                                                               09/08/2020 15:56:24 PAGE 2   
+
+ASSEMBLY LISTING OF GENERATED OBJECT CODE
+
+
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =   ----    ----
+   CONSTANT SIZE    =     30    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

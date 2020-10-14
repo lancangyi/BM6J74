@@ -1,0 +1,212 @@
+C51 COMPILER V7.50   OEM_LCD                                                               09/08/2020 15:56:24 PAGE 1   
+
+
+C51 COMPILER V7.50, COMPILATION OF MODULE OEM_LCD
+OBJECT MODULE PLACED IN Code\Oem\OEM_LCD.OBJ
+COMPILER INVOKED BY: C:\Keil\C51\BIN\c51.exe Code\Oem\OEM_LCD.C LA WL(1) CD OT(9,SIZE) NOAREGS OR INCDIR(.\Code\CORE\INC
+                    -LUDE\;.\Code\OEM\INCLUDE\;.\Code\CHIP\INCLUDE\)
+
+line level    source
+
+   1          
+   2          #include <CORE_INCLUDE.H>
+   3          #include <OEM_INCLUDE.H>
+   4          
+   5          
+   6          const BYTE code BrightnessTBL_PWM[MAX_LEVEL+1]= {0x01,0x04,0x08,0x0C,0x12,0x19,0x20,0x25,0x2D,0x34,0x3F};
+   7          
+   8          //-----------------------------------------------------------------------------
+   9          // Setup Brightness value
+  10          //-----------------------------------------------------------------------------
+  11          void Setup_Brightness(BYTE brg_level)
+  12          {
+  13   1          // check setup value is under range
+  14   1              if(brg_level > MAX_LEVEL)
+  15   1              {
+  16   2                      brg_level = MAX_LEVEL;
+  17   2              }
+  18   1      
+  19   1          //if(SystemIsS0)
+  20   1          //{
+  21   1              //PWM_VADJ = BrightnessTBL_PWM[brg_level];
+  22   1          //}
+  23   1              //else
+  24   1              //{
+  25   1                      //PWM_VADJ = 0x40;  // brightness is 0
+  26   1              //}
+  27   1      }
+  28          
+  29          //-----------------------------------------------------------------------------
+  30          // Initialize Brightness variable
+  31          //-----------------------------------------------------------------------------
+  32          void Init_Brightness(void)
+  33          {
+  34   1          BrgLevel = 0x04 ;   
+  35   1              bBrightness = 0 ;
+  36   1              if(OS_Type==3)
+  37   1              {
+  38   2                      LCD_BRIGHTNESS = 10;
+  39   2              }
+  40   1              else if(OS_Type > 8 && OS_Type < 12)
+  41   1              {
+  42   2                      LCD_BRIGHTNESS = LCD_BRIGHTNESS_BK;
+  43   2              }
+  44   1              else
+  45   1              {
+  46   2                      LCD_BRIGHTNESS = 10;
+  47   2              }
+  48   1      }
+  49          
+  50          void Off_Brightness(void)
+  51          {
+  52   1          BrgLevel = 0x00 ;
+  53   1      }
+  54          
+C51 COMPILER V7.50   OEM_LCD                                                               09/08/2020 15:56:24 PAGE 2   
+
+  55          //-----------------------------------------------------------------------------
+  56          // Check Brightness level change
+  57          //-----------------------------------------------------------------------------
+  58          void Check_Brightness(void)
+  59          {
+  60   1          if(bBrightness != BrgLevel)
+  61   1          {    
+  62   2              bBrightness = BrgLevel;
+  63   2                      LCD_BRIGHTNESS = BrgLevel;
+  64   2              Setup_Brightness(bBrightness);
+  65   2          }
+  66   1      }
+  67          
+C51 COMPILER V7.50   OEM_LCD                                                               09/08/2020 15:56:24 PAGE 3   
+
+ASSEMBLY LISTING OF GENERATED OBJECT CODE
+
+
+             ; FUNCTION _Setup_Brightness (BEGIN)
+                                           ; SOURCE LINE # 11
+;---- Variable 'brg_level' assigned to Register 'R7' ----
+                                           ; SOURCE LINE # 12
+                                           ; SOURCE LINE # 14
+0000 EF                MOV     A,R7
+0001 D3                SETB    C
+0002 940A              SUBB    A,#0AH
+                                           ; SOURCE LINE # 15
+                                           ; SOURCE LINE # 16
+                                           ; SOURCE LINE # 17
+                                           ; SOURCE LINE # 27
+0004         ?C0002:
+0004 22                RET     
+             ; FUNCTION _Setup_Brightness (END)
+
+             ; FUNCTION Init_Brightness (BEGIN)
+                                           ; SOURCE LINE # 32
+                                           ; SOURCE LINE # 33
+                                           ; SOURCE LINE # 34
+0000 900000      E     MOV     DPTR,#BrgLevel
+0003 7404              MOV     A,#04H
+0005 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 35
+0006 E4                CLR     A
+0007 900000      E     MOV     DPTR,#bBrightness
+000A F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 36
+000B 900000      E     MOV     DPTR,#OS_Type
+000E E0                MOVX    A,@DPTR
+000F B40302            CJNE    A,#03H,?C0003
+                                           ; SOURCE LINE # 37
+                                           ; SOURCE LINE # 38
+                                           ; SOURCE LINE # 39
+0012 8017              SJMP    ?C0011
+0014         ?C0003:
+                                           ; SOURCE LINE # 40
+0014 900000      E     MOV     DPTR,#OS_Type
+0017 E0                MOVX    A,@DPTR
+0018 D3                SETB    C
+0019 9408              SUBB    A,#08H
+001B 400E              JC      ?C0005
+001D E0                MOVX    A,@DPTR
+001E 940C              SUBB    A,#0CH
+0020 5009              JNC     ?C0005
+                                           ; SOURCE LINE # 41
+                                           ; SOURCE LINE # 42
+0022 900000      E     MOV     DPTR,#LCD_BRIGHTNESS_BK
+0025 E0                MOVX    A,@DPTR
+0026 900000      E     MOV     DPTR,#LCD_BRIGHTNESS
+0029 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 43
+002A 22                RET     
+002B         ?C0005:
+                                           ; SOURCE LINE # 45
+                                           ; SOURCE LINE # 46
+002B         ?C0011:
+002B 900000      E     MOV     DPTR,#LCD_BRIGHTNESS
+002E 740A              MOV     A,#0AH
+C51 COMPILER V7.50   OEM_LCD                                                               09/08/2020 15:56:24 PAGE 4   
+
+0030 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 47
+                                           ; SOURCE LINE # 48
+0031         ?C0007:
+0031 22                RET     
+             ; FUNCTION Init_Brightness (END)
+
+             ; FUNCTION Off_Brightness (BEGIN)
+                                           ; SOURCE LINE # 50
+                                           ; SOURCE LINE # 51
+                                           ; SOURCE LINE # 52
+0000 E4                CLR     A
+0001 900000      E     MOV     DPTR,#BrgLevel
+0004 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 53
+0005 22                RET     
+             ; FUNCTION Off_Brightness (END)
+
+             ; FUNCTION Check_Brightness (BEGIN)
+                                           ; SOURCE LINE # 58
+                                           ; SOURCE LINE # 59
+                                           ; SOURCE LINE # 60
+0000 900000      E     MOV     DPTR,#BrgLevel
+0003 E0                MOVX    A,@DPTR
+0004 FF                MOV     R7,A
+0005 900000      E     MOV     DPTR,#bBrightness
+0008 E0                MOVX    A,@DPTR
+0009 6F                XRL     A,R7
+000A 6018              JZ      ?C0010
+                                           ; SOURCE LINE # 61
+                                           ; SOURCE LINE # 62
+000C 900000      E     MOV     DPTR,#BrgLevel
+000F E0                MOVX    A,@DPTR
+0010 900000      E     MOV     DPTR,#bBrightness
+0013 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 63
+0014 900000      E     MOV     DPTR,#BrgLevel
+0017 E0                MOVX    A,@DPTR
+0018 900000      E     MOV     DPTR,#LCD_BRIGHTNESS
+001B F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 64
+001C 900000      E     MOV     DPTR,#bBrightness
+001F E0                MOVX    A,@DPTR
+0020 FF                MOV     R7,A
+0021 120000      R     LCALL   _Setup_Brightness
+                                           ; SOURCE LINE # 65
+                                           ; SOURCE LINE # 66
+0024         ?C0010:
+0024 22                RET     
+             ; FUNCTION Check_Brightness (END)
+
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     98    ----
+   CONSTANT SIZE    =     11    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+C51 COMPILER V7.50   OEM_LCD                                                               09/08/2020 15:56:24 PAGE 5   
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

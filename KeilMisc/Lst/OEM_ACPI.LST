@@ -1,0 +1,2584 @@
+C51 COMPILER V7.50   OEM_ACPI                                                              09/08/2020 15:56:23 PAGE 1   
+
+
+C51 COMPILER V7.50, COMPILATION OF MODULE OEM_ACPI
+OBJECT MODULE PLACED IN Code\OEM\OEM_ACPI.OBJ
+COMPILER INVOKED BY: C:\Keil\C51\BIN\c51.exe Code\OEM\OEM_ACPI.C LA WL(1) CD OT(9,SIZE) NOAREGS OR INCDIR(.\Code\CORE\IN
+                    -CLUDE\;.\Code\OEM\INCLUDE\;.\Code\CHIP\INCLUDE\)
+
+line level    source
+
+   1          /*-----------------------------------------------------------------------------
+   2           * TITLE: OEM_ACPI.C
+   3           *
+   4           * Author : Dino
+   5           *
+   6           * Note : These functions are reference only.
+   7           *        Please follow your project software specification to do some modification.
+   8           *---------------------------------------------------------------------------*/
+   9          
+  10          #include <CORE_INCLUDE.H>
+  11          #include <OEM_INCLUDE.H>
+  12          
+  13          //----------------------------------------------------------------------------
+  14          // Handle OEM ACPI command
+  15          //----------------------------------------------------------------------------
+  16          //----------------------------------------------------------------------------
+  17          // Handle OEM ACPI command 8x.
+  18          //----------------------------------------------------------------------------
+  19          void OEM_ACPI_Cmd_80(void)
+  20          {
+  21   1          if(IS_MASK_SET(SYS_MISC1,ACPI_OS))  // ACPI mode
+  22   1          {
+  23   2              if(IS_MASK_CLEAR(PM1STS,BURST)) // Non-burst mode
+  24   2              {
+  25   3                  ECCheckBurstMode = 1;
+  26   3              }
+  27   2          }
+  28   1      }
+  29          
+  30          void OEM_ACPI_Cmd_81(void)
+  31          {
+  32   1          if(IS_MASK_SET(SYS_MISC1,ACPI_OS))  // ACPI mode
+  33   1          {
+  34   2              if(IS_MASK_CLEAR(PM1STS,BURST)) // Non-burst mode
+  35   2              {
+  36   3                  ECCheckBurstMode = 1;
+  37   3              }
+  38   2              }
+  39   1      }
+  40          
+  41          void OEM_ACPI_Cmd_82(void)
+  42          {
+  43   1          ECCheckBurstMode = 1;
+  44   1      }
+  45          
+  46          void OEM_ACPI_Cmd_83(void)
+  47          {
+  48   1          ECCheckBurstMode = 0;
+  49   1      }
+  50          
+  51          void OEM_ACPI_Cmd_84(void)
+  52          {
+  53   1              ITempB05 = 0x00;
+  54   1              if (SCI_Event_Out_Index != SCI_Event_In_Index)
+C51 COMPILER V7.50   OEM_ACPI                                                              09/08/2020 15:56:23 PAGE 2   
+
+  55   1              {  
+  56   2                      ITempB05 = SCI_Event_Buffer[SCI_Event_Out_Index];
+  57   2              SCI_Event_Out_Index++;
+  58   2              if (SCI_Event_Out_Index >= EVENT_BUFFER_SIZE) 
+  59   2                      {
+  60   3                      SCI_Event_Out_Index = 0;
+  61   3                      }
+  62   2                      if (SCI_Event_Out_Index == SCI_Event_In_Index)
+  63   2                      CLEAR_MASK(PM1STS,SCIEVT);
+  64   2      
+  65   2                      SendFromAcpi(ITempB05);
+  66   2              }
+  67   1              else
+  68   1              {
+  69   2                      CLEAR_MASK(PM1STS,SCIEVT);
+  70   2              }
+  71   1      }
+  72          
+  73          void OEM_ACPI_Cmd_86(void)
+  74          {
+  75   1          SET_MASK(SYS_MISC1,ACPI_OS);
+  76   1      }
+  77          
+  78          void OEM_ACPI_Cmd_87(void)
+  79          {
+  80   1          CLEAR_MASK(SYS_MISC1,ACPI_OS);
+  81   1      }
+  82          
+  83          //TF_015++>>
+  84          void OEM_ACPI_Cmd_88(void)
+  85          {
+  86   1          CKE_CTL_ON();
+  87   1      }
+  88          
+  89          void OEM_ACPI_Cmd_8A(void)
+  90          {
+  91   1          RSTN_CTL_HI();
+  92   1      }
+  93          //TF_015++<<
+  94          
+  95          void OEM_ACPI_Cmd_8E(void)
+  96          {
+  97   1              SET_MASK(UtilityFlag, SMBusDebug);
+  98   1      }
+  99          void OEM_ACPI_Cmd_8F(void)
+ 100          {
+ 101   1              CLEAR_MASK(UtilityFlag, SMBusDebug);
+ 102   1      }
+ 103          
+ 104          
+ 105          //----------------------------------------------------------------------------
+ 106          // Handle OEM ACPI command Dx.
+ 107          //----------------------------------------------------------------------------
+ 108          void OEM_ACPI_Cmd_D8(void)
+ 109          {
+ 110   1      
+ 111   1      }
+ 112          
+ 113          void OEM_ACPI_Cmd_DD(void)
+ 114          {
+ 115   1      
+ 116   1      }
+C51 COMPILER V7.50   OEM_ACPI                                                              09/08/2020 15:56:23 PAGE 3   
+
+ 117          
+ 118          
+ 119          //----------------------------------------------------------------------------
+ 120          // The hook function of 62 port data
+ 121          //  Note : 
+ 122          //  PM1Step != 0x00 is necessary.
+ 123          //----------------------------------------------------------------------------
+ 124          void Hook_62Port(BYTE PM1Data)
+ 125          {
+ 126   1          switch(PM1Data)
+ 127   1          {
+ 128   2      
+ 129   2              default:
+ 130   2              break;
+ 131   2          }
+ 132   1      }
+ 133          
+ 134          //----------------------------------------------------------------------------
+ 135          // The hook function of 66 port command.
+ 136          //----------------------------------------------------------------------------
+ 137          void Hook_66Port(BYTE PM1Cmd)
+ 138          {
+ 139   1          switch(PM1Cmd)
+ 140   1          {
+ 141   2              case 0x80:
+ 142   2              OEM_ACPI_Cmd_80();
+ 143   2              break;
+ 144   2      
+ 145   2              case 0x81:
+ 146   2              OEM_ACPI_Cmd_81();
+ 147   2              break;
+ 148   2      
+ 149   2              case 0x82:
+ 150   2              OEM_ACPI_Cmd_82();
+ 151   2              break;
+ 152   2      
+ 153   2              case 0x83:
+ 154   2              OEM_ACPI_Cmd_83();
+ 155   2              break;
+ 156   2      
+ 157   2              case 0x84:
+ 158   2              OEM_ACPI_Cmd_84();
+ 159   2              break;
+ 160   2      
+ 161   2              case 0x86:
+ 162   2              OEM_ACPI_Cmd_86();
+ 163   2              break;
+ 164   2      
+ 165   2              case 0x87:
+ 166   2              OEM_ACPI_Cmd_87();
+ 167   2              break;
+ 168   2                      
+ 169   2                      //TF_015++>>
+ 170   2                      case 0x88:
+ 171   2                      OEM_ACPI_Cmd_88();
+ 172   2                      break;
+ 173   2                      
+ 174   2                      case 0x8A:
+ 175   2                      OEM_ACPI_Cmd_8A();
+ 176   2                      break;
+ 177   2                      //TF_015++<<
+ 178   2                      
+C51 COMPILER V7.50   OEM_ACPI                                                              09/08/2020 15:56:23 PAGE 4   
+
+ 179   2              case 0x8E:
+ 180   2              OEM_ACPI_Cmd_8E();
+ 181   2              break;
+ 182   2      
+ 183   2              case 0x8F:
+ 184   2              OEM_ACPI_Cmd_8F();
+ 185   2              break;
+ 186   2      
+ 187   2              case 0xD8:
+ 188   2              OEM_ACPI_Cmd_D8();
+ 189   2              break;
+ 190   2      
+ 191   2              case 0xDD:
+ 192   2              OEM_ACPI_Cmd_DD();
+ 193   2              break;
+ 194   2      
+ 195   2              default:
+ 196   2              break;
+ 197   2          }
+ 198   1      }
+ 199          
+ 200          //----------------------------------------------------------------------------
+ 201          // Hook function of ACPI command
+ 202          //----------------------------------------------------------------------------
+ 203          void Hook_ACPICommand(void)
+ 204          {
+ 205   1      #if ACPI_Smbus
+ 206   1              OSSMbusComd();          // ACPI SMBus command
+ 207   1      #endif  
+ 208   1      }
+ 209          
+ 210          //-------------------------------------------------------------------------------
+ 211          // parameter "QeventSCI" only, For a pulsed SCI
+ 212          //------------------------------------------------------------------------------
+ 213          void OEM_ACPI_Gen_Int(void)
+ 214          {
+ 215   1          ACPI_Gen_Int(QeventSCI);
+ 216   1      }
+ 217          
+ 218          //-------------------------------------------------------------------------------
+ 219          //
+ 220          //-------------------------------------------------------------------------------
+ 221          void ResetSCIEvent(void)
+ 222          {
+ 223   1          SCI_Event_In_Index = 0;
+ 224   1          SCI_Event_Out_Index = 0;
+ 225   1      
+ 226   1          #if ACPI_QEventPending
+                  PD_SCI_Event_In_Index = 0;
+                  PD_SCI_Event_Out_Index = 0;
+                  #endif
+ 230   1          
+ 231   1          CLEAR_MASK(PM1STS,SCIEVT);
+ 232   1      
+ 233   1          ECCheckBurstMode = 0;
+ 234   1      }
+ 235          
+ 236          /* ----------------------------------------------------------------------------
+ 237           * FUNCTION: ECQEvent -Setup cause flag for an SCI and start the ACPI_Timer.
+ 238           *
+ 239           * sci_number = 1 through 255.  The Host uses this number to determine the
+ 240           * cause of the SCI.
+C51 COMPILER V7.50   OEM_ACPI                                                              09/08/2020 15:56:23 PAGE 5   
+
+ 241           * ------------------------------------------------------------------------- */
+ 242          void ECQEvent(BYTE sci_number, BYTE sci_mode)
+ 243          {
+ 244   1          #if ACPI_QEventPending
+                  if((sci_mode == SCIMode_Normal)||(sci_mode == SCIMode_Pending))
+                  {
+                      if(sci_mode == SCIMode_Normal)
+                      {
+                          if(PD_SCI_Event_In_Index!=PD_SCI_Event_Out_Index)
+                          {
+                              PendingECQEvent(sci_number);
+                              return;
+                          }
+                      }
+                  
+                      if(IS_MASK_SET(PM1STS,P_IBF)||IS_MASK_SET(KBHISR, IBF))
+                      {
+                          if(sci_mode == SCIMode_Pending)
+                          {
+                              if(PD_SCI_Event_Out_Index==0x00)
+                              {
+                                  PD_SCI_Event_Out_Index = PENDING_BUFFER-1;
+                              }
+                              else
+                              {
+                                  PD_SCI_Event_Out_Index--;
+                              }
+                          }
+                          else
+                          {
+                              PendingECQEvent(sci_number);
+                          }
+                          return;
+                      } 
+                  }
+                  #endif
+ 277   1          
+ 278   1              ITempB05 = SCI_Event_In_Index;                          // Get the input index.
+ 279   1              SCI_Event_Buffer[ITempB05] = sci_number;        // Put the SCI number in the buffer.
+ 280   1              ITempB05++;                                                             // Increment the index. 
+ 281   1              if (ITempB05 >= EVENT_BUFFER_SIZE) 
+ 282   1              {
+ 283   2              ITempB05 = 0;
+ 284   2              }
+ 285   1                                                                                              // If the buffer is not full, update the input index.
+ 286   1              if (ITempB05 != SCI_Event_Out_Index) 
+ 287   1              {
+ 288   2                      SCI_Event_In_Index = ITempB05;
+ 289   2          }
+ 290   1          
+ 291   1              SET_MASK(PM1STS,SCIEVT);
+ 292   1          OEM_ACPI_Gen_Int();
+ 293   1      }
+ 294          
+ 295          //----------------------------------------------------------------------------
+ 296          //
+ 297          //----------------------------------------------------------------------------
+ 298          void PendingECQEvent(BYTE sci_number)
+ 299          {
+ 300   1          BYTE index;
+ 301   1          
+ 302   1          #if ACPI_QEventPending
+C51 COMPILER V7.50   OEM_ACPI                                                              09/08/2020 15:56:23 PAGE 6   
+
+                  
+                      index = PD_SCI_Event_In_Index;                      // Get the input index.
+                      PD_SCI_Event_Buffer[index] = sci_number;    // Put the SCI number in the buffer.
+                      index++;                                                            // Increment the index. 
+                      if(index >= PENDING_BUFFER) 
+                      {
+                      index = 0;
+                      }
+                                                                                                          // If the buffer is not full, update the input index.
+                      if(index != PD_SCI_Event_Out_Index) 
+                      {
+                              PD_SCI_Event_In_Index = index;
+                  }
+                  #endif
+ 317   1      }
+ 318          
+ 319          //----------------------------------------------------------------------------
+ 320          //
+ 321          //----------------------------------------------------------------------------
+ 322          void Get_PendingECQEvent(void)
+ 323          
+ 324          {
+ 325   1          BYTE sci_number;
+ 326   1          
+ 327   1          #if ACPI_QEventPending
+                  if(IS_MASK_SET(SYS_MISC1,ACPI_OS))
+                      {
+                          if (PD_SCI_Event_Out_Index != PD_SCI_Event_In_Index)
+                          {  
+                                  sci_number = PD_SCI_Event_Buffer[PD_SCI_Event_Out_Index];
+                          PD_SCI_Event_Out_Index++;
+                          if(PD_SCI_Event_Out_Index >= PENDING_BUFFER) 
+                                  {
+                                  PD_SCI_Event_Out_Index = 0;
+                                  }
+              
+                          ECQEvent(sci_number, SCIMode_Pending);
+                          }
+                  }
+                  #endif
+ 343   1      }
+ 344          
+ 345          //----------------------------------------------------------------------------
+ 346          // Read EC ram Space 
+ 347          //----------------------------------------------------------------------------
+ 348          BYTE Hook_ReadMapECSpace(BYTE MapIndex)
+ 349          {
+ 350   1              Tmp_XPntr=(ECRAM|MapIndex);
+ 351   1              return(*Tmp_XPntr);     
+ 352   1      }
+ 353          
+ 354          void SpecialFunc_01(void)
+ 355          {
+ 356   1      
+ 357   1      }
+ 358          
+ 359          //----------------------------------------------------------------------------
+ 360          // Do hook function when write EC ram Space 
+ 361          //----------------------------------------------------------------------------
+ 362          const sECRamSS code asECRamSS[] = 
+ 363          {       
+ 364              {&MISC_FLAG1,    SpecialFunc_01             },              
+C51 COMPILER V7.50   OEM_ACPI                                                              09/08/2020 15:56:23 PAGE 7   
+
+ 365          };
+ 366          
+ 367          void WriteECRamSpecialFunc(XBYTE *xdptr)        //81 EC write command
+ 368          {
+ 369   1              BYTE index;
+ 370   1              index=0x00;
+ 371   1              while(index<(sizeof(asECRamSS)/sizeof(sECRamSS)))
+ 372   1              {
+ 373   2                      if(xdptr == asECRamSS[index].addr)
+ 374   2                      {
+ 375   3                              (asECRamSS[index].hookfunc)();
+ 376   3                              break;
+ 377   3                      }
+ 378   2                      index++;
+ 379   2              }
+ 380   1      }
+ 381          
+ 382          //----------------------------------------------------------------------------
+ 383          // Write EC ram Space 
+ 384          //----------------------------------------------------------------------------
+ 385          void Hook_WriteMapECSpace(BYTE MapIndex, BYTE data1)
+ 386          {
+ 387   1              Tmp_XPntr=(ECRAM|MapIndex);
+ 388   1              *Tmp_XPntr = data1;
+ 389   1      
+ 390   1      #if HookFucnofWriteECRam
+ 391   1          WriteECRamSpecialFunc(Tmp_XPntr);
+ 392   1      #endif  
+ 393   1      }
+ 394          
+ 395          #if ACPI_Smbus
+ 396          //----------------------------------------------------------------------------
+ 397          // process OS SMBus command
+ 398          //----------------------------------------------------------------------------
+ 399          // ACPI response to writes to SMBus Protocol register. 
+ 400          const FUNCT_PTR_B_V code vOSSMbusComd_table[16] =
+ 401          {                                                               //the low nibble of SMB_PRTC
+ 402                  DummyFunction,          //0x00  
+ 403                  DummyFunction,          //0x01
+ 404                  DummyFunction,          //0x02-Write Quick Command 
+ 405                  DummyFunction,          //0x03-Read Quick Command
+ 406                  DummyFunction,          //0x04-Send Byte
+ 407                  DummyFunction,          //0x05-Receive Byte
+ 408                  vOSSMbusWBYTE,          //0x06-Write Byte
+ 409                  vOSSMbusRByte,          //0x07-Read Byte
+ 410                  vOSSMbusWWord,          //0x08-Write Word
+ 411                  vOSSMbusRWord,          //0x09-Read Word
+ 412                  vOSSMbusWBlcok,         //0x0A-Write Block
+ 413                  vOSSMbusRBlcok,         //0x0B-Read Block
+ 414                  DummyFunction,          //0x0C-Process Call
+ 415                  DummyFunction,          //0x0D-Write Block-Read Block Process Call
+ 416                  DummyFunction,          //0x0E
+ 417                  DummyFunction           //0x0F
+ 418          };
+ 419          
+ 420          void OSSMbusComd(void)
+ 421          {//     60 protocol,    61 status,              62 address,     63 command
+ 422   1              if(SMB_PRTC != 0x00)
+ 423   1              {
+ 424   2                      SMB_STS = 0x00;
+ 425   2              SMB_PRTC &= 0x0F;
+ 426   2              if((vOSSMbusComd_table[SMB_PRTC])())
+C51 COMPILER V7.50   OEM_ACPI                                                              09/08/2020 15:56:23 PAGE 8   
+
+ 427   2              {
+ 428   3                      SMB_STS = 0x80;
+ 429   3              }
+ 430   2                      else
+ 431   2                      {
+ 432   3                              SMB_STS = 0x5A;
+ 433   3                      }
+ 434   2              SMB_PRTC = 0x00;
+ 435   2              }
+ 436   1      }
+ 437          
+ 438          BYTE vOSSMbusWBlcok(void)
+ 439          {
+ 440   1              return (bWSMBusBlock(SMbusCh1, SMbusWBK, SMB_ADDR, SMB_CMD, &SMB_DATA,SMB_BCNT,1));
+ 441   1      }
+ 442          
+ 443          BYTE vOSSMbusRBlcok(void)
+ 444          {
+ 445   1              return (bRSMBusBlock(SMbusCh1, SMbusRBK, SMB_ADDR, SMB_CMD, &SMB_DATA));
+ 446   1      }
+ 447          
+ 448          BYTE vOSSMbusRByte(void)
+ 449          {
+ 450   1              return (bRWSMBus(SMbusCh1, SMbusRB, SMB_ADDR, SMB_CMD, &SMB_DATA, SMBus_NoPEC));
+ 451   1      }
+ 452          
+ 453          BYTE vOSSMbusRWord(void)
+ 454          {
+ 455   1              return (bRWSMBus(SMbusCh1, SMbusRW, SMB_ADDR, SMB_CMD, &SMB_DATA, SMBus_NoPEC));
+ 456   1      }
+ 457          
+ 458          BYTE vOSSMbusWBYTE(void)
+ 459          {
+ 460   1              return (bRWSMBus(SMbusCh1, SMbusWB, SMB_ADDR, SMB_CMD, &SMB_DATA, SMBus_NeedPEC));
+ 461   1      }
+ 462          
+ 463          BYTE vOSSMbusWWord(void)
+ 464          {
+ 465   1              return (bRWSMBus(SMbusCh1, SMbusWW, SMB_ADDR, SMB_CMD, &SMB_DATA, SMBus_NeedPEC));
+ 466   1      }
+ 467          
+ 468          void DummyFunction(void)
+ 469          {
+ 470   1      
+ 471   1      }
+ 472          #endif
+ 473          
+ 474          
+ 475          #if Lenovo_Support
+ 476          void Lenovo_PM_Cmd(void)
+ 477          {
+ 478   1              switch(VCMD_Lenovo)
+ 479   1              {       
+ 480   2              case 0x10 :  //-----------------------------------read VPC  
+ 481   2                      VDAT_Lenovo = VPC_Lenovo;
+ 482   2                      VPC_Lenovo = 0x00;
+ 483   2                      break;
+ 484   2                      
+ 485   2              case 0x11 :      //-----------------------------------read Brightness max level 
+ 486   2                      if(OS_Type==3)
+ 487   2                      {
+ 488   3                              VDAT_Lenovo = MAX_LEVEL_linux;
+C51 COMPILER V7.50   OEM_ACPI                                                              09/08/2020 15:56:23 PAGE 9   
+
+ 489   3                      }
+ 490   2                      else
+ 491   2                      {
+ 492   3                              VDAT_Lenovo = MAX_LEVEL; 
+ 493   3                      }
+ 494   2                      break;
+ 495   2                      
+ 496   2              case 0x12 :      //-----------------------------------read  Current  brightness level
+ 497   2                      if(IS_MASK_SET(Oem_Globe_Flag,Brightness_Up_Pressed))
+ 498   2                      {
+ 499   3                              CLEAR_MASK(Oem_Globe_Flag,Brightness_Up_Pressed);
+ 500   3                              CLEAR_MASK(Oem_Globe_Flag,Brightness_Down_Pressed);
+ 501   3                      }
+ 502   2                      else if(IS_MASK_SET(Oem_Globe_Flag,Brightness_Down_Pressed))
+ 503   2                      {
+ 504   3                              CLEAR_MASK(Oem_Globe_Flag,Brightness_Down_Pressed);
+ 505   3                              CLEAR_MASK(Oem_Globe_Flag,Brightness_Up_Pressed);
+ 506   3                      }
+ 507   2                      VDAT_Lenovo = LCD_BRIGHTNESS;
+ 508   2                      break;
+ 509   2                      
+ 510   2              case 0x13 :     //------------------------------------write Current  brightness level
+ 511   2                      LCD_BRIGHTNESS = VDAT_Lenovo;
+ 512   2                      //Setup_Brightness(LCD_BRIGHTNESS);
+ 513   2                      break;
+ 514   2      
+ 515   2              case 0x14 :     //------------------------------------read Wireless Status
+ 516   2                      if(IS_MASK_CLEAR(Device_Status_Lenovo,Wireless_S_B))
+ 517   2                      {
+ 518   3                              VDAT_Lenovo = 0;
+ 519   3                      }
+ 520   2                      else
+ 521   2                      {
+ 522   3                              VDAT_Lenovo = 1;
+ 523   3                      }
+ 524   2                      break;
+ 525   2                      
+ 526   2              case 0x15 :     //------------------------------------set Wireless Status
+ 527   2                      if(0 == VDAT_Lenovo) //------------------------turn off wifi
+ 528   2                      {
+ 529   3                              CLEAR_MASK(Device_Status_Lenovo,Wireless_S_B);
+ 530   3                      }
+ 531   2                      else                             //------------------------turn on wifi
+ 532   2                      {
+ 533   3                              SET_MASK(Device_Status_Lenovo,Wireless_S_B);
+ 534   3                      }
+ 535   2                      TurnOnOffWlan();
+ 536   2                      break;
+ 537   2                      
+ 538   2              case 0x16 :     //------------------------------------read Bluetooth status
+ 539   2                      if(IS_MASK_CLEAR(Device_Status_Lenovo,Bluetooth_S_B))
+ 540   2                      {
+ 541   3                              VDAT_Lenovo = 0;
+ 542   3                      }
+ 543   2                      else
+ 544   2                      {
+ 545   3                              VDAT_Lenovo = 1;
+ 546   3                      }
+ 547   2                      break;
+ 548   2      
+ 549   2              case 0x17 :     //------------------------------------set Bluetooth Status
+ 550   2                      if(0 == VDAT_Lenovo)  //----------------------- turn off 
+C51 COMPILER V7.50   OEM_ACPI                                                              09/08/2020 15:56:23 PAGE 10  
+
+ 551   2                      {
+ 552   3                              CLEAR_MASK(Device_Status_Lenovo,Bluetooth_S_B);
+ 553   3                      }
+ 554   2                      else                  // ----------------------- turn on
+ 555   2                      {
+ 556   3                              SET_MASK(Device_Status_Lenovo,Bluetooth_S_B);
+ 557   3                      }
+ 558   2                      TurnOnOffBT();
+ 559   2                      break;
+ 560   2                      
+ 561   2              case 0x18 :     //-------------------------------------read Inverter Status
+ 562   2                      if(IS_MASK_CLEAR(Device_Status_Lenovo,Inverter_S_B))
+ 563   2                      {
+ 564   3                              VDAT_Lenovo = 0;
+ 565   3                      }
+ 566   2                      else
+ 567   2                      {
+ 568   3                              VDAT_Lenovo = 1;
+ 569   3                      }
+ 570   2                      break;
+ 571   2                      
+ 572   2              case 0x19 :     //-------------------------------------read Novo Button Status
+ 573   2                      if(IS_MASK_CLEAR(Device_Status_Lenovo,Novo_S_B))
+ 574   2                      {
+ 575   3                              VDAT_Lenovo = 0;
+ 576   3                      }
+ 577   2                      else
+ 578   2                      {
+ 579   3                              VDAT_Lenovo = 1;
+ 580   3                      }
+ 581   2                      break;
+ 582   2                      
+ 583   2              case 0x1A :     //-------------------------------------Query VPC2
+ 584   2                      VDAT_Lenovo = VPC2_Lenovo;
+ 585   2                      VPC2_Lenovo = 0x00;
+ 586   2                      break;
+ 587   2                      
+ 588   2              case 0x1B :     //-------------------------------------Read Touch Pad Status
+ 589   2                      if(IS_MASK_CLEAR(Device_Status_Lenovo,TouchPad_S_B))
+ 590   2                      {
+ 591   3                              VDAT_Lenovo = 0;
+ 592   3                      }
+ 593   2                      else
+ 594   2                      {
+ 595   3                              VDAT_Lenovo = 1;
+ 596   3                      }
+ 597   2                      break;
+ 598   2                      
+ 599   2              case 0x1C :     //-------------------------------------Set Touch Pad
+ 600   2                      if(0 == VDAT_Lenovo)
+ 601   2                      {
+ 602   3                              CLEAR_MASK(Device_Status_Lenovo,TouchPad_S_B);
+ 603   3                      }
+ 604   2                      else
+ 605   2                      {
+ 606   3                              SET_MASK(Device_Status_Lenovo,TouchPad_S_B);
+ 607   3                      }
+ 608   2                      break;
+ 609   2                                      
+ 610   2              case 0x1D :     //-------------------------------------read Camera
+ 611   2                      if(IS_MASK_CLEAR(Device_Status_Lenovo,Camera_S_B))
+ 612   2                      {
+C51 COMPILER V7.50   OEM_ACPI                                                              09/08/2020 15:56:23 PAGE 11  
+
+ 613   3                              VDAT_Lenovo = 0;
+ 614   3                      }
+ 615   2                      else
+ 616   2                      {
+ 617   3                              VDAT_Lenovo = 1;
+ 618   3                      }
+ 619   2                      break;
+ 620   2                      
+ 621   2              case 0x1E :     //-------------------------------------Set Camera
+ 622   2                      if(0 == VDAT_Lenovo)
+ 623   2                      {
+ 624   3                              CLEAR_MASK(Device_Status_Lenovo,Camera_S_B);
+ 625   3                      }
+ 626   2                      else
+ 627   2                      {
+ 628   3                              SET_MASK(Device_Status_Lenovo,Camera_S_B);
+ 629   3                      }
+ 630   2                      break;
+ 631   2                      
+ 632   2              case 0x1F :     //-------------------------------------Read 3G RF Status
+ 633   2                      if(IS_MASK_CLEAR(Device_Status_Lenovo,RF3G_S_B))
+ 634   2                      {
+ 635   3                              VDAT_Lenovo = 0;
+ 636   3                      }
+ 637   2                      else
+ 638   2                      {
+ 639   3                              VDAT_Lenovo = 1;
+ 640   3                      }
+ 641   2                      break;
+ 642   2                      
+ 643   2              case 0x20 :     //-------------------------------------Set RF 3G
+ 644   2                      if(0 == VDAT_Lenovo) //------------------------turn off 3G
+ 645   2                      {
+ 646   3                              CLEAR_MASK(Device_Status_Lenovo,RF3G_S_B);
+ 647   3                      }
+ 648   2                      else                            //------------------------turn on 3G
+ 649   2                      {
+ 650   3                              SET_MASK(Device_Status_Lenovo,RF3G_S_B);
+ 651   3                      }
+ 652   2                      //TurnOnOff3G();
+ 653   2                      break;
+ 654   2                      
+ 655   2              case 0x21 :
+ 656   2                      break;
+ 657   2                      
+ 658   2              case 0x22 :
+ 659   2                      break;
+ 660   2                      
+ 661   2              case 0x23 :     //--------------------------------------read All RF Status
+ 662   2                      VDAT_Lenovo = 1;
+ 663   2                      break;  
+ 664   2                      
+ 665   2              case 0x24 : //--------------------------------------set All AF Status
+ 666   2                      break;
+ 667   2                      
+ 668   2              case 0x25 :     
+ 669   2              case 0x26 :
+ 670   2              case 0x27 :
+ 671   2                      break;
+ 672   2                      
+ 673   2              case 0x28 :
+ 674   2                      if(VDAT_Lenovo)
+C51 COMPILER V7.50   OEM_ACPI                                                              09/08/2020 15:56:23 PAGE 12  
+
+ 675   2                      {
+ 676   3                              SET_MASK(Device_Status_AllRF,Super_performance_F);
+ 677   3                      }
+ 678   2                      else
+ 679   2                      {
+ 680   3                              CLEAR_MASK(Device_Status_AllRF,Super_performance_F);
+ 681   3                      }
+ 682   2                      break;
+ 683   2                      
+ 684   2              case 0x29 :
+ 685   2                      VDAT_Lenovo = 1;
+ 686   2                      break;
+ 687   2                      
+ 688   2              case 0x2A :
+ 689   2                      break;
+ 690   2                      
+ 691   2              case 0x2B : //------------------------------------read Fan dust mode status
+ 692   2                      VDAT_Lenovo = 0;
+ 693   2                      #if SmartFanSupport
+ 694   2                      switch(Lenvo_dust_mode)
+ 695   2                      {
+ 696   3                              case 0:
+ 697   3                                      VDAT_Lenovo = 0x05;
+ 698   3                                      break;
+ 699   3                              case 1:
+ 700   3                                      break;
+ 701   3                              case 2:
+ 702   3                                      VDAT_Lenovo = 0x85;
+ 703   3                                      Lenvo_dust_mode = 0x00;
+ 704   3                                      break;
+ 705   3                              default:
+ 706   3                                      break;
+ 707   3                      }               
+ 708   2                      #endif
+ 709   2                      break;
+ 710   2                      
+ 711   2              case 0x2C :
+ 712   2                      break;
+ 713   2                      
+ 714   2              case 0x2D :
+ 715   2                      VDAT_Lenovo = 0x02;//SV+ATI
+ 716   2                      if(Device_Status_AllRF&Super_performance_F)
+ 717   2                      {
+ 718   3                              SET_MASK(VDAT_Lenovo,BIT3);
+ 719   3                      }
+ 720   2                      
+ 721   2                      if((Oem_Globe_Flag1&Oem_CPU_Temp_OV_f) || (Oem_Globe_Flag1&Oem_GPU_Temp_OV_f))
+ 722   2                      {
+ 723   3                              SET_MASK(VDAT_Lenovo,BIT4);
+ 724   3                      }
+ 725   2                      break;
+ 726   2                      
+ 727   2              case 0x2E :
+ 728   2                      break;
+ 729   2                      
+ 730   2              case 0x2F :
+ 731   2                      
+ 732   2                      if(Lenvo_general_f&auto_mode_f)
+ 733   2                      {
+ 734   3                              SET_MASK(VDAT_Lenovo,BIT1);
+ 735   3                      }
+ 736   2      
+C51 COMPILER V7.50   OEM_ACPI                                                              09/08/2020 15:56:23 PAGE 13  
+
+ 737   2                      if(Lenvo_general_f&super_temp_f)
+ 738   2                      {
+ 739   3                              SET_MASK(VDAT_Lenovo,BIT3);
+ 740   3                      }
+ 741   2                      break;
+ 742   2                      
+ 743   2              case 0x30 :
+ 744   2                      break;
+ 745   2                      
+ 746   2              case 0x31 :
+ 747   2                      VDAT_Lenovo = 0x01;   //------- onekey recovery
+ 748   2                      break;
+ 749   2                      
+ 750   2              case 0x32 :
+ 751   2                      break;
+ 752   2                      
+ 753   2              case 0x33 : //--------------------------------------Set Inverter
+ 754   2                      if(0 == VDAT_Lenovo)//-------------------------- turn off
+ 755   2                      {
+ 756   3                              CLEAR_MASK(Device_Status_Lenovo,Inverter_S_B);
+ 757   3                              //HW_OFF_BKLT_PORT &= ~HW_OFF_BKLT;
+ 758   3                      }
+ 759   2                      else               //-------------------------- turn on
+ 760   2                      {
+ 761   3                              SET_MASK(Device_Status_Lenovo,Inverter_S_B);
+ 762   3                              //HW_OFF_BKLT_PORT |= HW_OFF_BKLT;
+ 763   3                      }
+ 764   2                      break;
+ 765   2                      
+ 766   2              default:
+ 767   2                      break;   
+ 768   2      
+ 769   2              }
+ 770   1      
+ 771   1              VCMD_Lenovo = 0x00;
+ 772   1      }
+ 773          
+ 774          #endif
+ 775          
+ 776          void OEM_QUIT_TEST(void)
+ 777          {
+ 778   1      
+ 779   1              ledTestFlag=0;
+ 780   1              DebugFan1RPMT=0;
+ 781   1              DebugFan2RPMT=0;
+ 782   1              CLEAR_MASK(DebugFanStatus,Debug_Fan_enable);
+ 783   1              DebugFan1VoltageOut=0;
+ 784   1      
+ 785   1      
+ 786   1      }
+ 787          
+ 788          //TF_001-->>
+ 789          #if 0
+              //--------------------------------------
+              //
+              //--------------------------------------
+              void OEM_Fan_LED_Verify(void)
+              {
+                      if(EC_EXT_CMD==0x80)
+                      {
+                              switch(EC_DAT1)
+                              {
+C51 COMPILER V7.50   OEM_ACPI                                                              09/08/2020 15:56:23 PAGE 14  
+
+                                      case 0x01:
+                                              DebugFan1VoltageOut=0x01;
+                                              break;
+                                                      
+                                      case 0x02:
+                                              DebugFan1RPMT=EC_DAT3;  //V71
+                                              break;
+                                              
+                                      case 0x03:
+                                              DebugFan1RPMT=0x01;
+                                              break;
+                                              
+                                      case 0x04:
+                                              DebugFan1RPMT=FanHighValue;
+                                              break;
+                                              
+                                      case 0x06:
+                                      case 0x07:
+                                      case 0x08:
+                                      case 0x09:
+                                      case 0x0A:
+                                      case 0x0B:
+                                      case 0x0C:
+                                              break;
+                                              
+                                      case 0x0D:
+                                              OEM_QUIT_TEST();
+                                              break;
+                              }               
+              
+                              EC_EXT_CMD=0;           
+                      }
+              }
+              
+              /*------------------------------------------;
+               ;  Extra EC COMMAND TABLE 0x80-0xF
+               ; base 5ms 
+               ;------------------------------------------*/
+              void EXT_EC_CMD(void)
+              {
+                      switch(EC_EXT_CMD)
+                      {
+                      case 0x80 : 
+                              if(0x70 == EC_DAT2)
+                              {
+                                      OEM_Fan_LED_Verify();
+                                      EC_DAT2=0;
+                              }
+                              break;
+                              
+                      case 0x81 : 
+                              if(0x81 == EC_DAT1)
+                              {
+                                      EC_DAT2 = (RPM1/100);
+                              }
+                              break;
+                              
+                      case 0x82 : 
+                              if(3 == OS_Type)
+                              {
+                                      EC_DAT1 = MAX_LEVEL_linux;
+                              }
+C51 COMPILER V7.50   OEM_ACPI                                                              09/08/2020 15:56:23 PAGE 15  
+
+                              else
+                              {
+                                      EC_DAT1 = MAX_LEVEL;
+                              }
+                              break;
+                              
+                      case 0x83 : 
+                              EC_DAT3 = CpuTm;
+                              break;
+                              
+                      case 0x84 : //Label:BLD_TIPIA_20160908_008
+                              Oem_TriggerS0S5(SC_S0SLPOff);
+                              break;
+                              
+                      case 0x85 : //EXT_EC_CMD_66_85
+                      case 0x86 : //EXT_EC_CMD_66_86 
+                      case 0x87 : //EXT_EC_CMD_66_87 
+                      case 0x88 : //EXT_EC_CMD_66_88 
+                      case 0x89 : //EXT_EC_CMD_66_89 
+                      case 0x8A : //EXT_EC_CMD_66_8A 
+                      case 0x8B : //EXT_EC_CMD_66_8B 
+                      case 0x8C : //EXT_EC_CMD_66_8C 
+                      case 0x8D : //EXT_EC_CMD_66_8D 
+                      case 0x8E : //EXT_EC_CMD_66_8E 
+                      case 0x8F : //EXT_EC_CMD_66_8F 
+                      case 0x90 : //EXT_EC_CMD_66_90 
+                              SET_MASK(SYS_MISC1,OFF_ALW);
+                              break;
+                              
+                      case 0x91 : //EXT_EC_CMD_66_91 
+                              CLEAR_MASK(SYS_MISC1,OFF_ALW);
+                              break;
+                              
+                      case 0x92 : //EXT_EC_CMD_66_92 
+                      case 0x93 : //EXT_EC_CMD_66_93 
+                      case 0x94 : //EXT_EC_CMD_66_94 
+                      case 0x95 : //EXT_EC_CMD_66_95 
+                      case 0x96 : //EXT_EC_CMD_66_96 
+                      case 0x97 : //EXT_EC_CMD_66_97 
+                      case 0x98 : //EXT_EC_CMD_66_98 
+                      case 0x99 : //EXT_EC_CMD_66_99 
+                      case 0x9A : //EXT_EC_CMD_66_9A 
+                      case 0x9B : //EXT_EC_CMD_66_9B 
+                      case 0x9C : //EXT_EC_CMD_66_9C 
+                      case 0x9D : //EXT_EC_CMD_66_9D 
+                      case 0x9E : //EXT_EC_CMD_66_9E 
+                      case 0x9F : //EXT_EC_CMD_66_9F 
+                      case 0xA0 : //EXT_EC_CMD_66_A0 
+                      case 0xA1 : //EXT_EC_CMD_66_A1
+                      case 0xA2 : //EXT_EC_CMD_66_A2 
+                      case 0xA3 : //EXT_EC_CMD_66_A3                                                  
+                      case 0xA4 : //EXT_EC_CMD_66_A4 
+                      case 0xA5 : //EXT_EC_CMD_66_A5 
+                      case 0xA6 : //EXT_EC_CMD_66_A6 
+                      case 0xA7 : //EXT_EC_CMD_66_A7 
+                      case 0xA8 : //EXT_EC_CMD_66_A8 
+                      case 0xA9 : //EXT_EC_CMD_66_A9 
+                      case 0xAA : //EXT_EC_CMD_66_AA 
+                      case 0xAB : //EXT_EC_CMD_66_AB 
+                      case 0xAC : //EXT_EC_CMD_66_AC 
+                      case 0xAD : //EXT_EC_CMD_66_AD 
+                      case 0xAE : //EXT_EC_CMD_66_AE 
+C51 COMPILER V7.50   OEM_ACPI                                                              09/08/2020 15:56:23 PAGE 16  
+
+                      case 0xAF : //EXT_EC_CMD_66_AF 
+                      case 0xB0 : //EXT_EC_CMD_66_B0  
+                      case 0xB1 : //EXT_EC_CMD_66_B1  
+                      case 0xB2 : //EXT_EC_CMD_66_B2
+                              break;
+                              
+                      case 0xB3 : //EXT_EC_CMD_66_B3
+                              if(BIOS_OEM_battery_health&HOST_SMBUS_GET)
+                              {
+                                      SMB_CMD=EC_DAT1;
+                                      SMB_ADDR=EC_DAT2;
+                                      SMB_PRTC=EC_DAT3;
+                              }
+                              break;
+                              
+                      case 0xB5 : //EXT_EC_CMD_66_B5
+                              if(0x82 == EC_DAT1) //wireless 
+                              {
+                                      EC_DAT1=3;
+                              }
+                              
+                              if(0x84 == EC_DAT1) //lid 
+                              {
+                                      if(EC_EXT_SOURCE_STATE&LID_CLOSE_Act)
+                                      {
+                                              EC_DAT1=1;
+                                      }
+                                      else
+                                      {
+                                              EC_DAT1=2;
+                                      }
+                              }
+                              
+                              if(0x85 == EC_DAT1) //qs
+                              {
+                                      EC_DAT1=3;
+                              }
+                              break;
+                              
+                      case 0xB6 : 
+                              if(0x86 == EC_DAT1)
+                              {
+                                      LCD_BRIGHTNESS = EC_DAT3;
+                                      //Setup_Brightness(EC_DAT3);
+                                      
+                              }
+                              if(0x87 == EC_DAT1)
+                              {
+              //                      Oem_Open_Verify_Control();
+                                      //OEM_Backlight_Verify();
+                              }
+                              break;
+                              
+                      case 0xB7 : 
+                      case 0xB8 :             // WRITE BYTE TO EXTERNAL MEMORY
+                              *((PORT_BYTE_PNTR)((EC_DAT1*0x100)+EC_DAT2)) = EC_DAT3;
+                              EC_DAT2=0;
+                              EC_DAT1=0;
+                      break;
+                              
+                      case 0xB9 :     // READ BYTE FROM EXTERNAL MEMORY
+                              EC_DAT3 = *((PORT_BYTE_PNTR)((EC_DAT1*0x100)+EC_DAT2));
+C51 COMPILER V7.50   OEM_ACPI                                                              09/08/2020 15:56:23 PAGE 17  
+
+                              break;
+                              
+                      case 0xBA : //EXT_EC_CMD_66_BA 
+                      case 0xBB : //EXT_EC_CMD_66_BB  
+                      case 0xBC : //EXT_EC_CMD_66_BC  
+                      case 0xBD : //EXT_EC_CMD_66_BD  
+                      case 0xBE : //EXT_EC_CMD_66_BE  
+                      case 0xBF : //EXT_EC_CMD_66_BF 
+                      case 0xC0 : //EXT_EC_CMD_66_C0  
+                      case 0xC1 : //EXT_EC_CMD_66_C1  
+                      case 0xC2 : //EXT_EC_CMD_66_C2 
+                              break;
+                              
+                      case 0xC3 : //EXT_EC_CMD_66_C3  ;; GET GPIO STATUS
+                              EC_DAT3 = *((PORT_BYTE_PNTR)((&GPDRA)+(EC_DAT1&0x0f)));
+                              break;
+                              
+                      case 0xC4 : //EXT_EC_CMD_66_C4
+                      case 0xC5 : //EXT_EC_CMD_66_C5          
+                      case 0xC6 : //EXT_EC_CMD_66_C6 
+                      case 0xC7 : //EXT_EC_CMD_66_C7 
+                      case 0xC8 : //EXT_EC_CMD_66_C8 
+                      case 0xC9 : //EXT_EC_CMD_66_C9  ;; GET WAKE-UP EVENT
+              
+              /*----------------------------------------------;
+               ;C9 EC COMMAND : GET SWI                                               ;
+               ;----------------------------------------------*/
+                      //      EC_DAT3=SWI_BUF;
+                      //      SWI_BUF=0;
+                              break;
+              
+                      case 0xCA : //EXT_EC_CMD_66_CA 
+                      case 0xCB : //EXT_EC_CMD_66_CB 
+                      case 0xCC : //EXT_EC_CMD_66_CC 
+                              break;
+                              
+                      case 0xCD : //EXT_EC_CMD_66_CD  ;; GET SMI EVENT NOTIFICATION INFO
+              /*----------------------------------------------;
+               ;CD EC COMMAND : GET SMI                                               ;
+               ;----------------------------------------------*/
+                      //      EC_DAT3=SMI_BUF;
+                      //      SMI_BUF=0;
+                      //      PMSTS &=~ SMIEVT_F;
+                              break;
+              
+                      case 0xCE : //EXT_EC_CMD_66_CE 
+                      case 0xCF : //EXT_EC_CMD_66_CF 
+                      case 0xD0 : //EXT_EC_CMD_66_D0 
+                      case 0xD1 : //EXT_EC_CMD_66_D1 
+                      case 0xD2 : //EXT_EC_CMD_66_D2 
+                      case 0xD3 : //EXT_EC_CMD_66_D3 
+                      case 0xD4 : //EXT_EC_CMD_66_D4 
+                      case 0xD5 : //EXT_EC_CMD_66_D5  ;; SET DELAY TASK 1 TIMER                       
+                      case 0xD6 : //EXT_EC_CMD_66_D6  ;; SET DELAY TASK 2 TIMER
+                      case 0xD7 : //EXT_EC_CMD_66_D7 
+                      case 0xD8 : //EXT_EC_CMD_66_D8 
+                      case 0xD9 : //EXT_EC_CMD_66_D9 
+                      case 0xDA : //EXT_EC_CMD_66_DA 
+                      case 0xDB : //EXT_EC_CMD_66_DB 
+                      case 0xDC : //EXT_EC_CMD_66_DC 
+                      case 0xDD : //EXT_EC_CMD_66_DD 
+                      case 0xDE : //EXT_EC_CMD_66_DE 
+C51 COMPILER V7.50   OEM_ACPI                                                              09/08/2020 15:56:23 PAGE 18  
+
+                      case 0xDF : //EXT_EC_CMD_66_DF 
+                      case 0xE0 : //EXT_EC_CMD_66_E0 
+                      case 0xE1 : //EXT_EC_CMD_66_E1 
+                      case 0xE2 : //EXT_EC_CMD_66_E2 
+                      case 0xE3 : //EXT_EC_CMD_66_E3 
+                      case 0xE4 : //EXT_EC_CMD_66_E4 
+                      case 0xE5 : //EXT_EC_CMD_66_E5 
+                      case 0xE6 : //EXT_EC_CMD_66_E6 
+                      case 0xE7 : //EXT_EC_CMD_66_E7 
+                      case 0xE8 : //EXT_EC_CMD_66_E8 
+                      case 0xE9 : //EXT_EC_CMD_66_E9 
+                      case 0xEA : //EXT_EC_CMD_66_EA 
+                      case 0xEB : //EXT_EC_CMD_66_EB 
+                      case 0xEC : //EXT_EC_CMD_66_EC 
+                      case 0xED : //EXT_EC_CMD_66_ED 
+                      case 0xEE : //EXT_EC_CMD_66_EE 
+                      case 0xEF : //EXT_EC_CMD_66_EF 
+                      case 0xF0 : //EXT_EC_CMD_66_F0 
+                      case 0xF1 : //EXT_EC_CMD_66_F1 
+                      case 0xF2 : //EXT_EC_CMD_66_F2 
+                      case 0xF3 : //EXT_EC_CMD_66_F3 
+                      case 0xF4 : //EXT_EC_CMD_66_F4 
+                      case 0xF5 : //EXT_EC_CMD_66_F5 
+                      case 0xF6 : //EXT_EC_CMD_66_F6 
+                      case 0xF7 : //EXT_EC_CMD_66_F7 
+                      case 0xF8 : //EXT_EC_CMD_66_F8 
+                      case 0xF9 : //EXT_EC_CMD_66_F9 
+                      case 0xFA : //EXT_EC_CMD_66_FA 
+                      case 0xFB : //EXT_EC_CMD_66_FB 
+                      case 0xFC : //EXT_EC_CMD_66_FC 
+                      case 0xFD : //EXT_EC_CMD_66_FD 
+                      case 0xFE : //EXT_EC_CMD_66_FE 
+                      case 0xFF : //EXT_EC_CMD_66_FF
+                      default:
+                              break;   
+                      }   
+                      
+                      EC_EXT_CMD=0;            
+              }     
+              #endif
+1087          //TF_001--<<
+1088          
+1089          
+C51 COMPILER V7.50   OEM_ACPI                                                              09/08/2020 15:56:23 PAGE 19  
+
+ASSEMBLY LISTING OF GENERATED OBJECT CODE
+
+
+             ; FUNCTION Com00AA (BEGIN)
+0000         L?0171:
+0000         L?0172:
+0000 900000      E     MOV     DPTR,#SMB_ADDR
+0003 E0                MOVX    A,@DPTR
+0004 FB                MOV     R3,A
+0005 900000      E     MOV     DPTR,#SMB_CMD
+0008 E0                MOVX    A,@DPTR
+0009 900000      E     MOV     DPTR,#?_bRWSMBus?BYTE+03H
+000C         L?0173:
+000C F0                MOVX    @DPTR,A
+000D 7E00        E     MOV     R6,#HIGH SMB_DATA
+000F A3                INC     DPTR
+0010 7400        E     MOV     A,#HIGH SMB_DATA
+0012 F0                MOVX    @DPTR,A
+0013 A3                INC     DPTR
+0014 7400        E     MOV     A,#LOW SMB_DATA
+0016 F0                MOVX    @DPTR,A
+0017 22                RET     
+0018         L?0174:
+0018         L?0175:
+0018 900000      E     MOV     DPTR,#VDAT_Lenovo
+001B E0                MOVX    A,@DPTR
+001C 900000      E     MOV     DPTR,#Device_Status_Lenovo
+001F 22                RET     
+0020         L?0176:
+0020         L?0177:
+0020 900000      E     MOV     DPTR,#PM1STS
+0023 E0                MOVX    A,@DPTR
+0024 54DF              ANL     A,#0DFH
+0026 F0                MOVX    @DPTR,A
+0027 22                RET     
+0028         L?0178:
+0028 900000      E     MOV     DPTR,#SCI_Event_In_Index
+002B E0                MOVX    A,@DPTR
+002C FF                MOV     R7,A
+002D 900000      E     MOV     DPTR,#SCI_Event_Out_Index
+0030 E0                MOVX    A,@DPTR
+0031 6F                XRL     A,R7
+0032 22                RET     
+0033         L?0179:
+0033 900000      E     MOV     DPTR,#SMB_ADDR
+0036 E0                MOVX    A,@DPTR
+0037 FB                MOV     R3,A
+0038 900000      E     MOV     DPTR,#SMB_CMD
+003B E0                MOVX    A,@DPTR
+003C 22                RET     
+             ; FUNCTION Com00AA (END)
+
+             ; FUNCTION OEM_ACPI_Cmd_80 (BEGIN)
+                                           ; SOURCE LINE # 19
+                                           ; SOURCE LINE # 20
+                                           ; SOURCE LINE # 21
+0000 900000      E     MOV     DPTR,#SYS_MISC1
+0003 E0                MOVX    A,@DPTR
+0004 30E009            JNB     ACC.0,?C0003
+                                           ; SOURCE LINE # 22
+                                           ; SOURCE LINE # 23
+0007 900000      E     MOV     DPTR,#PM1STS
+C51 COMPILER V7.50   OEM_ACPI                                                              09/08/2020 15:56:23 PAGE 20  
+
+000A E0                MOVX    A,@DPTR
+000B 20E402            JB      ACC.4,?C0003
+                                           ; SOURCE LINE # 24
+                                           ; SOURCE LINE # 25
+000E D200        E     SETB    ECCheckBurstMode
+                                           ; SOURCE LINE # 26
+                                           ; SOURCE LINE # 27
+                                           ; SOURCE LINE # 28
+0010         ?C0003:
+0010 22                RET     
+             ; FUNCTION OEM_ACPI_Cmd_80 (END)
+
+             ; FUNCTION OEM_ACPI_Cmd_81 (BEGIN)
+                                           ; SOURCE LINE # 30
+                                           ; SOURCE LINE # 31
+                                           ; SOURCE LINE # 32
+0000 900000      E     MOV     DPTR,#SYS_MISC1
+0003 E0                MOVX    A,@DPTR
+0004 30E009            JNB     ACC.0,?C0006
+                                           ; SOURCE LINE # 33
+                                           ; SOURCE LINE # 34
+0007 900000      E     MOV     DPTR,#PM1STS
+000A E0                MOVX    A,@DPTR
+000B 20E402            JB      ACC.4,?C0006
+                                           ; SOURCE LINE # 35
+                                           ; SOURCE LINE # 36
+000E D200        E     SETB    ECCheckBurstMode
+                                           ; SOURCE LINE # 37
+                                           ; SOURCE LINE # 38
+                                           ; SOURCE LINE # 39
+0010         ?C0006:
+0010 22                RET     
+             ; FUNCTION OEM_ACPI_Cmd_81 (END)
+
+             ; FUNCTION OEM_ACPI_Cmd_82 (BEGIN)
+                                           ; SOURCE LINE # 41
+                                           ; SOURCE LINE # 42
+                                           ; SOURCE LINE # 43
+0000 D200        E     SETB    ECCheckBurstMode
+                                           ; SOURCE LINE # 44
+0002 22                RET     
+             ; FUNCTION OEM_ACPI_Cmd_82 (END)
+
+             ; FUNCTION OEM_ACPI_Cmd_83 (BEGIN)
+                                           ; SOURCE LINE # 46
+                                           ; SOURCE LINE # 47
+                                           ; SOURCE LINE # 48
+0000 C200        E     CLR     ECCheckBurstMode
+                                           ; SOURCE LINE # 49
+0002 22                RET     
+             ; FUNCTION OEM_ACPI_Cmd_83 (END)
+
+             ; FUNCTION OEM_ACPI_Cmd_84 (BEGIN)
+                                           ; SOURCE LINE # 51
+                                           ; SOURCE LINE # 52
+                                           ; SOURCE LINE # 53
+0000 E4                CLR     A
+0001 F500        E     MOV     ITempB05,A
+                                           ; SOURCE LINE # 54
+0003 120000      R     LCALL   L?0178
+0006 6028              JZ      ?C0009
+                                           ; SOURCE LINE # 55
+C51 COMPILER V7.50   OEM_ACPI                                                              09/08/2020 15:56:23 PAGE 21  
+
+                                           ; SOURCE LINE # 56
+0008 E0                MOVX    A,@DPTR
+0009 2400        E     ADD     A,#LOW SCI_Event_Buffer
+000B F582              MOV     DPL,A
+000D E4                CLR     A
+000E 3400        E     ADDC    A,#HIGH SCI_Event_Buffer
+0010 F583              MOV     DPH,A
+0012 E0                MOVX    A,@DPTR
+0013 F500        E     MOV     ITempB05,A
+                                           ; SOURCE LINE # 57
+0015 900000      E     MOV     DPTR,#SCI_Event_Out_Index
+0018 E0                MOVX    A,@DPTR
+0019 04                INC     A
+001A F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 58
+001B E0                MOVX    A,@DPTR
+001C C3                CLR     C
+001D 9409              SUBB    A,#09H
+001F 4002              JC      ?C0010
+                                           ; SOURCE LINE # 59
+                                           ; SOURCE LINE # 60
+0021 E4                CLR     A
+0022 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 61
+0023         ?C0010:
+                                           ; SOURCE LINE # 62
+0023 120000      R     LCALL   L?0178
+0026 7003              JNZ     ?C0011
+                                           ; SOURCE LINE # 63
+0028 120000      R     LCALL   L?0176
+002B         ?C0011:
+                                           ; SOURCE LINE # 65
+002B AF00        E     MOV     R7,ITempB05
+002D 020000      E     LJMP    _SendFromAcpi
+                                           ; SOURCE LINE # 66
+0030         ?C0009:
+                                           ; SOURCE LINE # 68
+                                           ; SOURCE LINE # 69
+0030 120000      R     LCALL   L?0176
+                                           ; SOURCE LINE # 70
+                                           ; SOURCE LINE # 71
+0033         ?C0013:
+0033 22                RET     
+             ; FUNCTION OEM_ACPI_Cmd_84 (END)
+
+             ; FUNCTION OEM_ACPI_Cmd_86 (BEGIN)
+                                           ; SOURCE LINE # 73
+                                           ; SOURCE LINE # 74
+                                           ; SOURCE LINE # 75
+0000 900000      E     MOV     DPTR,#SYS_MISC1
+0003 E0                MOVX    A,@DPTR
+0004 4401              ORL     A,#01H
+0006 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 76
+0007 22                RET     
+             ; FUNCTION OEM_ACPI_Cmd_86 (END)
+
+             ; FUNCTION OEM_ACPI_Cmd_87 (BEGIN)
+                                           ; SOURCE LINE # 78
+                                           ; SOURCE LINE # 79
+                                           ; SOURCE LINE # 80
+0000 900000      E     MOV     DPTR,#SYS_MISC1
+C51 COMPILER V7.50   OEM_ACPI                                                              09/08/2020 15:56:23 PAGE 22  
+
+0003 E0                MOVX    A,@DPTR
+0004 54FE              ANL     A,#0FEH
+0006 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 81
+0007 22                RET     
+             ; FUNCTION OEM_ACPI_Cmd_87 (END)
+
+             ; FUNCTION OEM_ACPI_Cmd_88 (BEGIN)
+                                           ; SOURCE LINE # 84
+                                           ; SOURCE LINE # 85
+                                           ; SOURCE LINE # 86
+0000 900000      E     MOV     DPTR,#GPDRH
+0003 E0                MOVX    A,@DPTR
+0004 4401              ORL     A,#01H
+0006 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 87
+0007 22                RET     
+             ; FUNCTION OEM_ACPI_Cmd_88 (END)
+
+             ; FUNCTION OEM_ACPI_Cmd_8A (BEGIN)
+                                           ; SOURCE LINE # 89
+                                           ; SOURCE LINE # 90
+                                           ; SOURCE LINE # 91
+0000 900000      E     MOV     DPTR,#GPDRE
+0003 E0                MOVX    A,@DPTR
+0004 4404              ORL     A,#04H
+0006 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 92
+0007 22                RET     
+             ; FUNCTION OEM_ACPI_Cmd_8A (END)
+
+             ; FUNCTION OEM_ACPI_Cmd_8E (BEGIN)
+                                           ; SOURCE LINE # 95
+                                           ; SOURCE LINE # 96
+                                           ; SOURCE LINE # 97
+0000 900000      E     MOV     DPTR,#UtilityFlag
+0003 E0                MOVX    A,@DPTR
+0004 4480              ORL     A,#080H
+0006 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 98
+0007 22                RET     
+             ; FUNCTION OEM_ACPI_Cmd_8E (END)
+
+             ; FUNCTION OEM_ACPI_Cmd_8F (BEGIN)
+                                           ; SOURCE LINE # 99
+                                           ; SOURCE LINE # 100
+                                           ; SOURCE LINE # 101
+0000 900000      E     MOV     DPTR,#UtilityFlag
+0003 E0                MOVX    A,@DPTR
+0004 547F              ANL     A,#07FH
+0006 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 102
+0007 22                RET     
+             ; FUNCTION OEM_ACPI_Cmd_8F (END)
+
+             ; FUNCTION OEM_ACPI_Cmd_D8 (BEGIN)
+                                           ; SOURCE LINE # 108
+                                           ; SOURCE LINE # 109
+                                           ; SOURCE LINE # 111
+0000 22                RET     
+             ; FUNCTION OEM_ACPI_Cmd_D8 (END)
+
+C51 COMPILER V7.50   OEM_ACPI                                                              09/08/2020 15:56:23 PAGE 23  
+
+             ; FUNCTION OEM_ACPI_Cmd_DD (BEGIN)
+                                           ; SOURCE LINE # 113
+                                           ; SOURCE LINE # 114
+                                           ; SOURCE LINE # 116
+0000 22                RET     
+             ; FUNCTION OEM_ACPI_Cmd_DD (END)
+
+             ; FUNCTION _Hook_62Port (BEGIN)
+                                           ; SOURCE LINE # 124
+;---- Variable 'PM1Data' assigned to Register 'R7' ----
+                                           ; SOURCE LINE # 125
+                                           ; SOURCE LINE # 126
+                                           ; SOURCE LINE # 127
+                                           ; SOURCE LINE # 129
+                                           ; SOURCE LINE # 130
+                                           ; SOURCE LINE # 131
+                                           ; SOURCE LINE # 132
+0000         ?C0024:
+0000 22                RET     
+             ; FUNCTION _Hook_62Port (END)
+
+             ; FUNCTION _Hook_66Port (BEGIN)
+                                           ; SOURCE LINE # 137
+;---- Variable 'PM1Cmd' assigned to Register 'R7' ----
+                                           ; SOURCE LINE # 138
+                                           ; SOURCE LINE # 139
+0000 EF                MOV     A,R7
+0001 120000      E     LCALL   ?C?CCASE
+0004 0000        R     DW      ?C0026
+0006 80                DB      080H
+0007 0000        R     DW      ?C0027
+0009 81                DB      081H
+000A 0000        R     DW      ?C0028
+000C 82                DB      082H
+000D 0000        R     DW      ?C0029
+000F 83                DB      083H
+0010 0000        R     DW      ?C0030
+0012 84                DB      084H
+0013 0000        R     DW      ?C0031
+0015 86                DB      086H
+0016 0000        R     DW      ?C0032
+0018 87                DB      087H
+0019 0000        R     DW      ?C0033
+001B 88                DB      088H
+001C 0000        R     DW      ?C0034
+001E 8A                DB      08AH
+001F 0000        R     DW      ?C0035
+0021 8E                DB      08EH
+0022 0000        R     DW      ?C0036
+0024 8F                DB      08FH
+0025 0000        R     DW      ?C0037
+0027 D8                DB      0D8H
+0028 0000        R     DW      ?C0038
+002A DD                DB      0DDH
+002B 0000              DW      00H
+002D 0000        R     DW      ?C0040
+                                           ; SOURCE LINE # 140
+                                           ; SOURCE LINE # 141
+002F         ?C0026:
+                                           ; SOURCE LINE # 142
+002F 020000      R     LJMP    OEM_ACPI_Cmd_80
+                                           ; SOURCE LINE # 143
+C51 COMPILER V7.50   OEM_ACPI                                                              09/08/2020 15:56:23 PAGE 24  
+
+                                           ; SOURCE LINE # 145
+0032         ?C0027:
+                                           ; SOURCE LINE # 146
+0032 020000      R     LJMP    OEM_ACPI_Cmd_81
+                                           ; SOURCE LINE # 147
+                                           ; SOURCE LINE # 149
+0035         ?C0028:
+                                           ; SOURCE LINE # 150
+0035 020000      R     LJMP    OEM_ACPI_Cmd_82
+                                           ; SOURCE LINE # 151
+                                           ; SOURCE LINE # 153
+0038         ?C0029:
+                                           ; SOURCE LINE # 154
+0038 020000      R     LJMP    OEM_ACPI_Cmd_83
+                                           ; SOURCE LINE # 155
+                                           ; SOURCE LINE # 157
+003B         ?C0030:
+                                           ; SOURCE LINE # 158
+003B 020000      R     LJMP    OEM_ACPI_Cmd_84
+                                           ; SOURCE LINE # 159
+                                           ; SOURCE LINE # 161
+003E         ?C0031:
+                                           ; SOURCE LINE # 162
+003E 020000      R     LJMP    OEM_ACPI_Cmd_86
+                                           ; SOURCE LINE # 163
+                                           ; SOURCE LINE # 165
+0041         ?C0032:
+                                           ; SOURCE LINE # 166
+0041 020000      R     LJMP    OEM_ACPI_Cmd_87
+                                           ; SOURCE LINE # 167
+                                           ; SOURCE LINE # 170
+0044         ?C0033:
+                                           ; SOURCE LINE # 171
+0044 020000      R     LJMP    OEM_ACPI_Cmd_88
+                                           ; SOURCE LINE # 172
+                                           ; SOURCE LINE # 174
+0047         ?C0034:
+                                           ; SOURCE LINE # 175
+0047 020000      R     LJMP    OEM_ACPI_Cmd_8A
+                                           ; SOURCE LINE # 176
+                                           ; SOURCE LINE # 179
+004A         ?C0035:
+                                           ; SOURCE LINE # 180
+004A 020000      R     LJMP    OEM_ACPI_Cmd_8E
+                                           ; SOURCE LINE # 181
+                                           ; SOURCE LINE # 183
+004D         ?C0036:
+                                           ; SOURCE LINE # 184
+004D 020000      R     LJMP    OEM_ACPI_Cmd_8F
+                                           ; SOURCE LINE # 185
+                                           ; SOURCE LINE # 187
+0050         ?C0037:
+                                           ; SOURCE LINE # 188
+0050 020000      R     LJMP    OEM_ACPI_Cmd_D8
+                                           ; SOURCE LINE # 189
+                                           ; SOURCE LINE # 191
+0053         ?C0038:
+                                           ; SOURCE LINE # 192
+0053 120000      R     LCALL   OEM_ACPI_Cmd_DD
+                                           ; SOURCE LINE # 193
+                                           ; SOURCE LINE # 195
+                                           ; SOURCE LINE # 196
+C51 COMPILER V7.50   OEM_ACPI                                                              09/08/2020 15:56:23 PAGE 25  
+
+                                           ; SOURCE LINE # 197
+                                           ; SOURCE LINE # 198
+0056         ?C0040:
+0056 22                RET     
+             ; FUNCTION _Hook_66Port (END)
+
+             ; FUNCTION Hook_ACPICommand (BEGIN)
+                                           ; SOURCE LINE # 203
+                                           ; SOURCE LINE # 204
+                                           ; SOURCE LINE # 206
+0000 020000      R     LJMP    OSSMbusComd
+             ; FUNCTION Hook_ACPICommand (END)
+
+             ; FUNCTION OEM_ACPI_Gen_Int (BEGIN)
+                                           ; SOURCE LINE # 213
+                                           ; SOURCE LINE # 214
+                                           ; SOURCE LINE # 215
+0000 7F01              MOV     R7,#01H
+0002 020000      E     LJMP    _ACPI_Gen_Int
+             ; FUNCTION OEM_ACPI_Gen_Int (END)
+
+             ; FUNCTION ResetSCIEvent (BEGIN)
+                                           ; SOURCE LINE # 221
+                                           ; SOURCE LINE # 222
+                                           ; SOURCE LINE # 223
+0000 E4                CLR     A
+0001 900000      E     MOV     DPTR,#SCI_Event_In_Index
+0004 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 224
+0005 900000      E     MOV     DPTR,#SCI_Event_Out_Index
+0008 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 231
+0009 120000      R     LCALL   L?0177
+                                           ; SOURCE LINE # 233
+000C C200        E     CLR     ECCheckBurstMode
+                                           ; SOURCE LINE # 234
+000E 22                RET     
+             ; FUNCTION ResetSCIEvent (END)
+
+             ; FUNCTION _ECQEvent (BEGIN)
+                                           ; SOURCE LINE # 242
+0000 900000      R     MOV     DPTR,#sci_mode
+0003 ED                MOV     A,R5
+0004 F0                MOVX    @DPTR,A
+;---- Variable 'sci_number' assigned to Register 'R7' ----
+                                           ; SOURCE LINE # 243
+                                           ; SOURCE LINE # 278
+0005 900000      E     MOV     DPTR,#SCI_Event_In_Index
+0008 E0                MOVX    A,@DPTR
+0009 F500        E     MOV     ITempB05,A
+                                           ; SOURCE LINE # 279
+000B AE00        E     MOV     R6,ITempB05
+000D 7400        E     MOV     A,#LOW SCI_Event_Buffer
+000F 2E                ADD     A,R6
+0010 F582              MOV     DPL,A
+0012 E4                CLR     A
+0013 3400        E     ADDC    A,#HIGH SCI_Event_Buffer
+0015 F583              MOV     DPH,A
+0017 EF                MOV     A,R7
+0018 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 280
+0019 0500        E     INC     ITempB05
+C51 COMPILER V7.50   OEM_ACPI                                                              09/08/2020 15:56:23 PAGE 26  
+
+                                           ; SOURCE LINE # 281
+001B E500        E     MOV     A,ITempB05
+001D C3                CLR     C
+001E 9409              SUBB    A,#09H
+0020 4003              JC      ?C0044
+                                           ; SOURCE LINE # 282
+                                           ; SOURCE LINE # 283
+0022 E4                CLR     A
+0023 F500        E     MOV     ITempB05,A
+                                           ; SOURCE LINE # 284
+0025         ?C0044:
+                                           ; SOURCE LINE # 286
+0025 900000      E     MOV     DPTR,#SCI_Event_Out_Index
+0028 E0                MOVX    A,@DPTR
+0029 6500        E     XRL     A,ITempB05
+002B 6006              JZ      ?C0045
+                                           ; SOURCE LINE # 287
+                                           ; SOURCE LINE # 288
+002D 900000      E     MOV     DPTR,#SCI_Event_In_Index
+0030 E500        E     MOV     A,ITempB05
+0032 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 289
+0033         ?C0045:
+                                           ; SOURCE LINE # 291
+0033 900000      E     MOV     DPTR,#PM1STS
+0036 E0                MOVX    A,@DPTR
+0037 4420              ORL     A,#020H
+0039 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 292
+003A 020000      R     LJMP    OEM_ACPI_Gen_Int
+             ; FUNCTION _ECQEvent (END)
+
+             ; FUNCTION _PendingECQEvent (BEGIN)
+                                           ; SOURCE LINE # 298
+0000 900000      R     MOV     DPTR,#sci_number
+0003 EF                MOV     A,R7
+0004 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 299
+                                           ; SOURCE LINE # 317
+0005 22                RET     
+             ; FUNCTION _PendingECQEvent (END)
+
+             ; FUNCTION Get_PendingECQEvent (BEGIN)
+                                           ; SOURCE LINE # 322
+                                           ; SOURCE LINE # 324
+                                           ; SOURCE LINE # 343
+0000 22                RET     
+             ; FUNCTION Get_PendingECQEvent (END)
+
+             ; FUNCTION _Hook_ReadMapECSpace (BEGIN)
+                                           ; SOURCE LINE # 348
+;---- Variable 'MapIndex' assigned to Register 'R7' ----
+                                           ; SOURCE LINE # 349
+                                           ; SOURCE LINE # 350
+0000 7401              MOV     A,#01H
+0002 7800        E     MOV     R0,#LOW Tmp_XPntr
+0004 F6                MOV     @R0,A
+0005 08                INC     R0
+0006 EF                MOV     A,R7
+0007 F6                MOV     @R0,A
+                                           ; SOURCE LINE # 351
+0008 F582              MOV     DPL,A
+C51 COMPILER V7.50   OEM_ACPI                                                              09/08/2020 15:56:23 PAGE 27  
+
+000A 758301            MOV     DPH,#01H
+000D E0                MOVX    A,@DPTR
+000E FF                MOV     R7,A
+                                           ; SOURCE LINE # 352
+000F         ?C0049:
+000F 22                RET     
+             ; FUNCTION _Hook_ReadMapECSpace (END)
+
+             ; FUNCTION SpecialFunc_01 (BEGIN)
+                                           ; SOURCE LINE # 354
+                                           ; SOURCE LINE # 355
+                                           ; SOURCE LINE # 357
+0000 22                RET     
+             ; FUNCTION SpecialFunc_01 (END)
+
+             ; FUNCTION _WriteECRamSpecialFunc (BEGIN)
+                                           ; SOURCE LINE # 367
+0000 900000      R     MOV     DPTR,#xdptr
+0003 EE                MOV     A,R6
+0004 F0                MOVX    @DPTR,A
+0005 A3                INC     DPTR
+0006 EF                MOV     A,R7
+0007 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 368
+                                           ; SOURCE LINE # 370
+0008 E4                CLR     A
+0009 A3                INC     DPTR
+000A F0                MOVX    @DPTR,A
+000B         ?C0051:
+                                           ; SOURCE LINE # 371
+000B 900000      R     MOV     DPTR,#index
+000E E0                MOVX    A,@DPTR
+000F FF                MOV     R7,A
+0010 C3                CLR     C
+0011 9401              SUBB    A,#01H
+0013 5047              JNC     ?C0054
+                                           ; SOURCE LINE # 372
+                                           ; SOURCE LINE # 373
+0015 EF                MOV     A,R7
+0016 25E0              ADD     A,ACC
+0018 25E0              ADD     A,ACC
+001A 2400        R     ADD     A,#LOW asECRamSS
+001C F582              MOV     DPL,A
+001E E4                CLR     A
+001F 3400        R     ADDC    A,#HIGH asECRamSS
+0021 F583              MOV     DPH,A
+0023 E4                CLR     A
+0024 93                MOVC    A,@A+DPTR
+0025 FE                MOV     R6,A
+0026 7401              MOV     A,#01H
+0028 93                MOVC    A,@A+DPTR
+0029 FF                MOV     R7,A
+002A 900000      R     MOV     DPTR,#xdptr
+002D E0                MOVX    A,@DPTR
+002E 6E                XRL     A,R6
+002F 7003              JNZ     ?C0150
+0031 A3                INC     DPTR
+0032 E0                MOVX    A,@DPTR
+0033 6F                XRL     A,R7
+0034         ?C0150:
+0034 701E              JNZ     ?C0053
+                                           ; SOURCE LINE # 374
+C51 COMPILER V7.50   OEM_ACPI                                                              09/08/2020 15:56:23 PAGE 28  
+
+                                           ; SOURCE LINE # 375
+0036 900000      R     MOV     DPTR,#index
+0039 E0                MOVX    A,@DPTR
+003A 25E0              ADD     A,ACC
+003C 25E0              ADD     A,ACC
+003E 2400        R     ADD     A,#LOW asECRamSS+02H
+0040 F582              MOV     DPL,A
+0042 E4                CLR     A
+0043 3400        R     ADDC    A,#HIGH asECRamSS+02H
+0045 F583              MOV     DPH,A
+0047 E4                CLR     A
+0048 93                MOVC    A,@A+DPTR
+0049 FE                MOV     R6,A
+004A 7401              MOV     A,#01H
+004C 93                MOVC    A,@A+DPTR
+004D CA                XCH     A,R2
+004E EE                MOV     A,R6
+004F CA                XCH     A,R2
+0050 F9                MOV     R1,A
+0051 020000      E     LJMP    ?C?ICALL
+                                           ; SOURCE LINE # 376
+                                           ; SOURCE LINE # 377
+0054         ?C0053:
+                                           ; SOURCE LINE # 378
+0054 900000      R     MOV     DPTR,#index
+0057 E0                MOVX    A,@DPTR
+0058 04                INC     A
+0059 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 379
+005A 80AF              SJMP    ?C0051
+                                           ; SOURCE LINE # 380
+005C         ?C0054:
+005C 22                RET     
+             ; FUNCTION _WriteECRamSpecialFunc (END)
+
+             ; FUNCTION _Hook_WriteMapECSpace (BEGIN)
+                                           ; SOURCE LINE # 385
+;---- Variable 'data1' assigned to Register 'R5' ----
+;---- Variable 'MapIndex' assigned to Register 'R7' ----
+                                           ; SOURCE LINE # 386
+                                           ; SOURCE LINE # 387
+0000 7401              MOV     A,#01H
+0002 7800        E     MOV     R0,#LOW Tmp_XPntr
+0004 F6                MOV     @R0,A
+0005 08                INC     R0
+0006 EF                MOV     A,R7
+0007 F6                MOV     @R0,A
+                                           ; SOURCE LINE # 388
+0008 18                DEC     R0
+0009 E6                MOV     A,@R0
+000A FE                MOV     R6,A
+000B 08                INC     R0
+000C E6                MOV     A,@R0
+000D FF                MOV     R7,A
+000E F582              MOV     DPL,A
+0010 8E83              MOV     DPH,R6
+0012 ED                MOV     A,R5
+0013 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 391
+0014 020000      R     LJMP    _WriteECRamSpecialFunc
+             ; FUNCTION _Hook_WriteMapECSpace (END)
+
+C51 COMPILER V7.50   OEM_ACPI                                                              09/08/2020 15:56:23 PAGE 29  
+
+             ; FUNCTION OSSMbusComd (BEGIN)
+                                           ; SOURCE LINE # 420
+                                           ; SOURCE LINE # 421
+                                           ; SOURCE LINE # 422
+0000 900000      E     MOV     DPTR,#SMB_PRTC
+0003 E0                MOVX    A,@DPTR
+0004 6038              JZ      ?C0059
+                                           ; SOURCE LINE # 423
+                                           ; SOURCE LINE # 424
+0006 E4                CLR     A
+0007 900000      E     MOV     DPTR,#SMB_STS
+000A F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 425
+000B 900000      E     MOV     DPTR,#SMB_PRTC
+000E E0                MOVX    A,@DPTR
+000F 540F              ANL     A,#0FH
+0011 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 426
+0012 E0                MOVX    A,@DPTR
+0013 25E0              ADD     A,ACC
+0015 2400        R     ADD     A,#LOW vOSSMbusComd_table
+0017 F582              MOV     DPL,A
+0019 E4                CLR     A
+001A 3400        R     ADDC    A,#HIGH vOSSMbusComd_table
+001C F583              MOV     DPH,A
+001E E4                CLR     A
+001F 93                MOVC    A,@A+DPTR
+0020 FE                MOV     R6,A
+0021 7401              MOV     A,#01H
+0023 93                MOVC    A,@A+DPTR
+0024 CA                XCH     A,R2
+0025 EE                MOV     A,R6
+0026 CA                XCH     A,R2
+0027 F9                MOV     R1,A
+0028 120000      E     LCALL   ?C?ICALL
+002B EF                MOV     A,R7
+002C 900000      E     MOV     DPTR,#SMB_STS
+002F 6005              JZ      ?C0057
+                                           ; SOURCE LINE # 427
+                                           ; SOURCE LINE # 428
+0031 7480              MOV     A,#080H
+0033 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 429
+0034 8003              SJMP    ?C0058
+0036         ?C0057:
+                                           ; SOURCE LINE # 431
+                                           ; SOURCE LINE # 432
+0036 745A              MOV     A,#05AH
+0038 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 433
+0039         ?C0058:
+                                           ; SOURCE LINE # 434
+0039 E4                CLR     A
+003A 900000      E     MOV     DPTR,#SMB_PRTC
+003D F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 435
+                                           ; SOURCE LINE # 436
+003E         ?C0059:
+003E 22                RET     
+             ; FUNCTION OSSMbusComd (END)
+
+             ; FUNCTION vOSSMbusWBlcok (BEGIN)
+C51 COMPILER V7.50   OEM_ACPI                                                              09/08/2020 15:56:23 PAGE 30  
+
+                                           ; SOURCE LINE # 438
+                                           ; SOURCE LINE # 439
+                                           ; SOURCE LINE # 440
+0000 120000      R     LCALL   L?0179
+0003 900000      E     MOV     DPTR,#?_bWSMBusBlock?BYTE+03H
+0006 120000      R     LCALL   L?0173
+0009 900000      E     MOV     DPTR,#SMB_BCNT
+000C E0                MOVX    A,@DPTR
+000D 900000      E     MOV     DPTR,#?_bWSMBusBlock?BYTE+06H
+0010 F0                MOVX    @DPTR,A
+0011 A3                INC     DPTR
+0012 7401              MOV     A,#01H
+0014 F0                MOVX    @DPTR,A
+0015 7D94              MOV     R5,#094H
+0017 E4                CLR     A
+0018 FF                MOV     R7,A
+0019 120000      E     LCALL   _bWSMBusBlock
+                                           ; SOURCE LINE # 441
+001C         ?C0060:
+001C 22                RET     
+             ; FUNCTION vOSSMbusWBlcok (END)
+
+             ; FUNCTION vOSSMbusRBlcok (BEGIN)
+                                           ; SOURCE LINE # 443
+                                           ; SOURCE LINE # 444
+                                           ; SOURCE LINE # 445
+0000 120000      R     LCALL   L?0179
+0003 900000      E     MOV     DPTR,#?_bRSMBusBlock?BYTE+03H
+0006 120000      R     LCALL   L?0173
+0009 7D14              MOV     R5,#014H
+000B E4                CLR     A
+000C FF                MOV     R7,A
+000D 120000      E     LCALL   _bRSMBusBlock
+                                           ; SOURCE LINE # 446
+0010         ?C0061:
+0010 22                RET     
+             ; FUNCTION vOSSMbusRBlcok (END)
+
+             ; FUNCTION vOSSMbusRByte (BEGIN)
+                                           ; SOURCE LINE # 448
+                                           ; SOURCE LINE # 449
+                                           ; SOURCE LINE # 450
+0000 120000      R     LCALL   L?0171
+0003 E4                CLR     A
+0004 A3                INC     DPTR
+0005 F0                MOVX    @DPTR,A
+0006 7D08              MOV     R5,#08H
+0008 FF                MOV     R7,A
+0009 120000      E     LCALL   _bRWSMBus
+                                           ; SOURCE LINE # 451
+000C         ?C0062:
+000C 22                RET     
+             ; FUNCTION vOSSMbusRByte (END)
+
+             ; FUNCTION vOSSMbusRWord (BEGIN)
+                                           ; SOURCE LINE # 453
+                                           ; SOURCE LINE # 454
+                                           ; SOURCE LINE # 455
+0000 120000      R     LCALL   L?0171
+0003 E4                CLR     A
+0004 A3                INC     DPTR
+0005 F0                MOVX    @DPTR,A
+C51 COMPILER V7.50   OEM_ACPI                                                              09/08/2020 15:56:23 PAGE 31  
+
+0006 7D0C              MOV     R5,#0CH
+0008 FF                MOV     R7,A
+0009 120000      E     LCALL   _bRWSMBus
+                                           ; SOURCE LINE # 456
+000C         ?C0063:
+000C 22                RET     
+             ; FUNCTION vOSSMbusRWord (END)
+
+             ; FUNCTION vOSSMbusWBYTE (BEGIN)
+                                           ; SOURCE LINE # 458
+                                           ; SOURCE LINE # 459
+                                           ; SOURCE LINE # 460
+0000 120000      R     LCALL   L?0172
+0003 A3                INC     DPTR
+0004 7401              MOV     A,#01H
+0006 F0                MOVX    @DPTR,A
+0007 7D88              MOV     R5,#088H
+0009 E4                CLR     A
+000A FF                MOV     R7,A
+000B 120000      E     LCALL   _bRWSMBus
+                                           ; SOURCE LINE # 461
+000E         ?C0064:
+000E 22                RET     
+             ; FUNCTION vOSSMbusWBYTE (END)
+
+             ; FUNCTION vOSSMbusWWord (BEGIN)
+                                           ; SOURCE LINE # 463
+                                           ; SOURCE LINE # 464
+                                           ; SOURCE LINE # 465
+0000 120000      R     LCALL   L?0172
+0003 A3                INC     DPTR
+0004 7401              MOV     A,#01H
+0006 F0                MOVX    @DPTR,A
+0007 7D8C              MOV     R5,#08CH
+0009 E4                CLR     A
+000A FF                MOV     R7,A
+000B 120000      E     LCALL   _bRWSMBus
+                                           ; SOURCE LINE # 466
+000E         ?C0065:
+000E 22                RET     
+             ; FUNCTION vOSSMbusWWord (END)
+
+             ; FUNCTION DummyFunction (BEGIN)
+                                           ; SOURCE LINE # 468
+                                           ; SOURCE LINE # 469
+                                           ; SOURCE LINE # 471
+0000 22                RET     
+             ; FUNCTION DummyFunction (END)
+
+             ; FUNCTION Lenovo_PM_Cmd (BEGIN)
+                                           ; SOURCE LINE # 476
+                                           ; SOURCE LINE # 477
+                                           ; SOURCE LINE # 478
+0000 900000      E     MOV     DPTR,#VCMD_Lenovo
+0003 E0                MOVX    A,@DPTR
+0004 120000      E     LCALL   ?C?CCASE
+0007 0000        R     DW      ?C0068
+0009 10                DB      010H
+000A 0000        R     DW      ?C0069
+000C 11                DB      011H
+000D 0000        R     DW      ?C0072
+000F 12                DB      012H
+C51 COMPILER V7.50   OEM_ACPI                                                              09/08/2020 15:56:23 PAGE 32  
+
+0010 0000        R     DW      ?C0076
+0012 13                DB      013H
+0013 0000        R     DW      ?C0077
+0015 14                DB      014H
+0016 0000        R     DW      ?C0080
+0018 15                DB      015H
+0019 0000        R     DW      ?C0083
+001B 16                DB      016H
+001C 0000        R     DW      ?C0086
+001E 17                DB      017H
+001F 0000        R     DW      ?C0089
+0021 18                DB      018H
+0022 0000        R     DW      ?C0092
+0024 19                DB      019H
+0025 0000        R     DW      ?C0095
+0027 1A                DB      01AH
+0028 0000        R     DW      ?C0096
+002A 1B                DB      01BH
+002B 0000        R     DW      ?C0099
+002D 1C                DB      01CH
+002E 0000        R     DW      ?C0102
+0030 1D                DB      01DH
+0031 0000        R     DW      ?C0105
+0033 1E                DB      01EH
+0034 0000        R     DW      ?C0108
+0036 1F                DB      01FH
+0037 0000        R     DW      ?C0111
+0039 20                DB      020H
+003A 0000        R     DW      ?C0124
+003C 23                DB      023H
+003D 0000        R     DW      ?C0121
+003F 28                DB      028H
+0040 0000        R     DW      ?C0124
+0042 29                DB      029H
+0043 0000        R     DW      ?C0126
+0045 2B                DB      02BH
+0046 0000        R     DW      ?C0133
+0048 2D                DB      02DH
+0049 0000        R     DW      ?C0138
+004B 2F                DB      02FH
+004C 0000        R     DW      ?C0124
+004E 31                DB      031H
+004F 0000        R     DW      ?C0144
+0051 33                DB      033H
+0052 0000              DW      00H
+0054 0000        R     DW      ?C0067
+                                           ; SOURCE LINE # 479
+                                           ; SOURCE LINE # 480
+0056         ?C0068:
+                                           ; SOURCE LINE # 481
+0056 900000      E     MOV     DPTR,#VPC_Lenovo
+0059 E0                MOVX    A,@DPTR
+005A 900000      E     MOV     DPTR,#VDAT_Lenovo
+005D F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 482
+005E E4                CLR     A
+005F 900000      E     MOV     DPTR,#VPC_Lenovo
+0062 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 483
+0063 020000      R     LJMP    ?C0067
+                                           ; SOURCE LINE # 485
+0066         ?C0069:
+C51 COMPILER V7.50   OEM_ACPI                                                              09/08/2020 15:56:23 PAGE 33  
+
+                                           ; SOURCE LINE # 486
+0066 900000      E     MOV     DPTR,#OS_Type
+0069 E0                MOVX    A,@DPTR
+                                           ; SOURCE LINE # 487
+                                           ; SOURCE LINE # 488
+                                           ; SOURCE LINE # 489
+                                           ; SOURCE LINE # 491
+                                           ; SOURCE LINE # 492
+006A 900000      E     MOV     DPTR,#VDAT_Lenovo
+006D 740A              MOV     A,#0AH
+006F F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 493
+                                           ; SOURCE LINE # 494
+0070 020000      R     LJMP    ?C0067
+                                           ; SOURCE LINE # 496
+0073         ?C0072:
+                                           ; SOURCE LINE # 497
+0073 900000      E     MOV     DPTR,#Oem_Globe_Flag
+0076 E0                MOVX    A,@DPTR
+0077 30E20A            JNB     ACC.2,?C0073
+                                           ; SOURCE LINE # 498
+                                           ; SOURCE LINE # 499
+007A E0                MOVX    A,@DPTR
+007B 54FB              ANL     A,#0FBH
+007D F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 500
+007E E0                MOVX    A,@DPTR
+007F 54FD              ANL     A,#0FDH
+0081 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 501
+0082 800F              SJMP    ?C0074
+0084         ?C0073:
+                                           ; SOURCE LINE # 502
+0084 900000      E     MOV     DPTR,#Oem_Globe_Flag
+0087 E0                MOVX    A,@DPTR
+0088 30E108            JNB     ACC.1,?C0074
+                                           ; SOURCE LINE # 503
+                                           ; SOURCE LINE # 504
+008B E0                MOVX    A,@DPTR
+008C 54FD              ANL     A,#0FDH
+008E F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 505
+008F E0                MOVX    A,@DPTR
+0090 54FB              ANL     A,#0FBH
+0092 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 506
+0093         ?C0074:
+                                           ; SOURCE LINE # 507
+0093 900000      E     MOV     DPTR,#LCD_BRIGHTNESS
+0096 E0                MOVX    A,@DPTR
+                                           ; SOURCE LINE # 508
+0097 020000      R     LJMP    ?C0163
+                                           ; SOURCE LINE # 510
+009A         ?C0076:
+                                           ; SOURCE LINE # 511
+009A 900000      E     MOV     DPTR,#VDAT_Lenovo
+009D E0                MOVX    A,@DPTR
+009E 900000      E     MOV     DPTR,#LCD_BRIGHTNESS
+00A1 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 513
+00A2 020000      R     LJMP    ?C0067
+                                           ; SOURCE LINE # 515
+C51 COMPILER V7.50   OEM_ACPI                                                              09/08/2020 15:56:23 PAGE 34  
+
+00A5         ?C0077:
+                                           ; SOURCE LINE # 516
+00A5 900000      E     MOV     DPTR,#Device_Status_Lenovo
+00A8 E0                MOVX    A,@DPTR
+00A9 20E053            JB      ACC.0,?C0157
+                                           ; SOURCE LINE # 517
+                                           ; SOURCE LINE # 518
+00AC E4                CLR     A
+00AD         ?C0151:
+                                           ; SOURCE LINE # 519
+00AD 020000      R     LJMP    ?C0163
+                                           ; SOURCE LINE # 526
+00B0         ?C0080:
+                                           ; SOURCE LINE # 527
+00B0 120000      R     LCALL   L?0174
+00B3 7006              JNZ     ?C0081
+                                           ; SOURCE LINE # 528
+                                           ; SOURCE LINE # 529
+00B5 E0                MOVX    A,@DPTR
+00B6 54FE              ANL     A,#0FEH
+00B8 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 530
+00B9 8004              SJMP    ?C0082
+00BB         ?C0081:
+                                           ; SOURCE LINE # 532
+                                           ; SOURCE LINE # 533
+00BB E0                MOVX    A,@DPTR
+00BC 4401              ORL     A,#01H
+00BE F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 534
+00BF         ?C0082:
+                                           ; SOURCE LINE # 535
+00BF 120000      E     LCALL   TurnOnOffWlan
+                                           ; SOURCE LINE # 536
+00C2 020000      R     LJMP    ?C0067
+                                           ; SOURCE LINE # 538
+00C5         ?C0083:
+                                           ; SOURCE LINE # 539
+00C5 900000      E     MOV     DPTR,#Device_Status_Lenovo
+00C8 E0                MOVX    A,@DPTR
+00C9 20E104            JB      ACC.1,?C0084
+                                           ; SOURCE LINE # 540
+                                           ; SOURCE LINE # 541
+00CC E4                CLR     A
+00CD         ?C0152:
+                                           ; SOURCE LINE # 542
+00CD 020000      R     LJMP    ?C0163
+00D0         ?C0084:
+                                           ; SOURCE LINE # 544
+                                           ; SOURCE LINE # 545
+00D0         ?C0153:
+                                           ; SOURCE LINE # 546
+                                           ; SOURCE LINE # 547
+00D0 020000      R     LJMP    ?C0169
+                                           ; SOURCE LINE # 549
+00D3         ?C0086:
+                                           ; SOURCE LINE # 550
+00D3 120000      R     LCALL   L?0174
+00D6 7006              JNZ     ?C0087
+                                           ; SOURCE LINE # 551
+                                           ; SOURCE LINE # 552
+00D8 E0                MOVX    A,@DPTR
+C51 COMPILER V7.50   OEM_ACPI                                                              09/08/2020 15:56:23 PAGE 35  
+
+00D9 54FD              ANL     A,#0FDH
+00DB F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 553
+00DC 8004              SJMP    ?C0088
+00DE         ?C0087:
+                                           ; SOURCE LINE # 555
+                                           ; SOURCE LINE # 556
+00DE E0                MOVX    A,@DPTR
+00DF 4402              ORL     A,#02H
+00E1 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 557
+00E2         ?C0088:
+                                           ; SOURCE LINE # 558
+00E2 120000      E     LCALL   TurnOnOffBT
+                                           ; SOURCE LINE # 559
+00E5 020000      R     LJMP    ?C0067
+                                           ; SOURCE LINE # 561
+00E8         ?C0089:
+                                           ; SOURCE LINE # 562
+00E8 900000      E     MOV     DPTR,#Device_Status_Lenovo
+00EB E0                MOVX    A,@DPTR
+00EC 20E203            JB      ACC.2,?C0090
+                                           ; SOURCE LINE # 563
+                                           ; SOURCE LINE # 564
+00EF E4                CLR     A
+00F0         ?C0154:
+                                           ; SOURCE LINE # 565
+00F0 8064              SJMP    ?C0163
+00F2         ?C0090:
+                                           ; SOURCE LINE # 567
+                                           ; SOURCE LINE # 568
+00F2         ?C0155:
+                                           ; SOURCE LINE # 569
+                                           ; SOURCE LINE # 570
+00F2 020000      R     LJMP    ?C0169
+                                           ; SOURCE LINE # 572
+00F5         ?C0092:
+                                           ; SOURCE LINE # 573
+00F5 900000      E     MOV     DPTR,#Device_Status_Lenovo
+00F8 E0                MOVX    A,@DPTR
+00F9 20E303            JB      ACC.3,?C0093
+                                           ; SOURCE LINE # 574
+                                           ; SOURCE LINE # 575
+00FC E4                CLR     A
+00FD         ?C0156:
+                                           ; SOURCE LINE # 576
+00FD 8057              SJMP    ?C0163
+00FF         ?C0093:
+                                           ; SOURCE LINE # 578
+                                           ; SOURCE LINE # 579
+00FF         ?C0157:
+                                           ; SOURCE LINE # 580
+                                           ; SOURCE LINE # 581
+00FF 020000      R     LJMP    ?C0169
+                                           ; SOURCE LINE # 583
+0102         ?C0095:
+                                           ; SOURCE LINE # 584
+0102 900000      E     MOV     DPTR,#VPC2_Lenovo
+0105 E0                MOVX    A,@DPTR
+0106 900000      E     MOV     DPTR,#VDAT_Lenovo
+0109 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 585
+C51 COMPILER V7.50   OEM_ACPI                                                              09/08/2020 15:56:23 PAGE 36  
+
+010A E4                CLR     A
+010B 900000      E     MOV     DPTR,#VPC2_Lenovo
+010E F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 586
+010F 020000      R     LJMP    ?C0067
+                                           ; SOURCE LINE # 588
+0112         ?C0096:
+                                           ; SOURCE LINE # 589
+0112 900000      E     MOV     DPTR,#Device_Status_Lenovo
+0115 E0                MOVX    A,@DPTR
+0116 20E403            JB      ACC.4,?C0097
+                                           ; SOURCE LINE # 590
+                                           ; SOURCE LINE # 591
+0119 E4                CLR     A
+011A         ?C0158:
+                                           ; SOURCE LINE # 592
+011A 803A              SJMP    ?C0163
+011C         ?C0097:
+                                           ; SOURCE LINE # 594
+                                           ; SOURCE LINE # 595
+011C         ?C0159:
+                                           ; SOURCE LINE # 596
+                                           ; SOURCE LINE # 597
+011C 020000      R     LJMP    ?C0169
+                                           ; SOURCE LINE # 599
+011F         ?C0099:
+                                           ; SOURCE LINE # 600
+011F 120000      R     LCALL   L?0175
+0122 7007              JNZ     ?C0100
+                                           ; SOURCE LINE # 601
+                                           ; SOURCE LINE # 602
+0124 E0                MOVX    A,@DPTR
+0125 54EF              ANL     A,#0EFH
+0127 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 603
+0128 020000      R     LJMP    ?C0067
+012B         ?C0100:
+                                           ; SOURCE LINE # 605
+                                           ; SOURCE LINE # 606
+                                           ; SOURCE LINE # 607
+                                           ; SOURCE LINE # 608
+012B 020000      R     LJMP    ?C0162
+                                           ; SOURCE LINE # 610
+012E         ?C0102:
+                                           ; SOURCE LINE # 611
+012E 900000      E     MOV     DPTR,#Device_Status_Lenovo
+0131 E0                MOVX    A,@DPTR
+0132 20E503            JB      ACC.5,?C0103
+                                           ; SOURCE LINE # 612
+                                           ; SOURCE LINE # 613
+0135 E4                CLR     A
+0136         ?C0160:
+                                           ; SOURCE LINE # 614
+0136 801E              SJMP    ?C0163
+0138         ?C0103:
+                                           ; SOURCE LINE # 616
+                                           ; SOURCE LINE # 617
+0138         ?C0161:
+                                           ; SOURCE LINE # 618
+                                           ; SOURCE LINE # 619
+0138 020000      R     LJMP    ?C0169
+                                           ; SOURCE LINE # 621
+C51 COMPILER V7.50   OEM_ACPI                                                              09/08/2020 15:56:23 PAGE 37  
+
+013B         ?C0105:
+                                           ; SOURCE LINE # 622
+013B 120000      R     LCALL   L?0175
+013E 7007              JNZ     ?C0106
+                                           ; SOURCE LINE # 623
+                                           ; SOURCE LINE # 624
+0140 E0                MOVX    A,@DPTR
+0141 54DF              ANL     A,#0DFH
+0143 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 625
+0144 020000      R     LJMP    ?C0067
+0147         ?C0106:
+                                           ; SOURCE LINE # 627
+                                           ; SOURCE LINE # 628
+0147 E0                MOVX    A,@DPTR
+0148 4420              ORL     A,#020H
+014A F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 629
+                                           ; SOURCE LINE # 630
+014B 020000      R     LJMP    ?C0067
+                                           ; SOURCE LINE # 632
+014E         ?C0108:
+                                           ; SOURCE LINE # 633
+014E 900000      E     MOV     DPTR,#Device_Status_Lenovo
+0151 E0                MOVX    A,@DPTR
+0152 20E608            JB      ACC.6,?C0109
+                                           ; SOURCE LINE # 634
+                                           ; SOURCE LINE # 635
+0155 E4                CLR     A
+0156         ?C0163:
+0156 900000      E     MOV     DPTR,#VDAT_Lenovo
+0159 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 636
+015A 020000      R     LJMP    ?C0067
+015D         ?C0109:
+                                           ; SOURCE LINE # 638
+                                           ; SOURCE LINE # 639
+015D         ?C0164:
+                                           ; SOURCE LINE # 640
+                                           ; SOURCE LINE # 641
+015D 020000      R     LJMP    ?C0169
+                                           ; SOURCE LINE # 643
+0160         ?C0111:
+                                           ; SOURCE LINE # 644
+0160 120000      R     LCALL   L?0175
+0163 7007              JNZ     ?C0112
+                                           ; SOURCE LINE # 645
+                                           ; SOURCE LINE # 646
+0165 E0                MOVX    A,@DPTR
+0166 54BF              ANL     A,#0BFH
+0168 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 647
+0169 020000      R     LJMP    ?C0067
+016C         ?C0112:
+                                           ; SOURCE LINE # 649
+                                           ; SOURCE LINE # 650
+016C E0                MOVX    A,@DPTR
+016D 4440              ORL     A,#040H
+016F F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 651
+                                           ; SOURCE LINE # 653
+0170 020000      R     LJMP    ?C0067
+C51 COMPILER V7.50   OEM_ACPI                                                              09/08/2020 15:56:23 PAGE 38  
+
+                                           ; SOURCE LINE # 655
+                                           ; SOURCE LINE # 656
+                                           ; SOURCE LINE # 658
+                                           ; SOURCE LINE # 659
+                                           ; SOURCE LINE # 661
+                                           ; SOURCE LINE # 665
+                                           ; SOURCE LINE # 666
+                                           ; SOURCE LINE # 668
+                                           ; SOURCE LINE # 669
+                                           ; SOURCE LINE # 670
+                                           ; SOURCE LINE # 671
+                                           ; SOURCE LINE # 673
+0173         ?C0121:
+                                           ; SOURCE LINE # 674
+0173 900000      E     MOV     DPTR,#VDAT_Lenovo
+0176 E0                MOVX    A,@DPTR
+0177 900000      E     MOV     DPTR,#Device_Status_AllRF
+017A 6003              JZ      ?C0122
+                                           ; SOURCE LINE # 675
+                                           ; SOURCE LINE # 676
+                                           ; SOURCE LINE # 677
+017C 020000      R     LJMP    ?C0167
+017F         ?C0122:
+                                           ; SOURCE LINE # 679
+                                           ; SOURCE LINE # 680
+                                           ; SOURCE LINE # 681
+                                           ; SOURCE LINE # 682
+017F 020000      R     LJMP    ?C0168
+                                           ; SOURCE LINE # 684
+0182         ?C0124:
+                                           ; SOURCE LINE # 685
+0182         ?C0166:
+                                           ; SOURCE LINE # 686
+0182 806C              SJMP    ?C0169
+                                           ; SOURCE LINE # 688
+                                           ; SOURCE LINE # 689
+                                           ; SOURCE LINE # 691
+0184         ?C0126:
+                                           ; SOURCE LINE # 692
+0184 E4                CLR     A
+0185 900000      E     MOV     DPTR,#VDAT_Lenovo
+0188 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 694
+0189 900000      E     MOV     DPTR,#Lenvo_dust_mode
+018C E0                MOVX    A,@DPTR
+018D 24FE              ADD     A,#0FEH
+018F 600C              JZ      ?C0130
+0191 2402              ADD     A,#02H
+0193 7072              JNZ     ?C0067
+                                           ; SOURCE LINE # 695
+                                           ; SOURCE LINE # 696
+0195         ?C0128:
+                                           ; SOURCE LINE # 697
+0195 900000      E     MOV     DPTR,#VDAT_Lenovo
+0198 7405              MOV     A,#05H
+019A F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 698
+019B 806A              SJMP    ?C0067
+                                           ; SOURCE LINE # 699
+                                           ; SOURCE LINE # 700
+                                           ; SOURCE LINE # 701
+019D         ?C0130:
+C51 COMPILER V7.50   OEM_ACPI                                                              09/08/2020 15:56:23 PAGE 39  
+
+                                           ; SOURCE LINE # 702
+019D 900000      E     MOV     DPTR,#VDAT_Lenovo
+01A0 7485              MOV     A,#085H
+01A2 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 703
+01A3 E4                CLR     A
+01A4 900000      E     MOV     DPTR,#Lenvo_dust_mode
+01A7 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 704
+01A8 805D              SJMP    ?C0067
+                                           ; SOURCE LINE # 705
+                                           ; SOURCE LINE # 706
+                                           ; SOURCE LINE # 707
+                                           ; SOURCE LINE # 709
+                                           ; SOURCE LINE # 711
+                                           ; SOURCE LINE # 712
+                                           ; SOURCE LINE # 714
+01AA         ?C0133:
+                                           ; SOURCE LINE # 715
+01AA 900000      E     MOV     DPTR,#VDAT_Lenovo
+01AD 7402              MOV     A,#02H
+01AF F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 716
+01B0 900000      E     MOV     DPTR,#Device_Status_AllRF
+01B3 E0                MOVX    A,@DPTR
+01B4 30E207            JNB     ACC.2,?C0134
+                                           ; SOURCE LINE # 717
+                                           ; SOURCE LINE # 718
+01B7 900000      E     MOV     DPTR,#VDAT_Lenovo
+01BA E0                MOVX    A,@DPTR
+01BB 4408              ORL     A,#08H
+01BD F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 719
+01BE         ?C0134:
+                                           ; SOURCE LINE # 721
+01BE 900000      E     MOV     DPTR,#Oem_Globe_Flag1
+01C1 E0                MOVX    A,@DPTR
+01C2 20E404            JB      ACC.4,?C0136
+01C5 E0                MOVX    A,@DPTR
+01C6 30E23E            JNB     ACC.2,?C0067
+01C9         ?C0136:
+                                           ; SOURCE LINE # 722
+                                           ; SOURCE LINE # 723
+01C9 900000      E     MOV     DPTR,#VDAT_Lenovo
+01CC         ?C0162:
+01CC E0                MOVX    A,@DPTR
+01CD 4410              ORL     A,#010H
+01CF F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 724
+                                           ; SOURCE LINE # 725
+01D0 8035              SJMP    ?C0067
+                                           ; SOURCE LINE # 727
+                                           ; SOURCE LINE # 728
+                                           ; SOURCE LINE # 730
+01D2         ?C0138:
+                                           ; SOURCE LINE # 732
+01D2 900000      E     MOV     DPTR,#Lenvo_general_f
+01D5 E0                MOVX    A,@DPTR
+01D6 30E007            JNB     ACC.0,?C0139
+                                           ; SOURCE LINE # 733
+                                           ; SOURCE LINE # 734
+01D9 900000      E     MOV     DPTR,#VDAT_Lenovo
+C51 COMPILER V7.50   OEM_ACPI                                                              09/08/2020 15:56:23 PAGE 40  
+
+01DC E0                MOVX    A,@DPTR
+01DD 4402              ORL     A,#02H
+01DF F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 735
+01E0         ?C0139:
+                                           ; SOURCE LINE # 737
+01E0 900000      E     MOV     DPTR,#Lenvo_general_f
+01E3 E0                MOVX    A,@DPTR
+01E4 30E120            JNB     ACC.1,?C0067
+                                           ; SOURCE LINE # 738
+                                           ; SOURCE LINE # 739
+01E7 900000      E     MOV     DPTR,#VDAT_Lenovo
+01EA E0                MOVX    A,@DPTR
+01EB 4408              ORL     A,#08H
+01ED F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 740
+                                           ; SOURCE LINE # 741
+01EE 8017              SJMP    ?C0067
+                                           ; SOURCE LINE # 743
+                                           ; SOURCE LINE # 744
+                                           ; SOURCE LINE # 746
+01F0         ?C0169:
+01F0 900000      E     MOV     DPTR,#VDAT_Lenovo
+01F3 7401              MOV     A,#01H
+01F5 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 748
+01F6 800F              SJMP    ?C0067
+                                           ; SOURCE LINE # 750
+                                           ; SOURCE LINE # 751
+                                           ; SOURCE LINE # 753
+01F8         ?C0144:
+                                           ; SOURCE LINE # 754
+01F8 120000      R     LCALL   L?0175
+01FB 7006              JNZ     ?C0145
+                                           ; SOURCE LINE # 755
+                                           ; SOURCE LINE # 756
+01FD         ?C0168:
+01FD E0                MOVX    A,@DPTR
+01FE 54FB              ANL     A,#0FBH
+0200 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 758
+0201 8004              SJMP    ?C0067
+0203         ?C0145:
+                                           ; SOURCE LINE # 760
+                                           ; SOURCE LINE # 761
+0203         ?C0167:
+0203 E0                MOVX    A,@DPTR
+0204 4404              ORL     A,#04H
+0206 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 763
+                                           ; SOURCE LINE # 764
+                                           ; SOURCE LINE # 766
+                                           ; SOURCE LINE # 767
+                                           ; SOURCE LINE # 769
+0207         ?C0067:
+                                           ; SOURCE LINE # 771
+0207 E4                CLR     A
+0208 900000      E     MOV     DPTR,#VCMD_Lenovo
+020B F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 772
+020C 22                RET     
+             ; FUNCTION Lenovo_PM_Cmd (END)
+C51 COMPILER V7.50   OEM_ACPI                                                              09/08/2020 15:56:23 PAGE 41  
+
+
+             ; FUNCTION OEM_QUIT_TEST (BEGIN)
+                                           ; SOURCE LINE # 776
+                                           ; SOURCE LINE # 777
+                                           ; SOURCE LINE # 779
+0000 E4                CLR     A
+0001 900000      E     MOV     DPTR,#ledTestFlag
+0004 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 780
+0005 900000      E     MOV     DPTR,#DebugFan1RPMT
+0008 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 781
+0009 900000      E     MOV     DPTR,#DebugFan2RPMT
+000C F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 782
+000D 900000      E     MOV     DPTR,#DebugFanStatus
+0010 E0                MOVX    A,@DPTR
+0011 54FE              ANL     A,#0FEH
+0013 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 783
+0014 E4                CLR     A
+0015 900000      E     MOV     DPTR,#DebugFan1VoltageOut
+0018 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 786
+0019 22                RET     
+             ; FUNCTION OEM_QUIT_TEST (END)
+
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =   1232    ----
+   CONSTANT SIZE    =     36    ----
+   XDATA SIZE       =   ----       7
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

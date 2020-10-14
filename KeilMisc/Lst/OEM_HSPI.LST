@@ -1,0 +1,1412 @@
+A51 MACRO ASSEMBLER  OEM_HSPI                                                             09/08/2020 15:56:26 PAGE     1
+
+
+MACRO ASSEMBLER A51 V7.10
+OBJECT MODULE PLACED IN Code\Oem\OEM_HSPI.OBJ
+ASSEMBLER INVOKED BY: C:\Keil\C51\BIN\A51.EXE Code\Oem\OEM_HSPI.SRC SET(LA) DEBUG EP
+
+LOC  OBJ            LINE     SOURCE
+
+                       1     ; Code\Oem\OEM_HSPI.SRC generated from: Code\Oem\OEM_HSPI.C
+                       2     ; COMPILER INVOKED BY:
+                       3     ;        C:\Keil\C51\BIN\c51.exe Code\Oem\OEM_HSPI.C LA WL(1) CD OT(9,SIZE) NOAREGS OR SRC 
+                             INCDIR(.\Code\CORE\INCLUDE\;.\Code\OEM\INCLUDE\;.\Code\CHIP\INCLUDE\)
+                       4     
+                       5     $nomod51 
+                       6     
+                       7     NAME    OEM_HSPI
+                       8     
+  0080                 9     P0      DATA    080H
+  0090                10     P1      DATA    090H
+  00A0                11     P2      DATA    0A0H
+  00B0                12     P3      DATA    0B0H
+  00D0                13     PSW     DATA    0D0H
+  00E0                14     ACC     DATA    0E0H
+  00F0                15     B       DATA    0F0H
+  0081                16     SP      DATA    081H
+  0082                17     DPL     DATA    082H
+  0083                18     DPH     DATA    083H
+  0087                19     PCON    DATA    087H
+  0088                20     TCON    DATA    088H
+  0089                21     TMOD    DATA    089H
+  008A                22     TL0     DATA    08AH
+  008B                23     TL1     DATA    08BH
+  008C                24     TH0     DATA    08CH
+  008D                25     TH1     DATA    08DH
+  008E                26     CKCON   DATA    08EH
+  00A8                27     IE      DATA    0A8H
+  00B8                28     IP      DATA    0B8H
+  0098                29     SCON    DATA    098H
+  0099                30     SBUF    DATA    099H
+  00C8                31     T2CON   DATA    0C8H
+  00C9                32     T2MOD   DATA    0C9H
+  00CA                33     RCAP2L  DATA    0CAH
+  00CB                34     RCAP2H  DATA    0CBH
+  00CC                35     TL2     DATA    0CCH
+  00CD                36     TH2     DATA    0CDH
+  00D8                37     WDTCON  DATA    0D8H
+  00F7                38     MPRECF  DATA    0F7H
+  00D9                39     WDTEB   BIT     0D8H.1
+  00D8                40     WDTRST  BIT     0D8H.0
+  00D7                41     CY      BIT     0D0H.7
+  00D6                42     AC      BIT     0D0H.6
+  00D5                43     F0      BIT     0D0H.5
+  00D4                44     RS1     BIT     0D0H.4
+  00D3                45     RS0     BIT     0D0H.3
+  00D2                46     OV      BIT     0D0H.2
+  00D0                47     P       BIT     0D0H.0
+  008F                48     TF1     BIT     088H.7
+  008E                49     TR1     BIT     088H.6
+  008D                50     TF0     BIT     088H.5
+  008C                51     TR0     BIT     088H.4
+  008B                52     IE1     BIT     088H.3
+  008A                53     IT1     BIT     088H.2
+  0089                54     IE0     BIT     088H.1
+  0088                55     IT0     BIT     088H.0
+  00AF                56     EA      BIT     0A8H.7
+  00AD                57     ET2     BIT     0A8H.5
+A51 MACRO ASSEMBLER  OEM_HSPI                                                             09/08/2020 15:56:26 PAGE     2
+
+  00AC                58     ES      BIT     0A8H.4
+  00AB                59     ET1     BIT     0A8H.3
+  00AA                60     EX1     BIT     0A8H.2
+  00A9                61     ET0     BIT     0A8H.1
+  00A8                62     EX0     BIT     0A8H.0
+  00BC                63     PS      BIT     0B8H.4
+  00BB                64     PT1     BIT     0B8H.3
+  00BA                65     PX1     BIT     0B8H.2
+  00B9                66     PT0     BIT     0B8H.1
+  00B8                67     PX0     BIT     0B8H.0
+  00B7                68     RD      BIT     0B0H.7
+  00B6                69     WR      BIT     0B0H.6
+  00B5                70     T1      BIT     0B0H.5
+  00B4                71     T0      BIT     0B0H.4
+  00B3                72     INT1    BIT     0B0H.3
+  00B2                73     INT0    BIT     0B0H.2
+  009F                74     SM0     BIT     098H.7
+  009E                75     SM1     BIT     098H.6
+  009D                76     SM2     BIT     098H.5
+  009C                77     REN     BIT     098H.4
+  009B                78     TB8     BIT     098H.3
+  009A                79     RB8     BIT     098H.2
+  0099                80     TI      BIT     098H.1
+  0098                81     RI      BIT     098H.0
+  00CF                82     TF2     BIT     0C8H.7
+  00CE                83     EXF2    BIT     0C8H.6
+  00CD                84     RCLK    BIT     0C8H.5
+  00CC                85     TCLK    BIT     0C8H.4
+  00CB                86     EXEN2   BIT     0C8H.3
+  00CA                87     TR2     BIT     0C8H.2
+  00C9                88     CT2     BIT     0C8H.1
+  00C8                89     CPRL2   BIT     0C8H.0
+                      90     ?PR?GPIO_HSPI_INIT?OEM_HSPI              SEGMENT CODE 
+                      91     ?PR?Enable_HSPI?OEM_HSPI                 SEGMENT CODE 
+                      92     ?PR?Disable_HSPI?OEM_HSPI                SEGMENT CODE 
+                      93     ?PR?HSPI_RamCode?OEM_HSPI                SEGMENT CODE 
+                      94     ?PR?HSPI_CmdRamCode?OEM_HSPI             SEGMENT CODE 
+                      95     ?PR?_ChangePLLFrequency?OEM_HSPI         SEGMENT CODE 
+                      96     ?PR?_ChangeSPIFlashReadMode?OEM_HSPI     SEGMENT CODE 
+                      97     ?XD?_ChangeSPIFlashReadMode?OEM_HSPI     SEGMENT XDATA OVERLAYABLE 
+                      98     ?PR?_ChangeHSRSMode?OEM_HSPI             SEGMENT CODE 
+                      99     ?XD?_ChangeHSRSMode?OEM_HSPI             SEGMENT XDATA OVERLAYABLE 
+                     100     ?PR?OEM_HSPI         SEGMENT CODE 
+                     101             EXTRN   DATA (MainFucnLow)
+                     102             EXTRN   DATA (MainFucnHigh)
+                     103             EXTRN   XDATA (WinFlashMark)
+                     104             EXTRN   XDATA (RamCodePort)
+                     105             EXTRN   XDATA (RamcodeCmd)
+                     106             EXTRN   XDATA (FLHCTRL1R)
+                     107             EXTRN   XDATA (HCTRL2R)
+                     108             EXTRN   XDATA (HSPICTRL2R)
+                     109             EXTRN   XDATA (HSPICTRL3R)
+                     110             EXTRN   XDATA (DSADR2)
+                     111             EXTRN   XDATA (HINSTC1)
+                     112             EXTRN   XDATA (ISR7)
+                     113             EXTRN   XDATA (IER7)
+                     114             EXTRN   XDATA (KBHISR)
+                     115             EXTRN   XDATA (KBHIKDOR)
+                     116             EXTRN   XDATA (KBHIDIR)
+                     117             EXTRN   XDATA (PM1STS)
+                     118             EXTRN   XDATA (PM1DO)
+                     119             EXTRN   XDATA (PM1DI)
+                     120             EXTRN   XDATA (PM2STS)
+                     121             EXTRN   XDATA (PM2DO)
+                     122             EXTRN   XDATA (PM2DI)
+                     123             EXTRN   XDATA (GPCRH0)
+A51 MACRO ASSEMBLER  OEM_HSPI                                                             09/08/2020 15:56:26 PAGE     3
+
+                     124             EXTRN   XDATA (GPCRH3)
+                     125             EXTRN   XDATA (GPCRH4)
+                     126             EXTRN   XDATA (GPCRH5)
+                     127             EXTRN   XDATA (GPCRH6)
+                     128             EXTRN   XDATA (PLLCTRL)
+                     129             EXTRN   XDATA (PLLFREQR)
+                     130             EXTRN   XDATA (RSTC4)
+                     131             EXTRN   CODE (DisableAllInterrupt)
+                     132             EXTRN   BIT (F_Service_MS_1)
+                     133             EXTRN   XDATA (HSPI_FPT_timeout)
+                     134             PUBLIC  _ChangeHSRSMode
+                     135             PUBLIC  _ChangeSPIFlashReadMode
+                     136             PUBLIC  _ChangePLLFrequency
+                     137             PUBLIC  HSPI_CmdRamCode
+                     138             PUBLIC  HSPI_RamCode
+                     139             PUBLIC  Disable_HSPI
+                     140             PUBLIC  Enable_HSPI
+                     141             PUBLIC  GPIO_HSPI_INIT
+                     142     
+----                 143             RSEG  ?XD?_ChangeSPIFlashReadMode?OEM_HSPI
+0000                 144     ?_ChangeSPIFlashReadMode?BYTE:
+0000                 145         restore?642:   DS   1
+                     146     
+----                 147             RSEG  ?XD?_ChangeHSRSMode?OEM_HSPI
+0000                 148     ?_ChangeHSRSMode?BYTE:
+0000                 149         restore?744:   DS   1
+                     150     ; /*-----------------------------------------------------------------------------
+                     151     ;  * TITLE: CORE_HSPI.C
+                     152     ;  *
+                     153     ;  * Copyright (c) 2009- , ITE Corporation. All Rights Reserved.
+                     154     ;  *
+                     155     ;  * You may not reproduce, distribute, publish, display, perform, modify, adapt,
+                     156     ;  * transmit, broadcast, present, recite, release, license or otherwise exploit
+                     157     ;  * any part of this publication in any form, by any means, without the prior
+                     158     ;  * written permission of Insyde Software Corporation.
+                     159     ;  *---------------------------------------------------------------------------*/
+                     160     ;  
+                     161     ; #include <CORE_INCLUDE.H>
+                     162     ; #include <OEM_INCLUDE.H>
+                     163     ; 
+                     164     ; //----------------------------------------------------------------------------
+                     165     ; // Disable HSPI interface pins 
+                     166     ; //----------------------------------------------------------------------------
+                     167     
+----                 168             RSEG  ?PR?OEM_HSPI
+0000                 169     Com0040:
+0000                 170     L?0065:
+                     171             USING   0
+0000 900000   F      172             MOV     DPTR,#GPCRH3
+0003 7480            173             MOV     A,#080H
+0005                 174     L?0066:
+0005 F0              175             MOVX    @DPTR,A
+0006 900000   F      176             MOV     DPTR,#GPCRH4
+0009 F0              177             MOVX    @DPTR,A
+000A 900000   F      178             MOV     DPTR,#GPCRH5
+000D F0              179             MOVX    @DPTR,A
+000E 900000   F      180             MOV     DPTR,#GPCRH6
+0011 F0              181             MOVX    @DPTR,A
+0012 22              182             RET     
+                     183     ; END OF Com0040
+                     184     
+                     185     ; void GPIO_HSPI_INIT(void)
+                     186     
+----                 187             RSEG  ?PR?GPIO_HSPI_INIT?OEM_HSPI
+0000                 188     GPIO_HSPI_INIT:
+                     189                             ; SOURCE LINE # 18
+A51 MACRO ASSEMBLER  OEM_HSPI                                                             09/08/2020 15:56:26 PAGE     4
+
+                     190     ; {
+                     191                             ; SOURCE LINE # 19
+                     192     ;       GPCRH3 = INPUT;                 // Set input mode
+                     193                             ; SOURCE LINE # 20
+                     194     ;       GPCRH4 = INPUT;                 // Set input mode
+                     195                             ; SOURCE LINE # 21
+                     196     ;       GPCRH5 = INPUT;                 // Set input mode
+                     197                             ; SOURCE LINE # 22
+                     198     ;       GPCRH6 = INPUT;                 // Set input mode
+                     199                             ; SOURCE LINE # 23
+0000 120000   F      200             LCALL   L?0065
+                     201     ;     SET_MASK(RSTC4,RSPI);           // Reset SPI
+                     202                             ; SOURCE LINE # 24
+0003 900000   F      203             MOV     DPTR,#RSTC4
+0006 E0              204             MOVX    A,@DPTR
+0007 4401            205             ORL     A,#01H
+0009 F0              206             MOVX    @DPTR,A
+                     207     ; }
+                     208                             ; SOURCE LINE # 25
+000A 22              209             RET     
+                     210     ; END OF GPIO_HSPI_INIT
+                     211     
+                     212     ; 
+                     213     ; //----------------------------------------------------------------------------
+                     214     ; // Enable HSPI interface
+                     215     ; //----------------------------------------------------------------------------
+                     216     ; void Enable_HSPI(void)
+                     217     
+----                 218             RSEG  ?PR?Enable_HSPI?OEM_HSPI
+0000                 219     Enable_HSPI:
+                     220                             ; SOURCE LINE # 30
+                     221     ; {
+                     222                             ; SOURCE LINE # 31
+                     223     ;     #ifdef HSPI_DefferingMode
+                     224     ;     CLEAR_MASK(IER7,Int_DeferredSPI);   // Disable HSPI interrupt 
+                     225     ;     ISR7 = Int_DeferredSPI;         // W/C interrupt status
+                     226     ;     #endif
+                     227     ;     
+                     228     ;       GPCRH3 = ALT;                   // Set HSPI mode
+                     229                             ; SOURCE LINE # 37
+0000 E4              230             CLR     A
+0001 900000   F      231             MOV     DPTR,#GPCRH3
+                     232     ;       GPCRH4 = ALT;                   // Set HSPI mode
+                     233                             ; SOURCE LINE # 38
+                     234     ;       GPCRH5 = ALT;                   // Set HSPI mode
+                     235                             ; SOURCE LINE # 39
+                     236     ;       GPCRH6 = ALT;                   // Set HSPI mode
+                     237                             ; SOURCE LINE # 40
+0004 120000   F      238             LCALL   L?0066
+                     239     ; 
+                     240     ;     #ifdef HSPI_DefferingMode
+                     241     ;     HINSTC1 = (ENDPI+ENDEI);        // Host Instruction Control 1 
+                     242     ;     #else
+                     243     ;     HINSTC1 = 0x00;
+                     244                             ; SOURCE LINE # 45
+0007 900000   F      245             MOV     DPTR,#HINSTC1
+000A F0              246             MOVX    @DPTR,A
+                     247     ;     #endif
+                     248     ;     
+                     249     ;     HSPICTRL3R = 0x10;                            // set bit4 for not SST SPI ROM
+                     250                             ; SOURCE LINE # 48
+000B 900000   F      251             MOV     DPTR,#HSPICTRL3R
+000E 7410            252             MOV     A,#010H
+0010 F0              253             MOVX    @DPTR,A
+                     254     ;                                                                   // clear bit4 for SST S
+                             PI ROM or set bit4 for not SST SPI ROM
+A51 MACRO ASSEMBLER  OEM_HSPI                                                             09/08/2020 15:56:26 PAGE     5
+
+                     255     ;                                           // For phoenix bios 
+                     256     ;       //FLHCTRL1R = 0x00;                         // Flash Control Register 1
+                     257     ;       HCTRL2R = 0x10;                             // Host Control 2 Register
+                     258                             ; SOURCE LINE # 52
+0011 900000   F      259             MOV     DPTR,#HCTRL2R
+0014 F0              260             MOVX    @DPTR,A
+                     261     ; 
+                     262     ;     #ifdef HSPI_DefferingMode
+                     263     ;     //ISR7 = Int_DeferredSPI;       // W/C interrupt status
+                     264     ;     SET_MASK(IER7,Int_DeferredSPI); // Enable interrupt 
+                     265     ;     #endif
+                     266     ; }
+                     267                             ; SOURCE LINE # 58
+0015 22              268             RET     
+                     269     ; END OF Enable_HSPI
+                     270     
+                     271     ; 
+                     272     ; //----------------------------------------------------------------------------
+                     273     ; // Disable HSPI interface
+                     274     ; //----------------------------------------------------------------------------
+                     275     ; void Disable_HSPI(void)
+                     276     
+----                 277             RSEG  ?PR?Disable_HSPI?OEM_HSPI
+0000                 278     Disable_HSPI:
+                     279                             ; SOURCE LINE # 63
+                     280     ; {
+                     281                             ; SOURCE LINE # 64
+                     282     ;     #ifdef HSPI_DefferingMode
+                     283     ;     CLEAR_MASK(IER7,Int_DeferredSPI);   // Disable HSPI interrupt 
+                     284     ;     ISR7 = Int_DeferredSPI;         // W/C interrupt status
+                     285     ;     //HCTRL2R = 0x80;
+                     286     ;     #endif
+                     287     ; 
+                     288     ;     HCTRL2R=0x00;
+                     289                             ; SOURCE LINE # 71
+0000 E4              290             CLR     A
+0001 900000   F      291             MOV     DPTR,#HCTRL2R
+0004 F0              292             MOVX    @DPTR,A
+                     293     ; 
+                     294     ;       GPCRH3 = INPUT;                 // Set input mode
+                     295                             ; SOURCE LINE # 73
+                     296     ;       GPCRH4 = INPUT;                 // Set input mode
+                     297                             ; SOURCE LINE # 74
+                     298     ;       GPCRH5 = INPUT;                 // Set input mode
+                     299                             ; SOURCE LINE # 75
+                     300     ;       GPCRH6 = INPUT;                 // Set input mode
+                     301                             ; SOURCE LINE # 76
+0005 120000   F      302             LCALL   L?0065
+                     303     ;     SET_MASK(RSTC4,RSPI);           // Reset SPI
+                     304                             ; SOURCE LINE # 77
+0008 900000   F      305             MOV     DPTR,#RSTC4
+000B E0              306             MOVX    A,@DPTR
+000C 4401            307             ORL     A,#01H
+000E F0              308             MOVX    @DPTR,A
+                     309     ; }
+                     310                             ; SOURCE LINE # 78
+000F 22              311             RET     
+                     312     ; END OF Disable_HSPI
+                     313     
+                     314     ; 
+                     315     ; #pragma ot(8, SPEED)
+                     316     ; //----------------------------------------------------------------------------
+                     317     ; // Instructino is valid
+                     318     ; //----------------------------------------------------------------------------
+                     319     ; void HSPI_RamCode(void)
+                     320     
+A51 MACRO ASSEMBLER  OEM_HSPI                                                             09/08/2020 15:56:26 PAGE     6
+
+----                 321             RSEG  ?PR?HSPI_RamCode?OEM_HSPI
+0000                 322     HSPI_RamCode:
+                     323                             ; SOURCE LINE # 84
+                     324     ; {
+                     325                             ; SOURCE LINE # 85
+                     326     ;     HINSTC1 = DISSV+DISS+ENDPI+ENDEI;   // Allow instruction
+                     327                             ; SOURCE LINE # 86
+0000 900000   F      328             MOV     DPTR,#HINSTC1
+0003 740F            329             MOV     A,#0FH
+0005 F0              330             MOVX    @DPTR,A
+                     331     ;     //HINSTC1 = (DISSV+DISS);         // Allow instruction
+                     332     ;     ISR7 = Int_DeferredSPI;         // W/C interrupt status
+                     333                             ; SOURCE LINE # 88
+0006 900000   F      334             MOV     DPTR,#ISR7
+0009 7408            335             MOV     A,#08H
+000B F0              336             MOVX    @DPTR,A
+                     337     ;     
+                     338     ;     HSPI_FPT_timeout = 0x00;
+                     339                             ; SOURCE LINE # 90
+000C E4              340             CLR     A
+000D 900000   F      341             MOV     DPTR,#HSPI_FPT_timeout
+0010 F0              342             MOVX    @DPTR,A
+                     343     ;     TR0 = 0;                        // Disable timer 0
+                     344                             ; SOURCE LINE # 91
+0011 C28C            345             CLR     TR0
+                     346     ;     ET0 = 0;                              // Disable timer0 interrupt
+                     347                             ; SOURCE LINE # 92
+0013 C2A9            348             CLR     ET0
+                     349     ;     TH0 = T_HSPI_ISRTime>>8;      // set timer0 counter xx ms 
+                     350                             ; SOURCE LINE # 93
+0015 F58C            351             MOV     TH0,A
+                     352     ;     TL0 = T_HSPI_ISRTime;                 // set timer0 counter xx ms
+                     353                             ; SOURCE LINE # 94
+0017 758A01          354             MOV     TL0,#01H
+                     355     ;     TF0 = 0;                              // clear overflow flag
+                     356                             ; SOURCE LINE # 95
+001A C28D            357             CLR     TF0
+                     358     ;     TR0 = 1;                              // enable timer0
+                     359                             ; SOURCE LINE # 96
+001C D28C            360             SETB    TR0
+001E                 361     ?C0004:
+                     362     ; 
+                     363     ;     while(!TF0)                     // if isn't time out
+                     364                             ; SOURCE LINE # 98
+001E 308D03          365             JNB     TF0,$ + 6H
+0021 020000   F      366             LJMP    ?C0005
+                     367     ;     {
+                     368                             ; SOURCE LINE # 99
+                     369     ;         if(IS_MASK_SET(ISR7, Int_DeferredSPI))  // Check HSPI isr
+                     370                             ; SOURCE LINE # 100
+0024 900000   F      371             MOV     DPTR,#ISR7
+0027 E0              372             MOVX    A,@DPTR
+0028 30E3F3          373             JNB     ACC.3,?C0004
+                     374     ;         {
+                     375                             ; SOURCE LINE # 101
+                     376     ;             if(DSADR2==HSPI_ECCodeSpaceAddr)    // EC code space
+                     377                             ; SOURCE LINE # 102
+002B 900000   F      378             MOV     DPTR,#DSADR2
+002E E0              379             MOVX    A,@DPTR
+002F 6418            380             XRL     A,#018H
+0031 7067            381             JNZ     ?C0007
+                     382     ;             {
+                     383                             ; SOURCE LINE # 103
+                     384     ;                 HINSTC1 = DISSV+DISS+ENDPI+ENDEI;   // Allow instruction
+                     385                             ; SOURCE LINE # 104
+0033 900000   F      386             MOV     DPTR,#HINSTC1
+A51 MACRO ASSEMBLER  OEM_HSPI                                                             09/08/2020 15:56:26 PAGE     7
+
+0036 740F            387             MOV     A,#0FH
+0038 F0              388             MOVX    @DPTR,A
+                     389     ;                 //HINSTC1 = (DISSV+DISS);         // Allow instruction
+                     390     ;                 ISR7 = Int_DeferredSPI;         // W/C interrupt status
+                     391                             ; SOURCE LINE # 106
+0039 900000   F      392             MOV     DPTR,#ISR7
+003C 7408            393             MOV     A,#08H
+003E F0              394             MOVX    @DPTR,A
+                     395     ;                     
+                     396     ;                 TH0 = T_HSPI_ISRTime>>8;          // set timer1 counter xx ms 
+                     397                             ; SOURCE LINE # 108
+                     398     ;                 TL0 = T_HSPI_ISRTime;         // set timer1 counter xx ms
+                     399                             ; SOURCE LINE # 109
+                     400     ;                 TF0 = 0;                                  // clear overflow flag
+                     401                             ; SOURCE LINE # 110
+003F 8034            402             SJMP    ?C0057
+0041                 403     ?C0008:
+                     404     ; 
+                     405     ;                 while(1)
+                     406                             ; SOURCE LINE # 112
+                     407     ;                 {
+                     408                             ; SOURCE LINE # 113
+                     409     ;                     if(IS_MASK_SET(ISR7, Int_DeferredSPI))
+                     410                             ; SOURCE LINE # 114
+0041 900000   F      411             MOV     DPTR,#ISR7
+0044 E0              412             MOVX    A,@DPTR
+0045 30E31A          413             JNB     ACC.3,?C0010
+                     414     ;                     {
+                     415                             ; SOURCE LINE # 115
+                     416     ;                         HINSTC1 = DISSV+DISS+ENDPI+ENDEI;   // Allow instruction
+                     417                             ; SOURCE LINE # 116
+0048 900000   F      418             MOV     DPTR,#HINSTC1
+004B 740F            419             MOV     A,#0FH
+004D F0              420             MOVX    @DPTR,A
+                     421     ;                         //HINSTC1 = (DISSV+DISS);     // Allow instruction
+                     422     ;                         ISR7 = Int_DeferredSPI;     // W/C interrupt status
+                     423                             ; SOURCE LINE # 118
+004E 900000   F      424             MOV     DPTR,#ISR7
+0051 7408            425             MOV     A,#08H
+0053 F0              426             MOVX    @DPTR,A
+                     427     ;                             
+                     428     ;                         TH0 = T_HSPI_ISRTime>>8;    // set timer1 counter xx ms 
+                     429                             ; SOURCE LINE # 120
+0054 E4              430             CLR     A
+0055 F58C            431             MOV     TH0,A
+                     432     ;                         TL0 = T_HSPI_ISRTime;     // set timer1 counter xx ms
+                     433                             ; SOURCE LINE # 121
+0057 758A01          434             MOV     TL0,#01H
+                     435     ;                         TF0 = 0; 
+                     436                             ; SOURCE LINE # 122
+005A C28D            437             CLR     TF0
+                     438     ;                         HSPI_FPT_timeout = 0x00;
+                     439                             ; SOURCE LINE # 123
+005C 900000   F      440             MOV     DPTR,#HSPI_FPT_timeout
+005F F0              441             MOVX    @DPTR,A
+                     442     ;                         continue;
+                     443                             ; SOURCE LINE # 124
+0060 80DF            444             SJMP    ?C0008
+                     445     ;                     }
+                     446                             ; SOURCE LINE # 125
+0062                 447     ?C0010:
+                     448     ; 
+                     449     ;                     if(TF0)
+                     450                             ; SOURCE LINE # 127
+0062 308DDC          451             JNB     TF0,?C0008
+                     452     ;                     {
+A51 MACRO ASSEMBLER  OEM_HSPI                                                             09/08/2020 15:56:26 PAGE     8
+
+                     453                             ; SOURCE LINE # 128
+                     454     ;                         if(++HSPI_FPT_timeout>=35)     // 3 sec EC auto wake up from ram 
+                             code.
+                     455                             ; SOURCE LINE # 129
+0065 900000   F      456             MOV     DPTR,#HSPI_FPT_timeout
+0068 E0              457             MOVX    A,@DPTR
+0069 04              458             INC     A
+006A F0              459             MOVX    @DPTR,A
+006B C3              460             CLR     C
+006C 9423            461             SUBB    A,#023H
+006E 4005            462             JC      ?C0012
+                     463     ;                         {
+                     464                             ; SOURCE LINE # 130
+                     465     ;                             HSPI_FPT_timeout=0xFF;
+                     466                             ; SOURCE LINE # 131
+0070 74FF            467             MOV     A,#0FFH
+0072 F0              468             MOVX    @DPTR,A
+                     469     ;                             break;
+                     470                             ; SOURCE LINE # 132
+0073 800A            471             SJMP    ?C0009
+                     472     ;                         }
+                     473                             ; SOURCE LINE # 133
+0075                 474     ?C0012:
+                     475     ;                         TH0 = T_HSPI_ISRTime>>8;          // set timer1 counter xx ms 
+                     476                             ; SOURCE LINE # 134
+0075                 477     ?C0057:
+0075 E4              478             CLR     A
+0076 F58C            479             MOV     TH0,A
+                     480     ;                         TL0 = T_HSPI_ISRTime;             // set timer1 counter xx ms
+                     481                             ; SOURCE LINE # 135
+0078 758A01          482             MOV     TL0,#01H
+                     483     ;                         TF0 = 0;                                  // clear overflow flag
+                     484                             ; SOURCE LINE # 136
+007B C28D            485             CLR     TF0
+                     486     ;                     }
+                     487                             ; SOURCE LINE # 137
+                     488     ;                 }
+                     489                             ; SOURCE LINE # 138
+007D 80C2            490             SJMP    ?C0008
+007F                 491     ?C0009:
+                     492     ;                 
+                     493     ;                 WinFlashMark = 0x33;
+                     494                             ; SOURCE LINE # 140
+007F 900000   F      495             MOV     DPTR,#WinFlashMark
+0082 7433            496             MOV     A,#033H
+0084 F0              497             MOVX    @DPTR,A
+                     498     ;                 TR0 = 0;                          // disable timer1
+                     499                             ; SOURCE LINE # 141
+0085 C28C            500             CLR     TR0
+                     501     ;                   TF0 = 0;                        // clear overflow flag
+                     502                             ; SOURCE LINE # 142
+0087 C28D            503             CLR     TF0
+                     504     ;                   ET0 = 1;                        // Enable timer1 interrupt
+                     505                             ; SOURCE LINE # 143
+0089 D2A9            506             SETB    ET0
+                     507     ;                   
+                     508     ;                   MainFucnLow = 0x00;     // Set main function low return vector
+                     509                             ; SOURCE LINE # 145
+008B E4              510             CLR     A
+008C F500     F      511             MOV     MainFucnLow,A
+                     512     ;                 MainFucnHigh= 0x02;     // Set main function high return vector
+                     513                             ; SOURCE LINE # 146
+008E 750002   F      514             MOV     MainFucnHigh,#02H
+                     515     ;                   #pragma asm
+                     516     ;                 CLR     PSW.3
+0091 C2D3            517               CLR     PSW.3
+A51 MACRO ASSEMBLER  OEM_HSPI                                                             09/08/2020 15:56:26 PAGE     9
+
+                     518     ;                 CLR     PSW.4           // IRam bank 0
+0093 C2D4            519               CLR     PSW.4            
+                     520     ;                 PUSH    05EH            // Push main function low return vector
+0095 C05E            521               PUSH    05EH             
+                     522     ;                 PUSH    05FH            // Push main function high return vector       
+0097 C05F            523               PUSH    05FH             
+                     524     ;                 RETI                    // Return to main function 0x200 
+0099 32              525               RETI                     
+                     526     ;                 #pragma endasm
+                     527     ;             }
+                     528                             ; SOURCE LINE # 154
+009A                 529     ?C0007:
+                     530     ;             
+                     531     ;             HINSTC1 = DISSV+DISS+ENDPI+ENDEI;   // Allow instruction
+                     532                             ; SOURCE LINE # 156
+009A 900000   F      533             MOV     DPTR,#HINSTC1
+009D 740F            534             MOV     A,#0FH
+009F F0              535             MOVX    @DPTR,A
+                     536     ;             //HINSTC1 = (DISSV+DISS);         // Allow instruction
+                     537     ;             ISR7 = Int_DeferredSPI;     // W/C interrupt status
+                     538                             ; SOURCE LINE # 158
+00A0 900000   F      539             MOV     DPTR,#ISR7
+00A3 7408            540             MOV     A,#08H
+00A5 F0              541             MOVX    @DPTR,A
+                     542     ;                 
+                     543     ;             TH0 = T_HSPI_ISRTime>>8;    // set timer1 counter xx ms 
+                     544                             ; SOURCE LINE # 160
+00A6 E4              545             CLR     A
+00A7 F58C            546             MOV     TH0,A
+                     547     ;             TL0 = T_HSPI_ISRTime;         // set timer1 counter xx ms
+                     548                             ; SOURCE LINE # 161
+00A9 758A01          549             MOV     TL0,#01H
+                     550     ;             TF0 = 0;
+                     551                             ; SOURCE LINE # 162
+00AC C28D            552             CLR     TF0
+                     553     ;         }
+                     554                             ; SOURCE LINE # 163
+                     555     ;     }
+                     556                             ; SOURCE LINE # 164
+00AE 020000   F      557             LJMP    ?C0004
+00B1                 558     ?C0005:
+                     559     ;     
+                     560     ;     TR0 = 0;                      // disable timer1
+                     561                             ; SOURCE LINE # 166
+00B1 C28C            562             CLR     TR0
+                     563     ;     TF0 = 0;                      // clear overflow flag
+                     564                             ; SOURCE LINE # 167
+00B3 C28D            565             CLR     TF0
+                     566     ;     ET0 = 1;                      // Enable timer1 interrupt 
+                     567                             ; SOURCE LINE # 168
+00B5 D2A9            568             SETB    ET0
+                     569     ; 
+                     570     ;     TL0 = Timer_1ms;          // Reload timer
+                     571                             ; SOURCE LINE # 170
+00B7 E4              572             CLR     A
+00B8 F58A            573             MOV     TL0,A
+                     574     ;       TH0 = Timer_1ms>>8;         // 1ms
+                     575                             ; SOURCE LINE # 171
+00BA 758CFD          576             MOV     TH0,#0FDH
+                     577     ;     TR0 = 1;                // Start timer0 running
+                     578                             ; SOURCE LINE # 172
+00BD D28C            579             SETB    TR0
+                     580     ;     ET0 = 1;                          // Enable timer0 interrupt
+                     581                             ; SOURCE LINE # 173
+00BF D2A9            582             SETB    ET0
+                     583     ;     F_Service_MS_1 = 1;     // Request 1 mS timer service.
+A51 MACRO ASSEMBLER  OEM_HSPI                                                             09/08/2020 15:56:26 PAGE    10
+
+                     584                             ; SOURCE LINE # 174
+00C1 D200     F      585             SETB    F_Service_MS_1
+                     586     ; }
+                     587                             ; SOURCE LINE # 175
+00C3 22              588             RET     
+                     589     ; END OF HSPI_RamCode
+                     590     
+                     591     ; 
+                     592     ; #pragma ot(8, SPEED)
+                     593     ; //----------------------------------------------------------------------------
+                     594     ; // Host send idle command to EC
+                     595     ; //----------------------------------------------------------------------------
+                     596     ; void HSPI_CmdRamCode(void)
+                     597     
+----                 598             RSEG  ?PR?HSPI_CmdRamCode?OEM_HSPI
+0000                 599     HSPI_CmdRamCode:
+                     600                             ; SOURCE LINE # 181
+                     601     ; {
+                     602                             ; SOURCE LINE # 182
+                     603     ;       RamcodeCmd = 0x00;
+                     604                             ; SOURCE LINE # 183
+0000 E4              605             CLR     A
+0001 900000   F      606             MOV     DPTR,#RamcodeCmd
+0004 F0              607             MOVX    @DPTR,A
+                     608     ; 
+                     609     ;       if(RamCodePort==0x64)
+                     610                             ; SOURCE LINE # 185
+0005 900000   F      611             MOV     DPTR,#RamCodePort
+0008 E0              612             MOVX    A,@DPTR
+0009 B46405          613             CJNE    A,#064H,?C0014
+                     614     ;       {
+                     615                             ; SOURCE LINE # 186
+                     616     ;               KBHIKDOR = 0xFA;
+                     617                             ; SOURCE LINE # 187
+000C 900000   F      618             MOV     DPTR,#KBHIKDOR
+                     619     ;       }
+                     620                             ; SOURCE LINE # 188
+000F 8016            621             SJMP    ?C0059
+0011                 622     ?C0014:
+                     623     ;       else if(RamCodePort==0x66)
+                     624                             ; SOURCE LINE # 189
+0011 900000   F      625             MOV     DPTR,#RamCodePort
+0014 E0              626             MOVX    A,@DPTR
+0015 B46605          627             CJNE    A,#066H,?C0016
+                     628     ;       {
+                     629                             ; SOURCE LINE # 190
+                     630     ;               PM1DO = 0xFA;
+                     631                             ; SOURCE LINE # 191
+0018 900000   F      632             MOV     DPTR,#PM1DO
+001B                 633     ?C0058:
+                     634     ;       }       
+                     635                             ; SOURCE LINE # 192
+001B 800A            636             SJMP    ?C0059
+001D                 637     ?C0016:
+                     638     ;       else if(RamCodePort==0x6C)
+                     639                             ; SOURCE LINE # 193
+001D 900000   F      640             MOV     DPTR,#RamCodePort
+0020 E0              641             MOVX    A,@DPTR
+0021 B46C06          642             CJNE    A,#06CH,?C0019
+                     643     ;       {
+                     644                             ; SOURCE LINE # 194
+                     645     ;               PM2DO = 0xFA;
+                     646                             ; SOURCE LINE # 195
+0024 900000   F      647             MOV     DPTR,#PM2DO
+0027                 648     ?C0059:
+0027 74FA            649             MOV     A,#0FAH
+A51 MACRO ASSEMBLER  OEM_HSPI                                                             09/08/2020 15:56:26 PAGE    11
+
+0029 F0              650             MOVX    @DPTR,A
+                     651     ;       }
+                     652                             ; SOURCE LINE # 196
+002A                 653     ?C0019:
+                     654     ;     
+                     655     ;       while(1)
+                     656                             ; SOURCE LINE # 198
+                     657     ;       {
+                     658                             ; SOURCE LINE # 199
+                     659     ;         #ifdef HSPI_DefferingMode
+                     660     ;         if(IS_MASK_SET(ISR7, Int_DeferredSPI))
+                     661     ;         {
+                     662     ;             HINSTC1 = DISSV+DISS+ENDPI+ENDEI;   // Allow instruction
+                     663     ;             //HINSTC1 = (DISSV+DISS);           // Allow instruction
+                     664     ;             ISR7 = Int_DeferredSPI;             // W/C interrupt status
+                     665     ;         }
+                     666     ;         #endif
+                     667     ;         
+                     668     ;               if(RamCodePort==0x64)
+                     669                             ; SOURCE LINE # 209
+002A 900000   F      670             MOV     DPTR,#RamCodePort
+002D E0              671             MOVX    A,@DPTR
+002E 6464            672             XRL     A,#064H
+0030 7018            673             JNZ     ?C0021
+                     674     ;               {
+                     675                             ; SOURCE LINE # 210
+                     676     ;                       if( IS_MASK_CLEAR(KBHISR,IBF)) continue;
+                     677                             ; SOURCE LINE # 211
+0032 900000   F      678             MOV     DPTR,#KBHISR
+0035 E0              679             MOVX    A,@DPTR
+0036 30E1F1          680             JNB     ACC.1,?C0019
+0039                 681     ?C0022:
+                     682     ;               if( IS_MASK_CLEAR(KBHISR,C_D)) 
+                     683                             ; SOURCE LINE # 212
+0039 900000   F      684             MOV     DPTR,#KBHISR
+003C E0              685             MOVX    A,@DPTR
+003D 20E305          686             JB      ACC.3,?C0023
+                     687     ;               {
+                     688                             ; SOURCE LINE # 213
+                     689     ;                 RamcodeCmd = KBHIDIR;
+                     690                             ; SOURCE LINE # 214
+0040 900000   F      691             MOV     DPTR,#KBHIDIR
+                     692     ;                 continue;
+                     693                             ; SOURCE LINE # 215
+0043 803D            694             SJMP    ?C0062
+                     695     ;               }
+                     696                             ; SOURCE LINE # 216
+0045                 697     ?C0023:
+                     698     ;             else
+                     699     ;             {
+                     700                             ; SOURCE LINE # 218
+                     701     ;                           RamcodeCmd = KBHIDIR;
+                     702                             ; SOURCE LINE # 219
+0045 900000   F      703             MOV     DPTR,#KBHIDIR
+                     704     ;             }
+                     705                             ; SOURCE LINE # 220
+                     706     ;               }
+                     707                             ; SOURCE LINE # 221
+0048 8042            708             SJMP    ?C0063
+004A                 709     ?C0021:
+                     710     ;               else if(RamCodePort==0x66)
+                     711                             ; SOURCE LINE # 222
+004A 900000   F      712             MOV     DPTR,#RamCodePort
+004D E0              713             MOVX    A,@DPTR
+004E 6466            714             XRL     A,#066H
+0050 7018            715             JNZ     ?C0026
+A51 MACRO ASSEMBLER  OEM_HSPI                                                             09/08/2020 15:56:26 PAGE    12
+
+                     716     ;               {
+                     717                             ; SOURCE LINE # 223
+                     718     ;               if ( IS_MASK_CLEAR(PM1STS,P_IBF)) continue;
+                     719                             ; SOURCE LINE # 224
+0052 900000   F      720             MOV     DPTR,#PM1STS
+0055 E0              721             MOVX    A,@DPTR
+0056 30E1D1          722             JNB     ACC.1,?C0019
+0059                 723     ?C0027:
+                     724     ;               if ( IS_MASK_CLEAR(PM1STS,P_C_D)) 
+                     725                             ; SOURCE LINE # 225
+0059 900000   F      726             MOV     DPTR,#PM1STS
+005C E0              727             MOVX    A,@DPTR
+005D 20E305          728             JB      ACC.3,?C0028
+                     729     ;             {
+                     730                             ; SOURCE LINE # 226
+                     731     ;                 RamcodeCmd = PM1DI;
+                     732                             ; SOURCE LINE # 227
+0060 900000   F      733             MOV     DPTR,#PM1DI
+0063                 734     ?C0060:
+                     735     ;                 continue;
+                     736                             ; SOURCE LINE # 228
+0063 801D            737             SJMP    ?C0062
+                     738     ;             }
+                     739                             ; SOURCE LINE # 229
+0065                 740     ?C0028:
+                     741     ;             else
+                     742     ;             {
+                     743                             ; SOURCE LINE # 231
+                     744     ;                   RamcodeCmd = PM1DI;
+                     745                             ; SOURCE LINE # 232
+0065 900000   F      746             MOV     DPTR,#PM1DI
+0068                 747     ?C0061:
+                     748     ;             }
+                     749                             ; SOURCE LINE # 233
+                     750     ;               }               
+                     751                             ; SOURCE LINE # 234
+0068 8022            752             SJMP    ?C0063
+006A                 753     ?C0026:
+                     754     ;               else if(RamCodePort==0x6C)
+                     755                             ; SOURCE LINE # 235
+006A 900000   F      756             MOV     DPTR,#RamCodePort
+006D E0              757             MOVX    A,@DPTR
+006E B46C20          758             CJNE    A,#06CH,?C0025
+                     759     ;               {
+                     760                             ; SOURCE LINE # 236
+                     761     ;               if ( IS_MASK_CLEAR(PM2STS,P_IBF)) continue;
+                     762                             ; SOURCE LINE # 237
+0071 900000   F      763             MOV     DPTR,#PM2STS
+0074 E0              764             MOVX    A,@DPTR
+0075 30E1B2          765             JNB     ACC.1,?C0019
+0078                 766     ?C0032:
+                     767     ;               if ( IS_MASK_CLEAR(PM2STS,P_C_D)) 
+                     768                             ; SOURCE LINE # 238
+0078 900000   F      769             MOV     DPTR,#PM2STS
+007B E0              770             MOVX    A,@DPTR
+007C 20E30A          771             JB      ACC.3,?C0033
+                     772     ;               {
+                     773                             ; SOURCE LINE # 239
+                     774     ;                 RamcodeCmd = PM2DI;
+                     775                             ; SOURCE LINE # 240
+007F 900000   F      776             MOV     DPTR,#PM2DI
+0082                 777     ?C0062:
+0082 E0              778             MOVX    A,@DPTR
+0083 900000   F      779             MOV     DPTR,#RamcodeCmd
+0086 F0              780             MOVX    @DPTR,A
+                     781     ;                 continue;
+A51 MACRO ASSEMBLER  OEM_HSPI                                                             09/08/2020 15:56:26 PAGE    13
+
+                     782                             ; SOURCE LINE # 241
+0087 80A1            783             SJMP    ?C0019
+                     784     ;               }
+                     785                             ; SOURCE LINE # 242
+0089                 786     ?C0033:
+                     787     ;             else
+                     788     ;             {
+                     789                             ; SOURCE LINE # 244
+                     790     ;                   RamcodeCmd = PM2DI;
+                     791                             ; SOURCE LINE # 245
+0089 900000   F      792             MOV     DPTR,#PM2DI
+008C                 793     ?C0063:
+008C E0              794             MOVX    A,@DPTR
+008D 900000   F      795             MOV     DPTR,#RamcodeCmd
+0090 F0              796             MOVX    @DPTR,A
+                     797     ;             }
+                     798                             ; SOURCE LINE # 246
+                     799     ;               }       
+                     800                             ; SOURCE LINE # 247
+0091                 801     ?C0025:
+                     802     ;               
+                     803     ;         if ( RamcodeCmd == 0x55)
+                     804                             ; SOURCE LINE # 249
+0091 900000   F      805             MOV     DPTR,#RamcodeCmd
+0094 E0              806             MOVX    A,@DPTR
+0095 B45508          807             CJNE    A,#055H,?C0035
+                     808     ;       {
+                     809                             ; SOURCE LINE # 250
+                     810     ;               WinFlashMark = 0x33;
+                     811                             ; SOURCE LINE # 251
+0098 900000   F      812             MOV     DPTR,#WinFlashMark
+009B 7433            813             MOV     A,#033H
+009D F0              814             MOVX    @DPTR,A
+                     815     ;               break;
+                     816                             ; SOURCE LINE # 252
+009E 8038            817             SJMP    ?C0020
+                     818     ;               }
+                     819                             ; SOURCE LINE # 253
+00A0                 820     ?C0035:
+                     821     ;               else if ( RamcodeCmd == 0xAF)
+                     822                             ; SOURCE LINE # 254
+00A0 900000   F      823             MOV     DPTR,#RamcodeCmd
+00A3 E0              824             MOVX    A,@DPTR
+00A4 64AF            825             XRL     A,#0AFH
+00A6 7082            826             JNZ     ?C0019
+                     827     ;       {
+                     828                             ; SOURCE LINE # 255
+                     829     ;             //#ifdef HSPI_DefferingMode
+                     830     ;             //HCTRL2R = 0x80; 
+                     831     ;             HCTRL2R=0x00;
+                     832                             ; SOURCE LINE # 258
+00A8 900000   F      833             MOV     DPTR,#HCTRL2R
+00AB F0              834             MOVX    @DPTR,A
+                     835     ;             CLEAR_MASK(IER7,Int_DeferredSPI);   // Disable HSPI interrupt 
+                     836                             ; SOURCE LINE # 259
+00AC 900000   F      837             MOV     DPTR,#IER7
+00AF E0              838             MOVX    A,@DPTR
+00B0 54F7            839             ANL     A,#0F7H
+00B2 F0              840             MOVX    @DPTR,A
+                     841     ;             ISR7 =Int_DeferredSPI;  // W/C interrupt status
+                     842                             ; SOURCE LINE # 260
+00B3 900000   F      843             MOV     DPTR,#ISR7
+00B6 7408            844             MOV     A,#08H
+00B8 F0              845             MOVX    @DPTR,A
+                     846     ;               GPCRH3 = INPUT;         // Set input mode
+                     847                             ; SOURCE LINE # 261
+A51 MACRO ASSEMBLER  OEM_HSPI                                                             09/08/2020 15:56:26 PAGE    14
+
+00B9 900000   F      848             MOV     DPTR,#GPCRH3
+00BC 7480            849             MOV     A,#080H
+00BE F0              850             MOVX    @DPTR,A
+                     851     ;               GPCRH4 = INPUT;         // Set input mode
+                     852                             ; SOURCE LINE # 262
+00BF 900000   F      853             MOV     DPTR,#GPCRH4
+00C2 F0              854             MOVX    @DPTR,A
+                     855     ;               GPCRH5 = INPUT;         // Set input mode
+                     856                             ; SOURCE LINE # 263
+00C3 900000   F      857             MOV     DPTR,#GPCRH5
+00C6 F0              858             MOVX    @DPTR,A
+                     859     ;               GPCRH6 = INPUT;         // Set input mode
+                     860                             ; SOURCE LINE # 264
+00C7 900000   F      861             MOV     DPTR,#GPCRH6
+00CA F0              862             MOVX    @DPTR,A
+                     863     ;             SET_MASK(RSTC4,RSPI);   // Reset SPI
+                     864                             ; SOURCE LINE # 265
+00CB 900000   F      865             MOV     DPTR,#RSTC4
+00CE E0              866             MOVX    A,@DPTR
+00CF 4401            867             ORL     A,#01H
+00D1 F0              868             MOVX    @DPTR,A
+                     869     ;             //#endif
+                     870     ;             
+                     871     ;                       WDTRST = 1;                     // Reset watch dog timer
+                     872                             ; SOURCE LINE # 268
+00D2 D2D8            873             SETB    WDTRST
+                     874     ;                       WDTEB = 1;                      // Enable watch dog
+                     875                             ; SOURCE LINE # 269
+00D4 D2D9            876             SETB    WDTEB
+00D6                 877     ?C0038:
+                     878     ;                       while(1);                       // Wait for watch dog time-out
+                     879                             ; SOURCE LINE # 270
+00D6 80FE            880             SJMP    ?C0038
+                     881     ;         }
+                     882                             ; SOURCE LINE # 271
+                     883     ;       }
+                     884                             ; SOURCE LINE # 272
+00D8                 885     ?C0020:
+                     886     ; 
+                     887     ;       _nop_();
+                     888                             ; SOURCE LINE # 274
+00D8 00              889             NOP     
+                     890     ; 
+                     891     ;       GPCRH0 = ALT;
+                     892                             ; SOURCE LINE # 276
+00D9 E4              893             CLR     A
+00DA 900000   F      894             MOV     DPTR,#GPCRH0
+00DD F0              895             MOVX    @DPTR,A
+                     896     ; 
+                     897     ;     #pragma asm
+                     898     ;     EXTRN CODE (main)
+                     899               EXTRN CODE (main)
+                     900     ;     LJMP    main
+00DE 020000   F      901               LJMP    main
+                     902     ;     #pragma endasm
+                     903     ; 
+                     904     ; }
+                     905                             ; SOURCE LINE # 283
+00E1 22              906             RET     
+                     907     ; END OF HSPI_CmdRamCode
+                     908     
+                     909     ; 
+                     910     ; //-----------------------------------------------------------------------------
+                     911     ; // Changing PLL frequency function
+                     912     ; //-----------------------------------------------------------------------------
+                     913     ; void ChangePLLFrequency(BYTE newseting)
+A51 MACRO ASSEMBLER  OEM_HSPI                                                             09/08/2020 15:56:26 PAGE    15
+
+                     914     
+----                 915             RSEG  ?PR?_ChangePLLFrequency?OEM_HSPI
+0000                 916     _ChangePLLFrequency:
+                     917             USING   0
+                     918                             ; SOURCE LINE # 288
+                     919     ;---- Variable 'newseting?540' assigned to Register 'R7' ----
+                     920     ; {
+                     921                             ; SOURCE LINE # 289
+                     922     ;     if(newseting!=PLLFREQR)
+                     923                             ; SOURCE LINE # 290
+0000 900000   F      924             MOV     DPTR,#PLLFREQR
+0003 E0              925             MOVX    A,@DPTR
+0004 6F              926             XRL     A,R7
+0005 6016            927             JZ      ?C0042
+                     928     ;     {
+                     929                             ; SOURCE LINE # 291
+                     930     ;         PLLFREQR = newseting;
+                     931                             ; SOURCE LINE # 292
+0007 EF              932             MOV     A,R7
+0008 F0              933             MOVX    @DPTR,A
+                     934     ;         PLLCTRL = 1;
+                     935                             ; SOURCE LINE # 293
+0009 900000   F      936             MOV     DPTR,#PLLCTRL
+000C 7401            937             MOV     A,#01H
+000E F0              938             MOVX    @DPTR,A
+                     939     ;         DisableAllInterrupt();
+                     940                             ; SOURCE LINE # 294
+000F 120000   F      941             LCALL   DisableAllInterrupt
+                     942     ;           PCON =2 ;                   // enter sleep mode
+                     943                             ; SOURCE LINE # 295
+0012 758702          944             MOV     PCON,#02H
+                     945     ;           _nop_();
+                     946                             ; SOURCE LINE # 296
+0015 00              947             NOP     
+                     948     ;           _nop_();
+                     949                             ; SOURCE LINE # 297
+0016 00              950             NOP     
+                     951     ;           _nop_();
+                     952                             ; SOURCE LINE # 298
+0017 00              953             NOP     
+                     954     ;           _nop_();
+                     955                             ; SOURCE LINE # 299
+0018 00              956             NOP     
+                     957     ;           _nop_();
+                     958                             ; SOURCE LINE # 300
+0019 00              959             NOP     
+                     960     ;           _nop_();
+                     961                             ; SOURCE LINE # 301
+001A 00              962             NOP     
+                     963     ;           _nop_();
+                     964                             ; SOURCE LINE # 302
+001B 00              965             NOP     
+                     966     ;           _nop_();    
+                     967                             ; SOURCE LINE # 303
+001C 00              968             NOP     
+                     969     ;     }
+                     970                             ; SOURCE LINE # 304
+                     971     ; }
+                     972                             ; SOURCE LINE # 305
+001D                 973     ?C0042:
+001D 22              974             RET     
+                     975     ; END OF _ChangePLLFrequency
+                     976     
+                     977     ; 
+                     978     ; //-----------------------------------------------------------------------------
+                     979     ; // Changing SPI flash read mode
+A51 MACRO ASSEMBLER  OEM_HSPI                                                             09/08/2020 15:56:26 PAGE    16
+
+                     980     ; //-----------------------------------------------------------------------------
+                     981     ; void ChangeSPIFlashReadMode(BYTE Mode)
+                     982     
+----                 983             RSEG  ?PR?_ChangeSPIFlashReadMode?OEM_HSPI
+0000                 984     _ChangeSPIFlashReadMode:
+                     985             USING   0
+                     986                             ; SOURCE LINE # 310
+                     987     ;---- Variable 'Mode?641' assigned to Register 'R5' ----
+                     988     ; {
+                     989                             ; SOURCE LINE # 311
+                     990     ;     XBYTE restore;
+                     991     ;     restore = FLHCTRL1R;
+                     992                             ; SOURCE LINE # 313
+0000 900000   F      993             MOV     DPTR,#FLHCTRL1R
+0003 E0              994             MOVX    A,@DPTR
+0004 900000   F      995             MOV     DPTR,#restore?642
+0007 F0              996             MOVX    @DPTR,A
+                     997     ;     CLEAR_MASK(restore, SPIFR0+SPIFR1);
+                     998                             ; SOURCE LINE # 314
+0008 E0              999             MOVX    A,@DPTR
+0009 54CF           1000             ANL     A,#0CFH
+000B F0             1001             MOVX    @DPTR,A
+                    1002     ;     
+                    1003     ;     switch(Mode)
+                    1004                             ; SOURCE LINE # 316
+000C EF             1005             MOV     A,R7
+000D 24FE           1006             ADD     A,#0FEH
+000F 6010           1007             JZ      ?C0046
+0011 14             1008             DEC     A
+0012 6016           1009             JZ      ?C0047
+0014 2402           1010             ADD     A,#02H
+0016 7019           1011             JNZ     ?C0043
+                    1012     ;     {
+                    1013                             ; SOURCE LINE # 317
+                    1014     ;         case SPIReadMode_0:
+                    1015                             ; SOURCE LINE # 318
+                    1016     ;             break;
+                    1017                             ; SOURCE LINE # 319
+                    1018     ;             
+                    1019     ;         case SPIReadMode_1:
+                    1020                             ; SOURCE LINE # 321
+0018                1021     ?C0045:
+                    1022     ;             SET_MASK(restore, SPIFR0);
+                    1023                             ; SOURCE LINE # 322
+0018 900000   F     1024             MOV     DPTR,#restore?642
+001B E0             1025             MOVX    A,@DPTR
+001C 4410           1026             ORL     A,#010H
+001E F0             1027             MOVX    @DPTR,A
+                    1028     ;             break;  
+                    1029                             ; SOURCE LINE # 323
+001F 8010           1030             SJMP    ?C0043
+                    1031     ;             
+                    1032     ;         case SPIReadMode_2:
+                    1033                             ; SOURCE LINE # 325
+0021                1034     ?C0046:
+                    1035     ;             SET_MASK(restore, SPIFR1);
+                    1036                             ; SOURCE LINE # 326
+0021 900000   F     1037             MOV     DPTR,#restore?642
+0024 E0             1038             MOVX    A,@DPTR
+0025 4420           1039             ORL     A,#020H
+0027 F0             1040             MOVX    @DPTR,A
+                    1041     ;             break;
+                    1042                             ; SOURCE LINE # 327
+0028 8007           1043             SJMP    ?C0043
+                    1044     ;             
+                    1045     ;         case SPIReadMode_3:
+A51 MACRO ASSEMBLER  OEM_HSPI                                                             09/08/2020 15:56:26 PAGE    17
+
+                    1046                             ; SOURCE LINE # 329
+002A                1047     ?C0047:
+                    1048     ;             SET_MASK(restore, SPIFR0+SPIFR1);
+                    1049                             ; SOURCE LINE # 330
+002A 900000   F     1050             MOV     DPTR,#restore?642
+002D E0             1051             MOVX    A,@DPTR
+002E 4430           1052             ORL     A,#030H
+0030 F0             1053             MOVX    @DPTR,A
+                    1054     ;             break;
+                    1055                             ; SOURCE LINE # 331
+                    1056     ;             
+                    1057     ;         default:
+                    1058                             ; SOURCE LINE # 333
+                    1059     ;             break;
+                    1060                             ; SOURCE LINE # 334
+                    1061     ;     }
+                    1062                             ; SOURCE LINE # 335
+0031                1063     ?C0043:
+                    1064     ;     FLHCTRL1R = restore;
+                    1065                             ; SOURCE LINE # 336
+0031 900000   F     1066             MOV     DPTR,#restore?642
+0034 E0             1067             MOVX    A,@DPTR
+0035 900000   F     1068             MOV     DPTR,#FLHCTRL1R
+0038 F0             1069             MOVX    @DPTR,A
+                    1070     ; }
+                    1071                             ; SOURCE LINE # 337
+0039 22             1072             RET     
+                    1073     ; END OF _ChangeSPIFlashReadMode
+                    1074     
+                    1075     ; 
+                    1076     ; //-----------------------------------------------------------------------------
+                    1077     ; // Changing HSPI requestmode
+                    1078     ; //-----------------------------------------------------------------------------
+                    1079     ; void ChangeHSRSMode(BYTE Mode)
+                    1080     
+----                1081             RSEG  ?PR?_ChangeHSRSMode?OEM_HSPI
+0000                1082     _ChangeHSRSMode:
+                    1083                             ; SOURCE LINE # 342
+                    1084     ;---- Variable 'Mode?743' assigned to Register 'R7' ----
+                    1085     ; {
+                    1086                             ; SOURCE LINE # 343
+                    1087     ;     XBYTE restore;
+                    1088     ; 
+                    1089     ;     restore=0x00;
+                    1090                             ; SOURCE LINE # 346
+0000 E4             1091             CLR     A
+0001 900000   F     1092             MOV     DPTR,#restore?744
+0004 F0             1093             MOVX    @DPTR,A
+                    1094     ;     
+                    1095     ;     switch(Mode)
+                    1096                             ; SOURCE LINE # 348
+0005 EF             1097             MOV     A,R7
+0006 24FE           1098             ADD     A,#0FEH
+0008 6010           1099             JZ      ?C0053
+000A 14             1100             DEC     A
+000B 6016           1101             JZ      ?C0054
+000D 2402           1102             ADD     A,#02H
+000F 7019           1103             JNZ     ?C0050
+                    1104     ;     {
+                    1105                             ; SOURCE LINE # 349
+                    1106     ;         case HSPI_RequestSelection_0:
+                    1107                             ; SOURCE LINE # 350
+                    1108     ;             break;
+                    1109                             ; SOURCE LINE # 351
+                    1110     ;             
+                    1111     ;         case HSPI_RequestSelection_1:
+A51 MACRO ASSEMBLER  OEM_HSPI                                                             09/08/2020 15:56:26 PAGE    18
+
+                    1112                             ; SOURCE LINE # 353
+0011                1113     ?C0052:
+                    1114     ;             SET_MASK(restore, BIT3);
+                    1115                             ; SOURCE LINE # 354
+0011 900000   F     1116             MOV     DPTR,#restore?744
+0014 E0             1117             MOVX    A,@DPTR
+0015 4408           1118             ORL     A,#08H
+0017 F0             1119             MOVX    @DPTR,A
+                    1120     ;             break;  
+                    1121                             ; SOURCE LINE # 355
+0018 8010           1122             SJMP    ?C0050
+                    1123     ;             
+                    1124     ;         case HSPI_RequestSelection_2:
+                    1125                             ; SOURCE LINE # 357
+001A                1126     ?C0053:
+                    1127     ;             SET_MASK(restore, BIT4);
+                    1128                             ; SOURCE LINE # 358
+001A 900000   F     1129             MOV     DPTR,#restore?744
+001D E0             1130             MOVX    A,@DPTR
+001E 4410           1131             ORL     A,#010H
+0020 F0             1132             MOVX    @DPTR,A
+                    1133     ;             break;
+                    1134                             ; SOURCE LINE # 359
+0021 8007           1135             SJMP    ?C0050
+                    1136     ;             
+                    1137     ;         case HSPI_RequestSelection_3:
+                    1138                             ; SOURCE LINE # 361
+0023                1139     ?C0054:
+                    1140     ;             SET_MASK(restore, BIT3+BIT4);
+                    1141                             ; SOURCE LINE # 362
+0023 900000   F     1142             MOV     DPTR,#restore?744
+0026 E0             1143             MOVX    A,@DPTR
+0027 4418           1144             ORL     A,#018H
+0029 F0             1145             MOVX    @DPTR,A
+                    1146     ;             break;
+                    1147                             ; SOURCE LINE # 363
+                    1148     ;             
+                    1149     ;         default:
+                    1150                             ; SOURCE LINE # 365
+                    1151     ;             break;
+                    1152                             ; SOURCE LINE # 366
+                    1153     ;     }
+                    1154                             ; SOURCE LINE # 367
+002A                1155     ?C0050:
+                    1156     ;     
+                    1157     ;     HSPICTRL2R = restore+BIT2;
+                    1158                             ; SOURCE LINE # 369
+002A 900000   F     1159             MOV     DPTR,#restore?744
+002D E0             1160             MOVX    A,@DPTR
+002E 2404           1161             ADD     A,#04H
+0030 900000   F     1162             MOV     DPTR,#HSPICTRL2R
+0033 F0             1163             MOVX    @DPTR,A
+                    1164     ; }                     ; SOURCE LINE # 370
+0034 22             1165             RET     
+                    1166     ; END OF _ChangeHSRSMode
+                    1167     
+                    1168             END
+A51 MACRO ASSEMBLER  OEM_HSPI                                                             09/08/2020 15:56:26 PAGE    19
+
+SYMBOL TABLE LISTING
+------ ----- -------
+
+
+N A M E                               T Y P E  V A L U E   ATTRIBUTES
+
+?C0004 . . . . . . . . . . . . . . .  C ADDR   001EH   R   SEG=?PR?HSPI_RAMCODE?OEM_HSPI
+?C0005 . . . . . . . . . . . . . . .  C ADDR   00B1H   R   SEG=?PR?HSPI_RAMCODE?OEM_HSPI
+?C0007 . . . . . . . . . . . . . . .  C ADDR   009AH   R   SEG=?PR?HSPI_RAMCODE?OEM_HSPI
+?C0008 . . . . . . . . . . . . . . .  C ADDR   0041H   R   SEG=?PR?HSPI_RAMCODE?OEM_HSPI
+?C0009 . . . . . . . . . . . . . . .  C ADDR   007FH   R   SEG=?PR?HSPI_RAMCODE?OEM_HSPI
+?C0010 . . . . . . . . . . . . . . .  C ADDR   0062H   R   SEG=?PR?HSPI_RAMCODE?OEM_HSPI
+?C0012 . . . . . . . . . . . . . . .  C ADDR   0075H   R   SEG=?PR?HSPI_RAMCODE?OEM_HSPI
+?C0014 . . . . . . . . . . . . . . .  C ADDR   0011H   R   SEG=?PR?HSPI_CMDRAMCODE?OEM_HSPI
+?C0016 . . . . . . . . . . . . . . .  C ADDR   001DH   R   SEG=?PR?HSPI_CMDRAMCODE?OEM_HSPI
+?C0019 . . . . . . . . . . . . . . .  C ADDR   002AH   R   SEG=?PR?HSPI_CMDRAMCODE?OEM_HSPI
+?C0020 . . . . . . . . . . . . . . .  C ADDR   00D8H   R   SEG=?PR?HSPI_CMDRAMCODE?OEM_HSPI
+?C0021 . . . . . . . . . . . . . . .  C ADDR   004AH   R   SEG=?PR?HSPI_CMDRAMCODE?OEM_HSPI
+?C0022 . . . . . . . . . . . . . . .  C ADDR   0039H   R   SEG=?PR?HSPI_CMDRAMCODE?OEM_HSPI
+?C0023 . . . . . . . . . . . . . . .  C ADDR   0045H   R   SEG=?PR?HSPI_CMDRAMCODE?OEM_HSPI
+?C0025 . . . . . . . . . . . . . . .  C ADDR   0091H   R   SEG=?PR?HSPI_CMDRAMCODE?OEM_HSPI
+?C0026 . . . . . . . . . . . . . . .  C ADDR   006AH   R   SEG=?PR?HSPI_CMDRAMCODE?OEM_HSPI
+?C0027 . . . . . . . . . . . . . . .  C ADDR   0059H   R   SEG=?PR?HSPI_CMDRAMCODE?OEM_HSPI
+?C0028 . . . . . . . . . . . . . . .  C ADDR   0065H   R   SEG=?PR?HSPI_CMDRAMCODE?OEM_HSPI
+?C0032 . . . . . . . . . . . . . . .  C ADDR   0078H   R   SEG=?PR?HSPI_CMDRAMCODE?OEM_HSPI
+?C0033 . . . . . . . . . . . . . . .  C ADDR   0089H   R   SEG=?PR?HSPI_CMDRAMCODE?OEM_HSPI
+?C0035 . . . . . . . . . . . . . . .  C ADDR   00A0H   R   SEG=?PR?HSPI_CMDRAMCODE?OEM_HSPI
+?C0038 . . . . . . . . . . . . . . .  C ADDR   00D6H   R   SEG=?PR?HSPI_CMDRAMCODE?OEM_HSPI
+?C0042 . . . . . . . . . . . . . . .  C ADDR   001DH   R   SEG=?PR?_CHANGEPLLFREQUENCY?OEM_HSPI
+?C0043 . . . . . . . . . . . . . . .  C ADDR   0031H   R   SEG=?PR?_CHANGESPIFLASHREADMODE?OEM_HSPI
+?C0045 . . . . . . . . . . . . . . .  C ADDR   0018H   R   SEG=?PR?_CHANGESPIFLASHREADMODE?OEM_HSPI
+?C0046 . . . . . . . . . . . . . . .  C ADDR   0021H   R   SEG=?PR?_CHANGESPIFLASHREADMODE?OEM_HSPI
+?C0047 . . . . . . . . . . . . . . .  C ADDR   002AH   R   SEG=?PR?_CHANGESPIFLASHREADMODE?OEM_HSPI
+?C0050 . . . . . . . . . . . . . . .  C ADDR   002AH   R   SEG=?PR?_CHANGEHSRSMODE?OEM_HSPI
+?C0052 . . . . . . . . . . . . . . .  C ADDR   0011H   R   SEG=?PR?_CHANGEHSRSMODE?OEM_HSPI
+?C0053 . . . . . . . . . . . . . . .  C ADDR   001AH   R   SEG=?PR?_CHANGEHSRSMODE?OEM_HSPI
+?C0054 . . . . . . . . . . . . . . .  C ADDR   0023H   R   SEG=?PR?_CHANGEHSRSMODE?OEM_HSPI
+?C0057 . . . . . . . . . . . . . . .  C ADDR   0075H   R   SEG=?PR?HSPI_RAMCODE?OEM_HSPI
+?C0058 . . . . . . . . . . . . . . .  C ADDR   001BH   R   SEG=?PR?HSPI_CMDRAMCODE?OEM_HSPI
+?C0059 . . . . . . . . . . . . . . .  C ADDR   0027H   R   SEG=?PR?HSPI_CMDRAMCODE?OEM_HSPI
+?C0060 . . . . . . . . . . . . . . .  C ADDR   0063H   R   SEG=?PR?HSPI_CMDRAMCODE?OEM_HSPI
+?C0061 . . . . . . . . . . . . . . .  C ADDR   0068H   R   SEG=?PR?HSPI_CMDRAMCODE?OEM_HSPI
+?C0062 . . . . . . . . . . . . . . .  C ADDR   0082H   R   SEG=?PR?HSPI_CMDRAMCODE?OEM_HSPI
+?C0063 . . . . . . . . . . . . . . .  C ADDR   008CH   R   SEG=?PR?HSPI_CMDRAMCODE?OEM_HSPI
+?PR?DISABLE_HSPI?OEM_HSPI. . . . . .  C SEG    0010H       REL=UNIT
+?PR?ENABLE_HSPI?OEM_HSPI . . . . . .  C SEG    0016H       REL=UNIT
+?PR?GPIO_HSPI_INIT?OEM_HSPI. . . . .  C SEG    000BH       REL=UNIT
+?PR?HSPI_CMDRAMCODE?OEM_HSPI . . . .  C SEG    00E2H       REL=UNIT
+?PR?HSPI_RAMCODE?OEM_HSPI. . . . . .  C SEG    00C4H       REL=UNIT
+?PR?OEM_HSPI . . . . . . . . . . . .  C SEG    0013H       REL=UNIT
+?PR?_CHANGEHSRSMODE?OEM_HSPI . . . .  C SEG    0035H       REL=UNIT
+?PR?_CHANGEPLLFREQUENCY?OEM_HSPI . .  C SEG    001EH       REL=UNIT
+?PR?_CHANGESPIFLASHREADMODE?OEM_HSPI  C SEG    003AH       REL=UNIT
+?XD?_CHANGEHSRSMODE?OEM_HSPI . . . .  X SEG    0001H       REL=UNIT
+?XD?_CHANGESPIFLASHREADMODE?OEM_HSPI  X SEG    0001H       REL=UNIT
+?_CHANGEHSRSMODE?BYTE. . . . . . . .  X ADDR   0000H   R   SEG=?XD?_CHANGEHSRSMODE?OEM_HSPI
+?_CHANGESPIFLASHREADMODE?BYTE. . . .  X ADDR   0000H   R   SEG=?XD?_CHANGESPIFLASHREADMODE?OEM_HSPI
+AC . . . . . . . . . . . . . . . . .  B ADDR   00D0H.6 A   
+ACC. . . . . . . . . . . . . . . . .  D ADDR   00E0H   A   
+B. . . . . . . . . . . . . . . . . .  D ADDR   00F0H   A   
+CKCON. . . . . . . . . . . . . . . .  D ADDR   008EH   A   
+COM0040. . . . . . . . . . . . . . .  C ADDR   0000H   R   SEG=?PR?OEM_HSPI
+CPRL2. . . . . . . . . . . . . . . .  B ADDR   00C8H.0 A   
+CT2. . . . . . . . . . . . . . . . .  B ADDR   00C8H.1 A   
+CY . . . . . . . . . . . . . . . . .  B ADDR   00D0H.7 A   
+DISABLEALLINTERRUPT. . . . . . . . .  C ADDR   -----       EXT
+A51 MACRO ASSEMBLER  OEM_HSPI                                                             09/08/2020 15:56:26 PAGE    20
+
+DISABLE_HSPI . . . . . . . . . . . .  C ADDR   0000H   R   SEG=?PR?DISABLE_HSPI?OEM_HSPI
+DPH. . . . . . . . . . . . . . . . .  D ADDR   0083H   A   
+DPL. . . . . . . . . . . . . . . . .  D ADDR   0082H   A   
+DSADR2 . . . . . . . . . . . . . . .  X ADDR   -----       EXT
+EA . . . . . . . . . . . . . . . . .  B ADDR   00A8H.7 A   
+ENABLE_HSPI. . . . . . . . . . . . .  C ADDR   0000H   R   SEG=?PR?ENABLE_HSPI?OEM_HSPI
+ES . . . . . . . . . . . . . . . . .  B ADDR   00A8H.4 A   
+ET0. . . . . . . . . . . . . . . . .  B ADDR   00A8H.1 A   
+ET1. . . . . . . . . . . . . . . . .  B ADDR   00A8H.3 A   
+ET2. . . . . . . . . . . . . . . . .  B ADDR   00A8H.5 A   
+EX0. . . . . . . . . . . . . . . . .  B ADDR   00A8H.0 A   
+EX1. . . . . . . . . . . . . . . . .  B ADDR   00A8H.2 A   
+EXEN2. . . . . . . . . . . . . . . .  B ADDR   00C8H.3 A   
+EXF2 . . . . . . . . . . . . . . . .  B ADDR   00C8H.6 A   
+F0 . . . . . . . . . . . . . . . . .  B ADDR   00D0H.5 A   
+FLHCTRL1R. . . . . . . . . . . . . .  X ADDR   -----       EXT
+F_SERVICE_MS_1 . . . . . . . . . . .  B ADDR   -----       EXT
+GPCRH0 . . . . . . . . . . . . . . .  X ADDR   -----       EXT
+GPCRH3 . . . . . . . . . . . . . . .  X ADDR   -----       EXT
+GPCRH4 . . . . . . . . . . . . . . .  X ADDR   -----       EXT
+GPCRH5 . . . . . . . . . . . . . . .  X ADDR   -----       EXT
+GPCRH6 . . . . . . . . . . . . . . .  X ADDR   -----       EXT
+GPIO_HSPI_INIT . . . . . . . . . . .  C ADDR   0000H   R   SEG=?PR?GPIO_HSPI_INIT?OEM_HSPI
+HCTRL2R. . . . . . . . . . . . . . .  X ADDR   -----       EXT
+HINSTC1. . . . . . . . . . . . . . .  X ADDR   -----       EXT
+HSPICTRL2R . . . . . . . . . . . . .  X ADDR   -----       EXT
+HSPICTRL3R . . . . . . . . . . . . .  X ADDR   -----       EXT
+HSPI_CMDRAMCODE. . . . . . . . . . .  C ADDR   0000H   R   SEG=?PR?HSPI_CMDRAMCODE?OEM_HSPI
+HSPI_FPT_TIMEOUT . . . . . . . . . .  X ADDR   -----       EXT
+HSPI_RAMCODE . . . . . . . . . . . .  C ADDR   0000H   R   SEG=?PR?HSPI_RAMCODE?OEM_HSPI
+IE . . . . . . . . . . . . . . . . .  D ADDR   00A8H   A   
+IE0. . . . . . . . . . . . . . . . .  B ADDR   0088H.1 A   
+IE1. . . . . . . . . . . . . . . . .  B ADDR   0088H.3 A   
+IER7 . . . . . . . . . . . . . . . .  X ADDR   -----       EXT
+INT0 . . . . . . . . . . . . . . . .  B ADDR   00B0H.2 A   
+INT1 . . . . . . . . . . . . . . . .  B ADDR   00B0H.3 A   
+IP . . . . . . . . . . . . . . . . .  D ADDR   00B8H   A   
+ISR7 . . . . . . . . . . . . . . . .  X ADDR   -----       EXT
+IT0. . . . . . . . . . . . . . . . .  B ADDR   0088H.0 A   
+IT1. . . . . . . . . . . . . . . . .  B ADDR   0088H.2 A   
+KBHIDIR. . . . . . . . . . . . . . .  X ADDR   -----       EXT
+KBHIKDOR . . . . . . . . . . . . . .  X ADDR   -----       EXT
+KBHISR . . . . . . . . . . . . . . .  X ADDR   -----       EXT
+L?0065 . . . . . . . . . . . . . . .  C ADDR   0000H   R   SEG=?PR?OEM_HSPI
+L?0066 . . . . . . . . . . . . . . .  C ADDR   0005H   R   SEG=?PR?OEM_HSPI
+MAIN . . . . . . . . . . . . . . . .  C ADDR   -----       EXT
+MAINFUCNHIGH . . . . . . . . . . . .  D ADDR   -----       EXT
+MAINFUCNLOW. . . . . . . . . . . . .  D ADDR   -----       EXT
+MPRECF . . . . . . . . . . . . . . .  D ADDR   00F7H   A   
+OEM_HSPI . . . . . . . . . . . . . .  N NUMB   -----       
+OV . . . . . . . . . . . . . . . . .  B ADDR   00D0H.2 A   
+P. . . . . . . . . . . . . . . . . .  B ADDR   00D0H.0 A   
+P0 . . . . . . . . . . . . . . . . .  D ADDR   0080H   A   
+P1 . . . . . . . . . . . . . . . . .  D ADDR   0090H   A   
+P2 . . . . . . . . . . . . . . . . .  D ADDR   00A0H   A   
+P3 . . . . . . . . . . . . . . . . .  D ADDR   00B0H   A   
+PCON . . . . . . . . . . . . . . . .  D ADDR   0087H   A   
+PLLCTRL. . . . . . . . . . . . . . .  X ADDR   -----       EXT
+PLLFREQR . . . . . . . . . . . . . .  X ADDR   -----       EXT
+PM1DI. . . . . . . . . . . . . . . .  X ADDR   -----       EXT
+PM1DO. . . . . . . . . . . . . . . .  X ADDR   -----       EXT
+PM1STS . . . . . . . . . . . . . . .  X ADDR   -----       EXT
+PM2DI. . . . . . . . . . . . . . . .  X ADDR   -----       EXT
+PM2DO. . . . . . . . . . . . . . . .  X ADDR   -----       EXT
+PM2STS . . . . . . . . . . . . . . .  X ADDR   -----       EXT
+PS . . . . . . . . . . . . . . . . .  B ADDR   00B8H.4 A   
+A51 MACRO ASSEMBLER  OEM_HSPI                                                             09/08/2020 15:56:26 PAGE    21
+
+PSW. . . . . . . . . . . . . . . . .  D ADDR   00D0H   A   
+PT0. . . . . . . . . . . . . . . . .  B ADDR   00B8H.1 A   
+PT1. . . . . . . . . . . . . . . . .  B ADDR   00B8H.3 A   
+PX0. . . . . . . . . . . . . . . . .  B ADDR   00B8H.0 A   
+PX1. . . . . . . . . . . . . . . . .  B ADDR   00B8H.2 A   
+RAMCODECMD . . . . . . . . . . . . .  X ADDR   -----       EXT
+RAMCODEPORT. . . . . . . . . . . . .  X ADDR   -----       EXT
+RB8. . . . . . . . . . . . . . . . .  B ADDR   0098H.2 A   
+RCAP2H . . . . . . . . . . . . . . .  D ADDR   00CBH   A   
+RCAP2L . . . . . . . . . . . . . . .  D ADDR   00CAH   A   
+RCLK . . . . . . . . . . . . . . . .  B ADDR   00C8H.5 A   
+RD . . . . . . . . . . . . . . . . .  B ADDR   00B0H.7 A   
+REN. . . . . . . . . . . . . . . . .  B ADDR   0098H.4 A   
+RESTORE?642. . . . . . . . . . . . .  X ADDR   0000H   R   SEG=?XD?_CHANGESPIFLASHREADMODE?OEM_HSPI
+RESTORE?744. . . . . . . . . . . . .  X ADDR   0000H   R   SEG=?XD?_CHANGEHSRSMODE?OEM_HSPI
+RI . . . . . . . . . . . . . . . . .  B ADDR   0098H.0 A   
+RS0. . . . . . . . . . . . . . . . .  B ADDR   00D0H.3 A   
+RS1. . . . . . . . . . . . . . . . .  B ADDR   00D0H.4 A   
+RSTC4. . . . . . . . . . . . . . . .  X ADDR   -----       EXT
+SBUF . . . . . . . . . . . . . . . .  D ADDR   0099H   A   
+SCON . . . . . . . . . . . . . . . .  D ADDR   0098H   A   
+SM0. . . . . . . . . . . . . . . . .  B ADDR   0098H.7 A   
+SM1. . . . . . . . . . . . . . . . .  B ADDR   0098H.6 A   
+SM2. . . . . . . . . . . . . . . . .  B ADDR   0098H.5 A   
+SP . . . . . . . . . . . . . . . . .  D ADDR   0081H   A   
+T0 . . . . . . . . . . . . . . . . .  B ADDR   00B0H.4 A   
+T1 . . . . . . . . . . . . . . . . .  B ADDR   00B0H.5 A   
+T2CON. . . . . . . . . . . . . . . .  D ADDR   00C8H   A   
+T2MOD. . . . . . . . . . . . . . . .  D ADDR   00C9H   A   
+TB8. . . . . . . . . . . . . . . . .  B ADDR   0098H.3 A   
+TCLK . . . . . . . . . . . . . . . .  B ADDR   00C8H.4 A   
+TCON . . . . . . . . . . . . . . . .  D ADDR   0088H   A   
+TF0. . . . . . . . . . . . . . . . .  B ADDR   0088H.5 A   
+TF1. . . . . . . . . . . . . . . . .  B ADDR   0088H.7 A   
+TF2. . . . . . . . . . . . . . . . .  B ADDR   00C8H.7 A   
+TH0. . . . . . . . . . . . . . . . .  D ADDR   008CH   A   
+TH1. . . . . . . . . . . . . . . . .  D ADDR   008DH   A   
+TH2. . . . . . . . . . . . . . . . .  D ADDR   00CDH   A   
+TI . . . . . . . . . . . . . . . . .  B ADDR   0098H.1 A   
+TL0. . . . . . . . . . . . . . . . .  D ADDR   008AH   A   
+TL1. . . . . . . . . . . . . . . . .  D ADDR   008BH   A   
+TL2. . . . . . . . . . . . . . . . .  D ADDR   00CCH   A   
+TMOD . . . . . . . . . . . . . . . .  D ADDR   0089H   A   
+TR0. . . . . . . . . . . . . . . . .  B ADDR   0088H.4 A   
+TR1. . . . . . . . . . . . . . . . .  B ADDR   0088H.6 A   
+TR2. . . . . . . . . . . . . . . . .  B ADDR   00C8H.2 A   
+WDTCON . . . . . . . . . . . . . . .  D ADDR   00D8H   A   
+WDTEB. . . . . . . . . . . . . . . .  B ADDR   00D8H.1 A   
+WDTRST . . . . . . . . . . . . . . .  B ADDR   00D8H.0 A   
+WINFLASHMARK . . . . . . . . . . . .  X ADDR   -----       EXT
+WR . . . . . . . . . . . . . . . . .  B ADDR   00B0H.6 A   
+_CHANGEHSRSMODE. . . . . . . . . . .  C ADDR   0000H   R   SEG=?PR?_CHANGEHSRSMODE?OEM_HSPI
+_CHANGEPLLFREQUENCY. . . . . . . . .  C ADDR   0000H   R   SEG=?PR?_CHANGEPLLFREQUENCY?OEM_HSPI
+_CHANGESPIFLASHREADMODE. . . . . . .  C ADDR   0000H   R   SEG=?PR?_CHANGESPIFLASHREADMODE?OEM_HSPI
+
+
+REGISTER BANK(S) USED: 0 
+
+
+ASSEMBLY COMPLETE.  0 WARNING(S), 0 ERROR(S)

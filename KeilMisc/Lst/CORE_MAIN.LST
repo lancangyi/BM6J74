@@ -1,0 +1,1392 @@
+C51 COMPILER V7.50   CORE_MAIN                                                             09/08/2020 15:56:18 PAGE 1   
+
+
+C51 COMPILER V7.50, COMPILATION OF MODULE CORE_MAIN
+OBJECT MODULE PLACED IN Code\CORE\CORE_MAIN.OBJ
+COMPILER INVOKED BY: C:\Keil\C51\BIN\c51.exe Code\CORE\CORE_MAIN.C LA WL(1) CD OT(9,SIZE) NOAREGS OR INCDIR(.\Code\CORE\
+                    -INCLUDE\;.\Code\OEM\INCLUDE\;.\Code\CHIP\INCLUDE\)
+
+line level    source
+
+   1          /*-----------------------------------------------------------------------------
+   2           * TITLE: CORE_MAIN.C - Main Program for KBC firmware.
+   3           *
+   4           * Main processing loop (interrupt driven) for the keyboard controller/scanner.
+   5           *
+   6           * Copyright (c) 1983-2007, Insyde Software Corporation. All Rights Reserved.
+   7           *
+   8           * You may not reproduce, distribute, publish, display, perform, modify, adapt,
+   9           * transmit, broadcast, present, recite, release, license or otherwise exploit
+  10           * any part of this publication in any form, by any means, without the prior
+  11           * written permission of Insyde Software Corporation.
+  12           *---------------------------------------------------------------------------*/
+  13           
+  14          #include <CORE_INCLUDE.H>
+  15          #include <OEM_INCLUDE.H>
+  16          
+  17          /* ----------------------------------------------------------------------------
+  18           *  FUNCTION: main - Main service loop.
+  19           *
+  20           *  Wait in idle state until an IRQ causes an exit from idle.  If the IRQ
+  21           *  handler posted a service request (via bSERVICE) then dispatch control to
+  22           *  the appropriate service handler.  Otherwise, go back to idle state.  After
+  23           *  all service requests have been handled, return to idle state.
+  24           * ------------------------------------------------------------------------- */
+  25          void main(void)
+  26          {
+  27   1              DisableAllInterrupt();
+  28   1              SP = 0xC0;                                      // Setting stack pointer
+  29   1      
+  30   1              if(Hook_ECRetunrMainFuncKeepCondition()==0x33)  // Exit from follow mode or EC scatch ROM
+  31   1              {
+  32   2                      CLEAR_MASK(FBCFG,SSMC); // disable scatch ROM
+  33   2                      _nop_();
+  34   2                  MPRECF = 0x01;
+  35   2                  _nop_();
+  36   2                  MPRECF = 0x01;
+  37   2                  _nop_(); 
+  38   2                  MPRECF = 0x01;
+  39   2                  _nop_();
+  40   2                  MPRECF = 0x01;
+  41   2                  _nop_();
+  42   2                  _nop_();
+  43   2              WinFlashMark = 0x00;
+  44   2              ResetBANKDATA();        // init bank mechanism to code bank 0
+  45   2              Hook_ECExitFollowMode();
+  46   2              Init_Timers();
+  47   2                      EnableModuleInterrupt();    
+  48   2              }
+  49   1              else
+  50   1              {
+  51   2                      Core_Initialization();
+  52   2                      Oem_Initialization();
+  53   2              InitEnableInterrupt();
+  54   2                      
+C51 COMPILER V7.50   CORE_MAIN                                                             09/08/2020 15:56:18 PAGE 2   
+
+  55   2              #if UART_Debug
+                              uart_Initial();
+                      UART_Print_Str("\n\n------------------------------------");
+                      UART_Print_Str("\n  EC Init OK !!!");
+                      UART_Print_Str("\n\n------------------------------------");
+                              #else
+  61   2                      //uart_Initial_Host();
+  62   2                      #endif
+  63   2              }
+  64   1      
+  65   1      
+  66   1              if((0x55==BRAM_FLASH_ID0)&&(0xaa==BRAM_FLASH_ID1)&&(0x55==BRAM_FLASH_ID2)&&(0xaa==BRAM_FLASH_ID3))
+  67   1              {
+  68   2                      //PulseSBPowerButton();
+  69   2              }
+  70   1      
+  71   1              BRAM_FLASH_ID0=0;
+  72   1              BRAM_FLASH_ID1=0;
+  73   1              BRAM_FLASH_ID2=0;
+  74   1              BRAM_FLASH_ID3=0;       
+  75   1      
+  76   1              while(1)
+  77   1              {
+  78   2              if(OEM_SkipMainServiceFunc()==Normal_MainService)
+  79   2              {
+  80   3                      main_service();
+  81   3                      EnableModuleInterrupt();
+  82   3                      _nop_();
+  83   3                      _nop_();
+  84   3                      _nop_();
+  85   3                      _nop_();
+  86   3      
+  87   3                              #if TouchPad_only
+  88   3                  if(PS2CheckPendingISR()==0x00)
+  89   3                  {
+  90   4                      ScanAUXDeviceStep();
+  91   4                  }
+  92   3                              #endif
+  93   3      
+  94   3                  #ifdef SMBusServiceCenterFunc
+  95   3                      if((Service==0x00)&&(Service1==0x00)&&(CheckSMBusNeedService()==SMBus_ClearService))
+  96   3                  #else
+                          if((Service==0x00)&&(Service1==0x00))
+                          #endif
+  99   3                      {
+ 100   4                              PCON=1;                 // enter idle mode
+ 101   4                      }
+ 102   3              }
+ 103   2              } 
+ 104   1      }
+ 105          
+ 106          /* ----------------------------------------------------------------------------
+ 107           * FUNCTION: main_service - Check for new/more service requests.
+ 108           *
+ 109           * Check for a request flag.  The check is done according to priority.  If a
+ 110           * request flag is set, handle the request and loop back to get the flags
+ 111           * again.  Do not follow through to check the next flag.  The flags are to be
+ 112           * checked in order.
+ 113           * ------------------------------------------------------------------------- */
+ 114          void main_service(void) 
+ 115          {
+ 116   1          #ifdef SMBusServiceCenterFunc
+C51 COMPILER V7.50   CORE_MAIN                                                             09/08/2020 15:56:18 PAGE 3   
+
+ 117   1          while((Service!=0x00)||(Service1!=0x00)||(CheckSMBusNeedService()==SMBus_NeedService))
+ 118   1          #else
+                  while((Service!=0x00)||(Service1!=0x00))
+                  #endif
+ 121   1          {
+ 122   2              //-----------------------------------
+ 123   2              // Host command/data service    6064
+ 124   2              //-----------------------------------
+ 125   2              if(F_Service_PCI)
+ 126   2              {
+ 127   3                  F_Service_PCI=0;
+ 128   3                  service_pci1();
+ 129   3                  continue;
+ 130   3              }
+ 131   2      
+ 132   2              //-----------------------------------
+ 133   2              // Service unlock
+ 134   2              //-----------------------------------
+ 135   2              if(F_Service_UNLOCK)
+ 136   2              {
+ 137   3                  F_Service_UNLOCK=0;
+ 138   3                  service_unlock();
+ 139   3                  continue;
+ 140   3              }
+ 141   2      
+ 142   2              //-----------------------------------
+ 143   2              // Send byte from KBC       6064
+ 144   2              //-----------------------------------
+ 145   2              if(F_Service_SEND)
+ 146   2              {
+ 147   3                  F_Service_SEND=0;
+ 148   3                  service_send();
+ 149   3                  continue;
+ 150   3              }
+ 151   2      
+ 152   2              //-----------------------------------
+ 153   2              // Send PS2 interface data      
+ 154   2              //-----------------------------------
+ 155   2              if(F_Service_Send_PS2)
+ 156   2              {
+ 157   3                  F_Service_Send_PS2=0;
+ 158   3                  service_PS2_data();
+ 159   3                  continue;
+ 160   3              }
+ 161   2      
+ 162   2              //-----------------------------------
+ 163   2              // process PS2 interface data
+ 164   2              //-----------------------------------
+ 165   2              if(F_Service_PS2)
+ 166   2              {
+ 167   3                  F_Service_PS2=0;
+ 168   3                  service_ps2();
+ 169   3                  continue;
+ 170   3              }
+ 171   2      
+ 172   2              //-----------------------------------
+ 173   2              // process SMBus interface data
+ 174   2              //-----------------------------------
+ 175   2              #ifdef SMBusServiceCenterFunc
+ 176   2                      
+ 177   2                      if (IS_MASK_CLEAR(SYS_MISC1, BAT_FW_UP))
+ 178   2                      {
+C51 COMPILER V7.50   CORE_MAIN                                                             09/08/2020 15:56:18 PAGE 4   
+
+ 179   3                      ServiceSMBus();
+ 180   3                      }       
+ 181   2                      
+ 182   2              #endif
+ 183   2      
+ 184   2              //-----------------------------------
+ 185   2              // Secondary Host command/data service
+ 186   2              //-----------------------------------
+ 187   2              if(F_Service_PCI2)
+ 188   2              {
+ 189   3                  F_Service_PCI2=0;
+ 190   3                  service_pci2();
+ 191   3                  continue;
+ 192   3              }
+ 193   2      
+ 194   2      
+ 195   2              //-----------------------------------
+ 196   2              // 1 millisecond elapsed
+ 197   2              //-----------------------------------
+ 198   2              if(F_Service_MS_1)
+ 199   2              {
+ 200   3                  F_Service_MS_1=0;
+ 201   3                  service_1mS();
+ 202   3                  continue;
+ 203   3              }
+ 204   2      
+ 205   2      
+ 206   2              //-----------------------------------
+ 207   2              // Keyboard scanner service
+ 208   2              //-----------------------------------
+ 209   2              if(F_Service_KEY)
+ 210   2              {
+ 211   3                      F_Service_KEY=0;
+ 212   3                              service_scan();
+ 213   3                              continue;
+ 214   3              }
+ 215   2      
+ 216   2              //-----------------------------------
+ 217   2              //
+ 218   2              //-----------------------------------
+ 219   2              Hook_main_service_H();
+ 220   2              
+ 221   2              //-----------------------------------
+ 222   2              // Low level event
+ 223   2              //-----------------------------------
+ 224   2              if(F_Service_Low_LV)
+ 225   2              {
+ 226   3                  F_Service_Low_LV=0;
+ 227   3                  service_Low_LVEvent();
+ 228   3                  continue;
+ 229   3              } 
+ 230   2      
+ 231   2              //-----------------------------------
+ 232   2              // Third Host command/data service
+ 233   2              //-----------------------------------
+ 234   2              if(F_Service_PCI3)
+ 235   2              {
+ 236   3                  F_Service_PCI3=0;
+ 237   3                  service_pci3();
+ 238   3                  continue;
+ 239   3              }
+ 240   2      
+C51 COMPILER V7.50   CORE_MAIN                                                             09/08/2020 15:56:18 PAGE 5   
+
+ 241   2              //-----------------------------------
+ 242   2              // CIR IRQ
+ 243   2              //-----------------------------------
+ 244   2              if(F_Service_CIR)
+ 245   2              {
+ 246   3                  F_Service_CIR=0;
+ 247   3                  service_cir();
+ 248   3                  continue;
+ 249   3              }
+ 250   2      
+ 251   2              //-----------------------------------
+ 252   2              // fourth command/data service
+ 253   2              //-----------------------------------
+ 254   2              if(F_Service_PCI4)
+ 255   2              {
+ 256   3                  F_Service_PCI4=0;
+ 257   3                  service_pci4();
+ 258   3                  continue;
+ 259   3              }
+ 260   2      
+ 261   2              //------------------------------------
+ 262   2              // service_OEM_1
+ 263   2              //------------------------------------
+ 264   2              if(F_Service_OEM_1)
+ 265   2              {
+ 266   3                  F_Service_OEM_1=0;
+ 267   3                  service_OEM_1();
+ 268   3                  continue;
+ 269   3              }
+ 270   2      
+ 271   2              //------------------------------------
+ 272   2              // service_OEM_2
+ 273   2              //------------------------------------
+ 274   2              if(F_Service_OEM_2)
+ 275   2              {
+ 276   3                  F_Service_OEM_2=0;
+ 277   3                  service_OEM_2();
+ 278   3                  continue;
+ 279   3              }
+ 280   2      
+ 281   2              //------------------------------------
+ 282   2              // service_OEM_3
+ 283   2              //------------------------------------
+ 284   2              if(F_Service_OEM_3)
+ 285   2              {
+ 286   3                  F_Service_OEM_3=0;
+ 287   3                  service_OEM_3();
+ 288   3                  continue;
+ 289   3              }
+ 290   2      
+ 291   2              //------------------------------------
+ 292   2              // service_OEM_4
+ 293   2              //------------------------------------
+ 294   2              if(F_Service_OEM_4)
+ 295   2              {
+ 296   3                  F_Service_OEM_4=0;
+ 297   3                  service_OEM_4();
+ 298   3                  continue;
+ 299   3              }
+ 300   2      
+ 301   2              //-----------------------------------
+ 302   2              //
+C51 COMPILER V7.50   CORE_MAIN                                                             09/08/2020 15:56:18 PAGE 6   
+
+ 303   2              //-----------------------------------
+ 304   2              Hook_main_service_L();
+ 305   2          }
+ 306   1      }
+ 307          
+ 308          static void service_Low_LVEvent(void)
+ 309          {
+ 310   1              if((KBPendingTXCount != KBPendingRXCount )||(scan.kbf_head != scan.kbf_tail))
+ 311   1              {
+ 312   2                      SetServiceSendFlag();
+ 313   2              }
+ 314   1      
+ 315   1          if(IS_MASK_SET(KBHISR,P_IBF))
+ 316   1          {
+ 317   2                  F_Service_PCI = 1;
+ 318   2          }
+ 319   1          
+ 320   1          if(IS_MASK_SET(PM1STS,P_IBF))
+ 321   1          {
+ 322   2                  F_Service_PCI2 = 1;
+ 323   2          }
+ 324   1      }
+ 325          
+ 326          //----------------------------------------------------------------------------
+ 327          // FUNCTION: service_unlock
+ 328          // Unlock aux devices and re-enable Host interface IRQ if it is ok to do so.
+ 329          //----------------------------------------------------------------------------
+ 330          static void service_unlock(void)
+ 331          {
+ 332   1              Unlock_Scan();
+ 333   1      }
+ 334          
+ 335          //------------------------------------------------------------
+ 336          // Polling events
+ 337          //------------------------------------------------------------
+ 338          void service_1mS(void)
+ 339          {
+ 340   1              Timer1msEvent();
+ 341   1              Timer1msCnt++;
+ 342   1          if(Timer1msCnt>=10)
+ 343   1          {
+ 344   2              Timer1msCnt = 0x00;
+ 345   2          }
+ 346   1      
+ 347   1          if(Hook_Only_Timer1msEvent()==Only_Timer1msEvent)
+ 348   1          {   
+ 349   2              return;
+ 350   2          }
+ 351   1      
+ 352   1          if((Timer1msCnt%5)==0x00)
+ 353   1          {
+ 354   2                  Timer5msEvent();
+ 355   2                  Timer5msCnt++;
+ 356   2                  if ( Timer5msCnt & 1 )      // 10ms events
+ 357   2                  {
+ 358   3                  Timer10msEventA();
+ 359   3                  }
+ 360   2                  else
+ 361   2                  {
+ 362   3                          Timer10msEventB();
+ 363   3                  switch( Timer5msCnt )   // Share Loading Branch Control
+ 364   3                  {
+C51 COMPILER V7.50   CORE_MAIN                                                             09/08/2020 15:56:18 PAGE 7   
+
+ 365   4                          case 2: Timer50msEventA();
+ 366   4                          break;
+ 367   4                          case 4: Timer50msEventB();
+ 368   4                          break;
+ 369   4                          case 6: Timer50msEventC();
+ 370   4                          break;
+ 371   4                          case 8: Timer100msCntB++;
+ 372   4                                  if ( Timer100msCntB & 1 )
+ 373   4                          {
+ 374   5                                  Timer100msEventA();
+ 375   5                          }
+ 376   4                          else
+ 377   4                          {
+ 378   5                                  Timer100msEventB();
+ 379   5                          }
+ 380   4                          break;
+ 381   4      
+ 382   4                          default:        
+ 383   4                                          Timer5msCnt=0;
+ 384   4                          break;
+ 385   4                  }
+ 386   3      
+ 387   3                  if ( Timer5msCnt == 0x00 )
+ 388   3                  {                           // 50msec
+ 389   4                          Timer100msCnt ++;
+ 390   4                          if ( Timer100msCnt & 1 )
+ 391   4                          {
+ 392   5                          Timer100msEventC();
+ 393   5                          }
+ 394   4                          else
+ 395   4                          {                   // 100msec
+ 396   5                                  switch( Timer100msCnt )
+ 397   5                          {
+ 398   6                                  case 2:     Timer500msEventA();
+ 399   6                                          break;
+ 400   6                                  case 4:     Timer500msEventB();
+ 401   6                                  break;
+ 402   6                                  case 6:     Timer500msEventC();
+ 403   6                                  break;
+ 404   6                                  case 8:     Timer1SecEventA();
+ 405   6                                  break;
+ 406   6                                                  case 10:    Timer1SecEventB();
+ 407   6                                  break;      
+ 408   6                                  case 12:    Timer500msEventA();
+ 409   6                                  break;
+ 410   6                                  case 14:    Timer500msEventB();
+ 411   6                                  break;
+ 412   6                                  case 16:    Timer500msEventC();
+ 413   6                                  break;
+ 414   6                                  case 18:    Timer1SecEventC();
+ 415   6                                  break;
+ 416   6                                  default:        // 1 Sec
+ 417   6                                  Timer100msCnt = 0;
+ 418   6                                          Timer1SecCnt ++;
+ 419   6                                  if ( Timer1SecCnt == 60 )
+ 420   6                                  {
+ 421   7                                          Timer1MinEvent();
+ 422   7                                          Timer1SecCnt=0;
+ 423   7                                  }
+ 424   6                                  break;
+ 425   6                                  }
+ 426   5                      }
+C51 COMPILER V7.50   CORE_MAIN                                                             09/08/2020 15:56:18 PAGE 8   
+
+ 427   4                      }
+ 428   3                      }
+ 429   2              } 
+ 430   1      }
+ 431          
+ 432          //------------------------------------------------------------
+ 433          // 1ms events
+ 434          //------------------------------------------------------------
+ 435          void Timer1msEvent(void)
+ 436          {
+ 437   1          ReSendPS2PendingData();
+ 438   1          Hook_Timer1msEvent(Timer1msCnt);
+ 439   1      }
+ 440          
+ 441          //------------------------------------------------------------
+ 442          // 5ms events
+ 443          //------------------------------------------------------------
+ 444          void Timer5msEvent(void)
+ 445          {
+ 446   1          F_Service_Low_LV = 1;
+ 447   1              if (Timer_A.fbit.TMR_SCAN) 
+ 448   1              {
+ 449   2                      F_Service_KEY = 1;              // Request scanner service. 
+ 450   2              }
+ 451   1          Hook_Timer5msEvent();
+ 452   1      }
+ 453          
+ 454          //------------------------------------------------------------
+ 455          // 10ms events
+ 456          //------------------------------------------------------------
+ 457          void Timer10msEventA(void)
+ 458          {
+ 459   1          SetStartScanAUXFlag();
+ 460   1              Hook_Timer10msEventA(); 
+ 461   1      }
+ 462          
+ 463          //------------------------------------------------------------
+ 464          // 10ms events
+ 465          //------------------------------------------------------------
+ 466          void Timer10msEventB(void)
+ 467          {
+ 468   1              Hook_Timer10msEventB();  
+ 469   1      }
+ 470          
+ 471          //------------------------------------------------------------
+ 472          // 50ms events A
+ 473          //------------------------------------------------------------
+ 474          void Timer50msEventA(void)
+ 475          {
+ 476   1              Hook_Timer50msEventA();
+ 477   1      }
+ 478          
+ 479          //------------------------------------------------------------
+ 480          // 50ms events B
+ 481          //------------------------------------------------------------
+ 482          void Timer50msEventB(void)
+ 483          {
+ 484   1              Hook_Timer50msEventB();
+ 485   1      }
+ 486          
+ 487          //------------------------------------------------------------
+ 488          // 50ms events C
+C51 COMPILER V7.50   CORE_MAIN                                                             09/08/2020 15:56:18 PAGE 9   
+
+ 489          //------------------------------------------------------------
+ 490          void Timer50msEventC(void)
+ 491          {
+ 492   1              Hook_Timer50msEventC();
+ 493   1      }
+ 494          
+ 495          //------------------------------------------------------------
+ 496          // 100ms events A
+ 497          //------------------------------------------------------------
+ 498          void Timer100msEventA(void)
+ 499          {
+ 500   1              Hook_Timer100msEventA();
+ 501   1      }
+ 502          
+ 503          //------------------------------------------------------------
+ 504          // 100ms events B
+ 505          //------------------------------------------------------------
+ 506          void Timer100msEventB(void)
+ 507          {
+ 508   1              Hook_Timer100msEventB();
+ 509   1      }
+ 510          
+ 511          //------------------------------------------------------------
+ 512          // 100ms events C
+ 513          //------------------------------------------------------------
+ 514          void Timer100msEventC(void)
+ 515          {
+ 516   1              Hook_Timer100msEventC();
+ 517   1      }
+ 518          
+ 519          //------------------------------------------------------------
+ 520          // 500ms events A
+ 521          //------------------------------------------------------------
+ 522          void Timer500msEventA(void)
+ 523          {
+ 524   1              Hook_Timer500msEventA();
+ 525   1      }
+ 526          
+ 527          //------------------------------------------------------------
+ 528          // 500ms events B
+ 529          //------------------------------------------------------------
+ 530          void Timer500msEventB(void)
+ 531          {
+ 532   1              Hook_Timer500msEventB();
+ 533   1      }
+ 534          
+ 535          //------------------------------------------------------------
+ 536          // 500ms events C
+ 537          //------------------------------------------------------------
+ 538          void Timer500msEventC(void)
+ 539          {
+ 540   1              Hook_Timer500msEventC();
+ 541   1      }
+ 542          
+ 543          //------------------------------------------------------------
+ 544          // 1sec events A
+ 545          //------------------------------------------------------------
+ 546          void Timer1SecEventA(void)
+ 547          {       
+ 548   1              Hook_Timer1SecEventA();
+ 549   1      }
+ 550          
+C51 COMPILER V7.50   CORE_MAIN                                                             09/08/2020 15:56:18 PAGE 10  
+
+ 551          //------------------------------------------------------------
+ 552          // 1sec events B
+ 553          //------------------------------------------------------------
+ 554          void Timer1SecEventB(void)
+ 555          {
+ 556   1              Hook_Timer1SecEventB();
+ 557   1      }
+ 558          
+ 559          //------------------------------------------------------------
+ 560          // 1sec events C
+ 561          //------------------------------------------------------------
+ 562          void Timer1SecEventC(void)
+ 563          {
+ 564   1              Hook_Timer1SecEventC();
+ 565   1      }
+ 566          
+ 567          //------------------------------------------------------------
+ 568          // 1min events
+ 569          //------------------------------------------------------------
+ 570          void Timer1MinEvent(void)
+ 571          {
+ 572   1          Hook_Timer1MinEvent();
+ 573   1      }
+ 574          
+C51 COMPILER V7.50   CORE_MAIN                                                             09/08/2020 15:56:18 PAGE 11  
+
+ASSEMBLY LISTING OF GENERATED OBJECT CODE
+
+
+             ; FUNCTION main (BEGIN)
+                                           ; SOURCE LINE # 25
+                                           ; SOURCE LINE # 26
+                                           ; SOURCE LINE # 27
+0000 120000      E     LCALL   DisableAllInterrupt
+                                           ; SOURCE LINE # 28
+0003 7581C0            MOV     SP,#0C0H
+                                           ; SOURCE LINE # 30
+0006 120000      E     LCALL   Hook_ECRetunrMainFuncKeepCondition
+0009 EF                MOV     A,R7
+000A 6433              XRL     A,#033H
+000C 702C              JNZ     ?C0001
+                                           ; SOURCE LINE # 31
+                                           ; SOURCE LINE # 32
+000E 900000      E     MOV     DPTR,#FBCFG
+0011 E0                MOVX    A,@DPTR
+0012 547F              ANL     A,#07FH
+0014 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 33
+0015 00                NOP     
+                                           ; SOURCE LINE # 34
+0016 75F701            MOV     MPRECF,#01H
+                                           ; SOURCE LINE # 35
+0019 00                NOP     
+                                           ; SOURCE LINE # 36
+001A 75F701            MOV     MPRECF,#01H
+                                           ; SOURCE LINE # 37
+001D 00                NOP     
+                                           ; SOURCE LINE # 38
+001E 75F701            MOV     MPRECF,#01H
+                                           ; SOURCE LINE # 39
+0021 00                NOP     
+                                           ; SOURCE LINE # 40
+0022 75F701            MOV     MPRECF,#01H
+                                           ; SOURCE LINE # 41
+0025 00                NOP     
+                                           ; SOURCE LINE # 42
+0026 00                NOP     
+                                           ; SOURCE LINE # 43
+0027 E4                CLR     A
+0028 900000      E     MOV     DPTR,#WinFlashMark
+002B F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 44
+002C 120000      E     LCALL   ResetBANKDATA
+                                           ; SOURCE LINE # 45
+002F 120000      E     LCALL   Hook_ECExitFollowMode
+                                           ; SOURCE LINE # 46
+0032 120000      E     LCALL   Init_Timers
+                                           ; SOURCE LINE # 47
+0035 120000      E     LCALL   EnableModuleInterrupt
+                                           ; SOURCE LINE # 48
+0038 8009              SJMP    ?C0002
+003A         ?C0001:
+                                           ; SOURCE LINE # 50
+                                           ; SOURCE LINE # 51
+003A 120000      E     LCALL   Core_Initialization
+                                           ; SOURCE LINE # 52
+003D 120000      E     LCALL   Oem_Initialization
+                                           ; SOURCE LINE # 53
+C51 COMPILER V7.50   CORE_MAIN                                                             09/08/2020 15:56:18 PAGE 12  
+
+0040 120000      E     LCALL   InitEnableInterrupt
+                                           ; SOURCE LINE # 63
+0043         ?C0002:
+                                           ; SOURCE LINE # 66
+0043 900000      E     MOV     DPTR,#BRAM_OEM
+0046 E0                MOVX    A,@DPTR
+0047 B4550D            CJNE    A,#055H,?C0003
+004A A3                INC     DPTR
+004B E0                MOVX    A,@DPTR
+004C B4AA08            CJNE    A,#0AAH,?C0003
+004F A3                INC     DPTR
+0050 E0                MOVX    A,@DPTR
+0051 B45503            CJNE    A,#055H,?C0003
+0054 A3                INC     DPTR
+0055 E0                MOVX    A,@DPTR
+0056 FF                MOV     R7,A
+                                           ; SOURCE LINE # 67
+                                           ; SOURCE LINE # 69
+0057         ?C0003:
+                                           ; SOURCE LINE # 71
+0057 E4                CLR     A
+0058 900000      E     MOV     DPTR,#BRAM_OEM
+005B F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 72
+005C A3                INC     DPTR
+005D F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 73
+005E A3                INC     DPTR
+005F F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 74
+0060 A3                INC     DPTR
+0061 F0                MOVX    @DPTR,A
+0062         ?C0004:
+                                           ; SOURCE LINE # 76
+                                           ; SOURCE LINE # 77
+                                           ; SOURCE LINE # 78
+0062 120000      E     LCALL   OEM_SkipMainServiceFunc
+0065 BFFFFA            CJNE    R7,#0FFH,?C0004
+                                           ; SOURCE LINE # 79
+                                           ; SOURCE LINE # 80
+0068 120000      R     LCALL   main_service
+                                           ; SOURCE LINE # 81
+006B 120000      E     LCALL   EnableModuleInterrupt
+                                           ; SOURCE LINE # 82
+006E 00                NOP     
+                                           ; SOURCE LINE # 83
+006F 00                NOP     
+                                           ; SOURCE LINE # 84
+0070 00                NOP     
+                                           ; SOURCE LINE # 85
+0071 00                NOP     
+                                           ; SOURCE LINE # 88
+0072 120000      E     LCALL   PS2CheckPendingISR
+0075 EF                MOV     A,R7
+0076 7003              JNZ     ?C0007
+                                           ; SOURCE LINE # 89
+                                           ; SOURCE LINE # 90
+0078 120000      E     LCALL   ScanAUXDeviceStep
+                                           ; SOURCE LINE # 91
+007B         ?C0007:
+                                           ; SOURCE LINE # 95
+007B E500        E     MOV     A,Service
+C51 COMPILER V7.50   CORE_MAIN                                                             09/08/2020 15:56:18 PAGE 13  
+
+007D 70E3              JNZ     ?C0004
+007F E500        E     MOV     A,Service1
+0081 70DF              JNZ     ?C0004
+0083 120000      E     LCALL   CheckSMBusNeedService
+0086 EF                MOV     A,R7
+0087 70D9              JNZ     ?C0004
+                                           ; SOURCE LINE # 99
+                                           ; SOURCE LINE # 100
+0089 758701            MOV     PCON,#01H
+                                           ; SOURCE LINE # 101
+                                           ; SOURCE LINE # 102
+                                           ; SOURCE LINE # 103
+008C 80D4              SJMP    ?C0004
+             ; FUNCTION main (END)
+
+             ; FUNCTION main_service (BEGIN)
+                                           ; SOURCE LINE # 114
+                                           ; SOURCE LINE # 115
+0000         ?C0010:
+                                           ; SOURCE LINE # 117
+0000 E500        E     MOV     A,Service
+0002 700F              JNZ     ?C0012
+0004 E500        E     MOV     A,Service1
+0006 700B              JNZ     ?C0012
+0008 120000      E     LCALL   CheckSMBusNeedService
+000B EF                MOV     A,R7
+000C 6401              XRL     A,#01H
+000E 6003              JZ      $ + 5H
+0010 020000      R     LJMP    ?C0030
+0013         ?C0012:
+                                           ; SOURCE LINE # 121
+                                           ; SOURCE LINE # 125
+0013 300007      E     JNB     F_Service_PCI,?C0013
+                                           ; SOURCE LINE # 126
+                                           ; SOURCE LINE # 127
+0016 C200        E     CLR     F_Service_PCI
+                                           ; SOURCE LINE # 128
+0018 120000      E     LCALL   service_pci1
+                                           ; SOURCE LINE # 129
+001B 80E3              SJMP    ?C0010
+                                           ; SOURCE LINE # 130
+001D         ?C0013:
+                                           ; SOURCE LINE # 135
+001D 300007      E     JNB     F_Service_UNLOCK,?C0014
+                                           ; SOURCE LINE # 136
+                                           ; SOURCE LINE # 137
+0020 C200        E     CLR     F_Service_UNLOCK
+                                           ; SOURCE LINE # 138
+0022 120000      R     LCALL   service_unlock
+                                           ; SOURCE LINE # 139
+0025 80D9              SJMP    ?C0010
+                                           ; SOURCE LINE # 140
+0027         ?C0014:
+                                           ; SOURCE LINE # 145
+0027 300007      E     JNB     F_Service_SEND,?C0015
+                                           ; SOURCE LINE # 146
+                                           ; SOURCE LINE # 147
+002A C200        E     CLR     F_Service_SEND
+                                           ; SOURCE LINE # 148
+002C 120000      E     LCALL   service_send
+                                           ; SOURCE LINE # 149
+002F 80CF              SJMP    ?C0010
+C51 COMPILER V7.50   CORE_MAIN                                                             09/08/2020 15:56:18 PAGE 14  
+
+                                           ; SOURCE LINE # 150
+0031         ?C0015:
+                                           ; SOURCE LINE # 155
+0031 300007      E     JNB     F_Service_Send_PS2,?C0016
+                                           ; SOURCE LINE # 156
+                                           ; SOURCE LINE # 157
+0034 C200        E     CLR     F_Service_Send_PS2
+                                           ; SOURCE LINE # 158
+0036 120000      E     LCALL   service_PS2_data
+                                           ; SOURCE LINE # 159
+0039 80C5              SJMP    ?C0010
+                                           ; SOURCE LINE # 160
+003B         ?C0016:
+                                           ; SOURCE LINE # 165
+003B 300007      E     JNB     F_Service_PS2,?C0017
+                                           ; SOURCE LINE # 166
+                                           ; SOURCE LINE # 167
+003E C200        E     CLR     F_Service_PS2
+                                           ; SOURCE LINE # 168
+0040 120000      E     LCALL   service_ps2
+                                           ; SOURCE LINE # 169
+0043 80BB              SJMP    ?C0010
+                                           ; SOURCE LINE # 170
+0045         ?C0017:
+                                           ; SOURCE LINE # 177
+0045 900000      E     MOV     DPTR,#SYS_MISC1
+0048 E0                MOVX    A,@DPTR
+0049 20E203            JB      ACC.2,?C0018
+                                           ; SOURCE LINE # 178
+                                           ; SOURCE LINE # 179
+004C 120000      E     LCALL   ServiceSMBus
+                                           ; SOURCE LINE # 180
+004F         ?C0018:
+                                           ; SOURCE LINE # 187
+004F 300007      E     JNB     F_Service_PCI2,?C0019
+                                           ; SOURCE LINE # 188
+                                           ; SOURCE LINE # 189
+0052 C200        E     CLR     F_Service_PCI2
+                                           ; SOURCE LINE # 190
+0054 120000      E     LCALL   service_pci2
+                                           ; SOURCE LINE # 191
+0057 80A7              SJMP    ?C0010
+                                           ; SOURCE LINE # 192
+0059         ?C0019:
+                                           ; SOURCE LINE # 198
+0059 300007      E     JNB     F_Service_MS_1,?C0020
+                                           ; SOURCE LINE # 199
+                                           ; SOURCE LINE # 200
+005C C200        E     CLR     F_Service_MS_1
+                                           ; SOURCE LINE # 201
+005E 120000      R     LCALL   service_1mS
+                                           ; SOURCE LINE # 202
+0061 809D              SJMP    ?C0010
+                                           ; SOURCE LINE # 203
+0063         ?C0020:
+                                           ; SOURCE LINE # 209
+0063 300007      E     JNB     F_Service_KEY,?C0021
+                                           ; SOURCE LINE # 210
+                                           ; SOURCE LINE # 211
+0066 C200        E     CLR     F_Service_KEY
+                                           ; SOURCE LINE # 212
+0068 120000      E     LCALL   service_scan
+C51 COMPILER V7.50   CORE_MAIN                                                             09/08/2020 15:56:18 PAGE 15  
+
+                                           ; SOURCE LINE # 213
+006B 8093              SJMP    ?C0010
+                                           ; SOURCE LINE # 214
+006D         ?C0021:
+                                           ; SOURCE LINE # 219
+006D 120000      E     LCALL   Hook_main_service_H
+                                           ; SOURCE LINE # 224
+0070 300007      E     JNB     F_Service_Low_LV,?C0022
+                                           ; SOURCE LINE # 225
+                                           ; SOURCE LINE # 226
+0073 C200        E     CLR     F_Service_Low_LV
+                                           ; SOURCE LINE # 227
+0075 120000      R     LCALL   service_Low_LVEvent
+                                           ; SOURCE LINE # 228
+0078 8086              SJMP    ?C0010
+                                           ; SOURCE LINE # 229
+007A         ?C0022:
+                                           ; SOURCE LINE # 234
+007A 300008      E     JNB     F_Service_PCI3,?C0023
+                                           ; SOURCE LINE # 235
+                                           ; SOURCE LINE # 236
+007D C200        E     CLR     F_Service_PCI3
+                                           ; SOURCE LINE # 237
+007F 120000      E     LCALL   service_pci3
+                                           ; SOURCE LINE # 238
+0082 020000      R     LJMP    ?C0010
+                                           ; SOURCE LINE # 239
+0085         ?C0023:
+                                           ; SOURCE LINE # 244
+0085 300008      E     JNB     F_Service_CIR,?C0024
+                                           ; SOURCE LINE # 245
+                                           ; SOURCE LINE # 246
+0088 C200        E     CLR     F_Service_CIR
+                                           ; SOURCE LINE # 247
+008A 120000      E     LCALL   service_cir
+                                           ; SOURCE LINE # 248
+008D 020000      R     LJMP    ?C0010
+                                           ; SOURCE LINE # 249
+0090         ?C0024:
+                                           ; SOURCE LINE # 254
+0090 300008      E     JNB     F_Service_PCI4,?C0025
+                                           ; SOURCE LINE # 255
+                                           ; SOURCE LINE # 256
+0093 C200        E     CLR     F_Service_PCI4
+                                           ; SOURCE LINE # 257
+0095 120000      E     LCALL   service_pci4
+                                           ; SOURCE LINE # 258
+0098 020000      R     LJMP    ?C0010
+                                           ; SOURCE LINE # 259
+009B         ?C0025:
+                                           ; SOURCE LINE # 264
+009B 300008      E     JNB     F_Service_OEM_1,?C0026
+                                           ; SOURCE LINE # 265
+                                           ; SOURCE LINE # 266
+009E C200        E     CLR     F_Service_OEM_1
+                                           ; SOURCE LINE # 267
+00A0 120000      E     LCALL   service_OEM_1
+                                           ; SOURCE LINE # 268
+00A3 020000      R     LJMP    ?C0010
+                                           ; SOURCE LINE # 269
+00A6         ?C0026:
+                                           ; SOURCE LINE # 274
+C51 COMPILER V7.50   CORE_MAIN                                                             09/08/2020 15:56:18 PAGE 16  
+
+00A6 300008      E     JNB     F_Service_OEM_2,?C0027
+                                           ; SOURCE LINE # 275
+                                           ; SOURCE LINE # 276
+00A9 C200        E     CLR     F_Service_OEM_2
+                                           ; SOURCE LINE # 277
+00AB 120000      E     LCALL   service_OEM_2
+                                           ; SOURCE LINE # 278
+00AE 020000      R     LJMP    ?C0010
+                                           ; SOURCE LINE # 279
+00B1         ?C0027:
+                                           ; SOURCE LINE # 284
+00B1 300008      E     JNB     F_Service_OEM_3,?C0028
+                                           ; SOURCE LINE # 285
+                                           ; SOURCE LINE # 286
+00B4 C200        E     CLR     F_Service_OEM_3
+                                           ; SOURCE LINE # 287
+00B6 120000      E     LCALL   service_OEM_3
+                                           ; SOURCE LINE # 288
+00B9 020000      R     LJMP    ?C0010
+                                           ; SOURCE LINE # 289
+00BC         ?C0028:
+                                           ; SOURCE LINE # 294
+00BC 300008      E     JNB     F_Service_OEM_4,?C0029
+                                           ; SOURCE LINE # 295
+                                           ; SOURCE LINE # 296
+00BF C200        E     CLR     F_Service_OEM_4
+                                           ; SOURCE LINE # 297
+00C1 120000      E     LCALL   service_OEM_4
+                                           ; SOURCE LINE # 298
+00C4 020000      R     LJMP    ?C0010
+                                           ; SOURCE LINE # 299
+00C7         ?C0029:
+                                           ; SOURCE LINE # 304
+00C7 120000      E     LCALL   Hook_main_service_L
+                                           ; SOURCE LINE # 305
+00CA 020000      R     LJMP    ?C0010
+                                           ; SOURCE LINE # 306
+00CD         ?C0030:
+00CD 22                RET     
+             ; FUNCTION main_service (END)
+
+             ; FUNCTION service_Low_LVEvent (BEGIN)
+                                           ; SOURCE LINE # 308
+                                           ; SOURCE LINE # 309
+                                           ; SOURCE LINE # 310
+0000 900000      E     MOV     DPTR,#KBPendingRXCount
+0003 E0                MOVX    A,@DPTR
+0004 FF                MOV     R7,A
+0005 900000      E     MOV     DPTR,#KBPendingTXCount
+0008 E0                MOVX    A,@DPTR
+0009 6F                XRL     A,R7
+000A 700E              JNZ     ?C0032
+000C AF00        E     MOV     R7,scan
+000E EF                MOV     A,R7
+000F C4                SWAP    A
+0010 540F              ANL     A,#0FH
+0012 FF                MOV     R7,A
+0013 E500        E     MOV     A,scan
+0015 540F              ANL     A,#0FH
+0017 6F                XRL     A,R7
+0018 6003              JZ      ?C0031
+001A         ?C0032:
+C51 COMPILER V7.50   CORE_MAIN                                                             09/08/2020 15:56:18 PAGE 17  
+
+                                           ; SOURCE LINE # 311
+                                           ; SOURCE LINE # 312
+001A 120000      E     LCALL   SetServiceSendFlag
+                                           ; SOURCE LINE # 313
+001D         ?C0031:
+                                           ; SOURCE LINE # 315
+001D 900000      E     MOV     DPTR,#KBHISR
+0020 E0                MOVX    A,@DPTR
+0021 30E102            JNB     ACC.1,?C0033
+                                           ; SOURCE LINE # 316
+                                           ; SOURCE LINE # 317
+0024 D200        E     SETB    F_Service_PCI
+                                           ; SOURCE LINE # 318
+0026         ?C0033:
+                                           ; SOURCE LINE # 320
+0026 900000      E     MOV     DPTR,#PM1STS
+0029 E0                MOVX    A,@DPTR
+002A 30E102            JNB     ACC.1,?C0035
+                                           ; SOURCE LINE # 321
+                                           ; SOURCE LINE # 322
+002D D200        E     SETB    F_Service_PCI2
+                                           ; SOURCE LINE # 323
+                                           ; SOURCE LINE # 324
+002F         ?C0035:
+002F 22                RET     
+             ; FUNCTION service_Low_LVEvent (END)
+
+             ; FUNCTION service_unlock (BEGIN)
+                                           ; SOURCE LINE # 330
+                                           ; SOURCE LINE # 331
+                                           ; SOURCE LINE # 332
+0000 020000      E     LJMP    Unlock_Scan
+             ; FUNCTION service_unlock (END)
+
+             ; FUNCTION service_1mS (BEGIN)
+                                           ; SOURCE LINE # 338
+                                           ; SOURCE LINE # 339
+                                           ; SOURCE LINE # 340
+0000 120000      R     LCALL   Timer1msEvent
+                                           ; SOURCE LINE # 341
+0003 0500        E     INC     Timer1msCnt
+                                           ; SOURCE LINE # 342
+0005 E500        E     MOV     A,Timer1msCnt
+0007 C3                CLR     C
+0008 940A              SUBB    A,#0AH
+000A 4003              JC      ?C0037
+                                           ; SOURCE LINE # 343
+                                           ; SOURCE LINE # 344
+000C E4                CLR     A
+000D F500        E     MOV     Timer1msCnt,A
+                                           ; SOURCE LINE # 345
+000F         ?C0037:
+                                           ; SOURCE LINE # 347
+000F 120000      E     LCALL   Hook_Only_Timer1msEvent
+0012 EF                MOV     A,R7
+0013 6401              XRL     A,#01H
+0015 7003              JNZ     $ + 5H
+0017 020000      R     LJMP    ?C0039
+                                           ; SOURCE LINE # 348
+                                           ; SOURCE LINE # 350
+001A         ?C0038:
+                                           ; SOURCE LINE # 352
+C51 COMPILER V7.50   CORE_MAIN                                                             09/08/2020 15:56:18 PAGE 18  
+
+001A E500        E     MOV     A,Timer1msCnt
+001C 75F005            MOV     B,#05H
+001F 84                DIV     AB
+0020 E5F0              MOV     A,B
+0022 6003              JZ      $ + 5H
+0024 020000      R     LJMP    ?C0039
+                                           ; SOURCE LINE # 353
+                                           ; SOURCE LINE # 354
+0027 120000      R     LCALL   Timer5msEvent
+                                           ; SOURCE LINE # 355
+002A 0500        E     INC     Timer5msCnt
+                                           ; SOURCE LINE # 356
+002C E500        E     MOV     A,Timer5msCnt
+002E 30E003            JNB     ACC.0,?C0041
+                                           ; SOURCE LINE # 357
+                                           ; SOURCE LINE # 358
+0031 020000      R     LJMP    Timer10msEventA
+                                           ; SOURCE LINE # 359
+0034         ?C0041:
+                                           ; SOURCE LINE # 361
+                                           ; SOURCE LINE # 362
+0034 120000      R     LCALL   Timer10msEventB
+                                           ; SOURCE LINE # 363
+0037 E500        E     MOV     A,Timer5msCnt
+0039 24FC              ADD     A,#0FCH
+003B 6011              JZ      ?C0045
+003D 24FE              ADD     A,#0FEH
+003F 6012              JZ      ?C0046
+0041 24FE              ADD     A,#0FEH
+0043 6013              JZ      ?C0047
+0045 2406              ADD     A,#06H
+0047 7020              JNZ     ?C0050
+                                           ; SOURCE LINE # 364
+                                           ; SOURCE LINE # 365
+0049         ?C0044:
+0049 120000      R     LCALL   Timer50msEventA
+                                           ; SOURCE LINE # 366
+004C 801E              SJMP    ?C0043
+                                           ; SOURCE LINE # 367
+004E         ?C0045:
+004E 120000      R     LCALL   Timer50msEventB
+                                           ; SOURCE LINE # 368
+0051 8019              SJMP    ?C0043
+                                           ; SOURCE LINE # 369
+0053         ?C0046:
+0053 120000      R     LCALL   Timer50msEventC
+                                           ; SOURCE LINE # 370
+0056 8014              SJMP    ?C0043
+                                           ; SOURCE LINE # 371
+0058         ?C0047:
+0058 0500        E     INC     Timer100msCntB
+                                           ; SOURCE LINE # 372
+005A E500        E     MOV     A,Timer100msCntB
+005C 30E005            JNB     ACC.0,?C0048
+                                           ; SOURCE LINE # 373
+                                           ; SOURCE LINE # 374
+005F 120000      R     LCALL   Timer100msEventA
+                                           ; SOURCE LINE # 375
+0062 8008              SJMP    ?C0043
+0064         ?C0048:
+                                           ; SOURCE LINE # 377
+                                           ; SOURCE LINE # 378
+C51 COMPILER V7.50   CORE_MAIN                                                             09/08/2020 15:56:18 PAGE 19  
+
+0064 120000      R     LCALL   Timer100msEventB
+                                           ; SOURCE LINE # 379
+                                           ; SOURCE LINE # 380
+0067 8003              SJMP    ?C0043
+                                           ; SOURCE LINE # 382
+0069         ?C0050:
+                                           ; SOURCE LINE # 383
+0069 E4                CLR     A
+006A F500        E     MOV     Timer5msCnt,A
+                                           ; SOURCE LINE # 384
+                                           ; SOURCE LINE # 385
+006C         ?C0043:
+                                           ; SOURCE LINE # 387
+006C E500        E     MOV     A,Timer5msCnt
+006E 7056              JNZ     ?C0039
+                                           ; SOURCE LINE # 388
+                                           ; SOURCE LINE # 389
+0070 0500        E     INC     Timer100msCnt
+                                           ; SOURCE LINE # 390
+0072 E500        E     MOV     A,Timer100msCnt
+0074 30E003            JNB     ACC.0,?C0052
+                                           ; SOURCE LINE # 391
+                                           ; SOURCE LINE # 392
+0077 020000      R     LJMP    Timer100msEventC
+                                           ; SOURCE LINE # 393
+007A         ?C0052:
+                                           ; SOURCE LINE # 395
+                                           ; SOURCE LINE # 396
+007A E500        E     MOV     A,Timer100msCnt
+007C 120000      E     LCALL   ?C?CCASE
+007F 0000        R     DW      ?C0055
+0081 02                DB      02H
+0082 0000        R     DW      ?C0056
+0084 04                DB      04H
+0085 0000        R     DW      ?C0057
+0087 06                DB      06H
+0088 0000        R     DW      ?C0058
+008A 08                DB      08H
+008B 0000        R     DW      ?C0059
+008D 0A                DB      0AH
+008E 0000        R     DW      ?C0060
+0090 0C                DB      0CH
+0091 0000        R     DW      ?C0061
+0093 0E                DB      0EH
+0094 0000        R     DW      ?C0057
+0096 10                DB      010H
+0097 0000        R     DW      ?C0063
+0099 12                DB      012H
+009A 0000              DW      00H
+009C 0000        R     DW      ?C0064
+                                           ; SOURCE LINE # 397
+                                           ; SOURCE LINE # 398
+009E         ?C0055:
+                                           ; SOURCE LINE # 399
+009E 800A              SJMP    ?C0084
+                                           ; SOURCE LINE # 400
+00A0         ?C0056:
+                                           ; SOURCE LINE # 401
+00A0 800B              SJMP    ?C0085
+                                           ; SOURCE LINE # 402
+00A2         ?C0057:
+                                           ; SOURCE LINE # 403
+C51 COMPILER V7.50   CORE_MAIN                                                             09/08/2020 15:56:18 PAGE 20  
+
+00A2 800C              SJMP    ?C0086
+                                           ; SOURCE LINE # 404
+00A4         ?C0058:
+00A4 020000      R     LJMP    Timer1SecEventA
+                                           ; SOURCE LINE # 405
+                                           ; SOURCE LINE # 406
+00A7         ?C0059:
+00A7 020000      R     LJMP    Timer1SecEventB
+                                           ; SOURCE LINE # 407
+                                           ; SOURCE LINE # 408
+00AA         ?C0060:
+00AA         ?C0084:
+00AA 020000      R     LJMP    Timer500msEventA
+                                           ; SOURCE LINE # 409
+                                           ; SOURCE LINE # 410
+00AD         ?C0061:
+00AD         ?C0085:
+00AD 020000      R     LJMP    Timer500msEventB
+                                           ; SOURCE LINE # 411
+                                           ; SOURCE LINE # 412
+00B0         ?C0086:
+00B0 020000      R     LJMP    Timer500msEventC
+                                           ; SOURCE LINE # 413
+                                           ; SOURCE LINE # 414
+00B3         ?C0063:
+00B3 020000      R     LJMP    Timer1SecEventC
+                                           ; SOURCE LINE # 415
+                                           ; SOURCE LINE # 416
+00B6         ?C0064:
+                                           ; SOURCE LINE # 417
+00B6 E4                CLR     A
+00B7 F500        E     MOV     Timer100msCnt,A
+                                           ; SOURCE LINE # 418
+00B9 0500        E     INC     Timer1SecCnt
+                                           ; SOURCE LINE # 419
+00BB E500        E     MOV     A,Timer1SecCnt
+00BD B43C06            CJNE    A,#03CH,?C0039
+                                           ; SOURCE LINE # 420
+                                           ; SOURCE LINE # 421
+00C0 120000      R     LCALL   Timer1MinEvent
+                                           ; SOURCE LINE # 422
+00C3 E4                CLR     A
+00C4 F500        E     MOV     Timer1SecCnt,A
+                                           ; SOURCE LINE # 423
+                                           ; SOURCE LINE # 424
+                                           ; SOURCE LINE # 425
+                                           ; SOURCE LINE # 426
+                                           ; SOURCE LINE # 427
+                                           ; SOURCE LINE # 428
+                                           ; SOURCE LINE # 429
+                                           ; SOURCE LINE # 430
+00C6         ?C0039:
+00C6 22                RET     
+             ; FUNCTION service_1mS (END)
+
+             ; FUNCTION Timer1msEvent (BEGIN)
+                                           ; SOURCE LINE # 435
+                                           ; SOURCE LINE # 436
+                                           ; SOURCE LINE # 437
+0000 120000      E     LCALL   ReSendPS2PendingData
+                                           ; SOURCE LINE # 438
+0003 AF00        E     MOV     R7,Timer1msCnt
+C51 COMPILER V7.50   CORE_MAIN                                                             09/08/2020 15:56:18 PAGE 21  
+
+0005 020000      E     LJMP    _Hook_Timer1msEvent
+             ; FUNCTION Timer1msEvent (END)
+
+             ; FUNCTION Timer5msEvent (BEGIN)
+                                           ; SOURCE LINE # 444
+                                           ; SOURCE LINE # 445
+                                           ; SOURCE LINE # 446
+0000 D200        E     SETB    F_Service_Low_LV
+                                           ; SOURCE LINE # 447
+0002 AF00        E     MOV     R7,Timer_A
+0004 EF                MOV     A,R7
+0005 C4                SWAP    A
+0006 540F              ANL     A,#0FH
+0008 30E002            JNB     ACC.0,?C0067
+                                           ; SOURCE LINE # 448
+                                           ; SOURCE LINE # 449
+000B D200        E     SETB    F_Service_KEY
+                                           ; SOURCE LINE # 450
+000D         ?C0067:
+                                           ; SOURCE LINE # 451
+000D 020000      E     LJMP    Hook_Timer5msEvent
+             ; FUNCTION Timer5msEvent (END)
+
+             ; FUNCTION Timer10msEventA (BEGIN)
+                                           ; SOURCE LINE # 457
+                                           ; SOURCE LINE # 458
+                                           ; SOURCE LINE # 459
+0000 120000      E     LCALL   SetStartScanAUXFlag
+                                           ; SOURCE LINE # 460
+0003 020000      E     LJMP    Hook_Timer10msEventA
+             ; FUNCTION Timer10msEventA (END)
+
+             ; FUNCTION Timer10msEventB (BEGIN)
+                                           ; SOURCE LINE # 466
+                                           ; SOURCE LINE # 467
+                                           ; SOURCE LINE # 468
+0000 020000      E     LJMP    Hook_Timer10msEventB
+             ; FUNCTION Timer10msEventB (END)
+
+             ; FUNCTION Timer50msEventA (BEGIN)
+                                           ; SOURCE LINE # 474
+                                           ; SOURCE LINE # 475
+                                           ; SOURCE LINE # 476
+0000 020000      E     LJMP    Hook_Timer50msEventA
+             ; FUNCTION Timer50msEventA (END)
+
+             ; FUNCTION Timer50msEventB (BEGIN)
+                                           ; SOURCE LINE # 482
+                                           ; SOURCE LINE # 483
+                                           ; SOURCE LINE # 484
+0000 020000      E     LJMP    Hook_Timer50msEventB
+             ; FUNCTION Timer50msEventB (END)
+
+             ; FUNCTION Timer50msEventC (BEGIN)
+                                           ; SOURCE LINE # 490
+                                           ; SOURCE LINE # 491
+                                           ; SOURCE LINE # 492
+0000 020000      E     LJMP    Hook_Timer50msEventC
+             ; FUNCTION Timer50msEventC (END)
+
+             ; FUNCTION Timer100msEventA (BEGIN)
+                                           ; SOURCE LINE # 498
+C51 COMPILER V7.50   CORE_MAIN                                                             09/08/2020 15:56:18 PAGE 22  
+
+                                           ; SOURCE LINE # 499
+                                           ; SOURCE LINE # 500
+0000 020000      E     LJMP    Hook_Timer100msEventA
+             ; FUNCTION Timer100msEventA (END)
+
+             ; FUNCTION Timer100msEventB (BEGIN)
+                                           ; SOURCE LINE # 506
+                                           ; SOURCE LINE # 507
+                                           ; SOURCE LINE # 508
+0000 020000      E     LJMP    Hook_Timer100msEventB
+             ; FUNCTION Timer100msEventB (END)
+
+             ; FUNCTION Timer100msEventC (BEGIN)
+                                           ; SOURCE LINE # 514
+                                           ; SOURCE LINE # 515
+                                           ; SOURCE LINE # 516
+0000 020000      E     LJMP    Hook_Timer100msEventC
+             ; FUNCTION Timer100msEventC (END)
+
+             ; FUNCTION Timer500msEventA (BEGIN)
+                                           ; SOURCE LINE # 522
+                                           ; SOURCE LINE # 523
+                                           ; SOURCE LINE # 524
+0000 020000      E     LJMP    Hook_Timer500msEventA
+             ; FUNCTION Timer500msEventA (END)
+
+             ; FUNCTION Timer500msEventB (BEGIN)
+                                           ; SOURCE LINE # 530
+                                           ; SOURCE LINE # 531
+                                           ; SOURCE LINE # 532
+0000 020000      E     LJMP    Hook_Timer500msEventB
+             ; FUNCTION Timer500msEventB (END)
+
+             ; FUNCTION Timer500msEventC (BEGIN)
+                                           ; SOURCE LINE # 538
+                                           ; SOURCE LINE # 539
+                                           ; SOURCE LINE # 540
+0000 020000      E     LJMP    Hook_Timer500msEventC
+             ; FUNCTION Timer500msEventC (END)
+
+             ; FUNCTION Timer1SecEventA (BEGIN)
+                                           ; SOURCE LINE # 546
+                                           ; SOURCE LINE # 547
+                                           ; SOURCE LINE # 548
+0000 020000      E     LJMP    Hook_Timer1SecEventA
+             ; FUNCTION Timer1SecEventA (END)
+
+             ; FUNCTION Timer1SecEventB (BEGIN)
+                                           ; SOURCE LINE # 554
+                                           ; SOURCE LINE # 555
+                                           ; SOURCE LINE # 556
+0000 020000      E     LJMP    Hook_Timer1SecEventB
+             ; FUNCTION Timer1SecEventB (END)
+
+             ; FUNCTION Timer1SecEventC (BEGIN)
+                                           ; SOURCE LINE # 562
+                                           ; SOURCE LINE # 563
+                                           ; SOURCE LINE # 564
+0000 020000      E     LJMP    Hook_Timer1SecEventC
+             ; FUNCTION Timer1SecEventC (END)
+
+             ; FUNCTION Timer1MinEvent (BEGIN)
+C51 COMPILER V7.50   CORE_MAIN                                                             09/08/2020 15:56:18 PAGE 23  
+
+                                           ; SOURCE LINE # 570
+                                           ; SOURCE LINE # 571
+                                           ; SOURCE LINE # 572
+0000 020000      E     LJMP    Hook_Timer1MinEvent
+             ; FUNCTION Timer1MinEvent (END)
+
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    670    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

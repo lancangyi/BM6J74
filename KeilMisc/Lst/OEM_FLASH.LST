@@ -1,0 +1,620 @@
+C51 COMPILER V7.50   OEM_FLASH                                                             09/08/2020 15:56:23 PAGE 1   
+
+
+C51 COMPILER V7.50, COMPILATION OF MODULE OEM_FLASH
+OBJECT MODULE PLACED IN Code\OEM\OEM_FLASH.OBJ
+COMPILER INVOKED BY: C:\Keil\C51\BIN\c51.exe Code\OEM\OEM_FLASH.C LA WL(1) CD OT(8,SIZE) NOAREGS OR INCDIR(.\Code\CORE\I
+                    -NCLUDE\;.\Code\OEM\INCLUDE\;.\Code\CHIP\INCLUDE\)
+
+line level    source
+
+   1          /*-----------------------------------------------------------------------------
+   2           * TITLE: OEM_FLASH.C
+   3           *
+   4           * Author : Dino
+   5           *
+   6           * Note : These functions are reference only.
+   7           *        Please follow your project software specification to do some modification.
+   8           *---------------------------------------------------------------------------*/
+   9          
+  10          #include <CORE_INCLUDE.H>
+  11          #include <OEM_INCLUDE.H>
+  12          
+  13          void SetLPCClockFreeRun(void)
+  14          {
+  15   1              GPCRH0 = OUTPUT;
+  16   1              CLEAR_MASK(GPDRH,BIT(0));
+  17   1      }
+  18          
+  19          
+  20          //----------------------------------------------------------------------------
+  21          // The function of flashing
+  22          //----------------------------------------------------------------------------
+  23          void LPC_RamCode(void)
+  24          {
+  25   1      
+  26   1              RamcodeCmd = 0x00;
+  27   1      
+  28   1              SET_MASK(SMECCS,HOSTWA);        // Host write allow 
+  29   1      
+  30   1              if(RamCodePort==0x64)
+  31   1              {
+  32   2                      KBHIKDOR = 0xFA;
+  33   2              }
+  34   1              else if(RamCodePort==0x66)
+  35   1              {
+  36   2                      PM1DO = 0xFA;
+  37   2              }       
+  38   1              else if(RamCodePort==0x6C)
+  39   1              {
+  40   2                      PM2DO = 0xFA;
+  41   2              }               
+  42   1              while(1)
+  43   1              {
+  44   2                      if(RamCodePort==0x64)
+  45   2                      {
+  46   3                              if( IS_MASK_CLEAR(KBHISR,IBF)) continue;
+  47   3                      if( IS_MASK_CLEAR(KBHISR,C_D)) continue;
+  48   3                      RamcodeCmd = KBHIDIR;
+  49   3                      }
+  50   2                      else if(RamCodePort==0x66)
+  51   2                      {
+  52   3                      if ( IS_MASK_CLEAR(PM1STS,P_IBF)) continue;
+  53   3                      if ( IS_MASK_CLEAR(PM1STS,P_C_D)) continue;
+  54   3                      RamcodeCmd = PM1DI;
+C51 COMPILER V7.50   OEM_FLASH                                                             09/08/2020 15:56:23 PAGE 2   
+
+  55   3                      }               
+  56   2                      else if(RamCodePort==0x6C)
+  57   2                      {
+  58   3                      if ( IS_MASK_CLEAR(PM2STS,P_IBF)) continue;
+  59   3                      if ( IS_MASK_CLEAR(PM2STS,P_C_D)) continue;
+  60   3                      RamcodeCmd = PM2DI;
+  61   3                      }       
+  62   2                      
+  63   2              if ( RamcodeCmd == 0x55)
+  64   2              {
+  65   3                      WinFlashMark = 0x33;
+  66   3                      break;
+  67   3                      }
+  68   2                      else if ( RamcodeCmd == 0xAF)
+  69   2              {
+  70   3                              WDTRST = 1;                     // Reset watch dog timer
+  71   3                              WDTEB = 1;                      // Enable watch dog
+  72   3                      while(1);                       // Wait for watch dog time-out
+  73   3              }
+  74   2      
+  75   2      //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++  guoyong 120313 add
+  76   2                      else if ( RamcodeCmd == 0x95)   // For AMI BIOS
+  77   2              {
+  78   3                      WinFlashMark = 0x33;
+  79   3                  break;
+  80   3              }
+  81   2      //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  82   2              else if ( RamcodeCmd == 0xD7)   // For AMI BIOS
+  83   2              {
+  84   3                  CLEAR_MASK(SMECCS,HOSTWA);  // Host write not allow
+  85   3                  _nop_();
+  86   3                  _nop_();
+  87   3                  SET_MASK(SMECCS,HOSTWA);    // Host write allow 
+  88   3              }
+  89   2              }
+  90   1      
+  91   1              CLEAR_MASK(SMECCS,HOSTWA);  // Host write not allow
+  92   1      
+  93   1              _nop_();
+  94   1      
+  95   1              GPCRH0 = ALT;
+  96   1      
+  97   1          main();
+  98   1      }
+  99          
+ 100          //----------------------------------------------------------------------------
+ 101          // The function of Scratch rom
+ 102          //----------------------------------------------------------------------------
+ 103          void RamProgram(BYTE useport)
+ 104          { 
+ 105   1          SetLPCClockFreeRun();
+ 106   1              RamCodePort = useport;
+ 107   1              DisableAllInterrupt();
+ 108   1      
+ 109   1              Tmp_XPntr = 0x700;
+ 110   1          
+ 111   1          #ifdef HSPI
+                      #ifdef HSPI_DefferingMode
+                      CLEAR_MASK(IER7,Int_DeferredSPI);   // Disable HSPI interrupt
+                      #endif
+                  Tmp_code_pointer = (void *)HSPI_CmdRamCode;
+                  #else
+C51 COMPILER V7.50   OEM_FLASH                                                             09/08/2020 15:56:23 PAGE 3   
+
+ 117   1              Tmp_code_pointer = (void *)LPC_RamCode;
+ 118   1          #endif
+ 119   1              
+ 120   1              for(ITempB01=0;ITempB01<255;ITempB01++)
+ 121   1              {
+ 122   2                      *Tmp_XPntr = *Tmp_code_pointer;
+ 123   2              Tmp_XPntr++;
+ 124   2                      Tmp_code_pointer++;
+ 125   2              }
+ 126   1              SET_MASK(FBCFG,SSMC);           // enable scatch ROM
+ 127   1      
+ 128   1      //++++++++++++++++++++++++++++++++++++++++++
+ 129   1      //      FBCFG=0x83;             // ENABLE SCRATCH ROM
+ 130   1              
+ 131   1      //++++++++++++++++++++++++++++++++++++++++++
+ 132   1          _nop_();
+ 133   1          _nop_();
+ 134   1          _nop_();
+ 135   1          _nop_();
+ 136   1          _nop_();
+ 137   1          _nop_();
+ 138   1          _nop_();
+ 139   1          _nop_();
+ 140   1          
+ 141   1              RamCode();
+ 142   1      }
+ 143          
+ 144          
+ 145          //----------------------------------------------------------------------------
+ 146          // SPI read & write example
+ 147          //----------------------------------------------------------------------------
+ 148          //----------------------------------------------------------------------------
+ 149          // The example of SPI protect all
+ 150          //----------------------------------------------------------------------------
+ 151          void OEM_SPIProtectAll(void)
+ 152          {
+ 153   1              Do_SPI_Write_Status(SPIStatus_ProtectAll);
+ 154   1              Do_SPI_Write_Disable();
+ 155   1      }
+ 156          
+ 157          void OEM_SPIUnlockAll(void)
+ 158          {
+ 159   1              Do_SPI_Write_Status(SPIStatus_UnlockAll);
+ 160   1              Do_SPI_Write_Enable();    
+ 161   1      }    
+ 162          //----------------------------------------------------------------------------
+ 163          // The example of writing external ram 0x200 ~ 0x2FF to SPI ROM 0x010000 ~ 0x0100FF
+ 164          //----------------------------------------------------------------------------
+ 165          void OEM_Write_SPI_256Bytes(void)
+ 166          {
+ 167   1              Do_SPI_Write_Status(SPIStatus_UnlockAll);
+ 168   1              Do_SPI_Write_Enable();
+ 169   1              Do_SPI_Erase(SPICmd_Erase4KByte,0x01,0x00,0x00);
+ 170   1              Do_SPI_Write_Enable();
+ 171   1              Do_SPI_Write_256Bytes(&SPIBuffer,0x01,0x00,0x00);
+ 172   1              Do_SPI_Write_Disable();
+ 173   1      }
+ 174          
+ 175          //----------------------------------------------------------------------------
+ 176          // The example of reading SPI ROM 0x010000 ~ 0x0100FF to external ram 0x200 ~ 0x2FF
+ 177          //----------------------------------------------------------------------------
+ 178          void OEM_Read_SPI_256Bytes(void)
+C51 COMPILER V7.50   OEM_FLASH                                                             09/08/2020 15:56:23 PAGE 4   
+
+ 179          {
+ 180   1              Do_SPI_Read_256Bytes(&SPIBuffer,0x01,0x00,0x00);
+ 181   1      }
+ 182          
+ 183          //-----------------------------------------------------------------------------
+ 184          // The example of reading SPI ID
+ 185          //              Note : SPI ID always save to array SPIIDBuf[]
+ 186          //-----------------------------------------------------------------------------
+ 187          void OEM_SPI_Read_ID(void)
+ 188          {
+ 189   1              Do_SPI_Read_ID();
+ 190   1      }
+ 191          
+ 192          //----------------------------------------------------------------------------
+ 193          // The example of SPI read status
+ 194          //----------------------------------------------------------------------------
+ 195          BYTE OEM_SPIReadStatus(void)
+ 196          {
+ 197   1              Do_SPI_Read_Status();
+ 198   1              return(SPIReadStatus);
+ 199   1      }
+C51 COMPILER V7.50   OEM_FLASH                                                             09/08/2020 15:56:23 PAGE 5   
+
+ASSEMBLY LISTING OF GENERATED OBJECT CODE
+
+
+             ; FUNCTION SetLPCClockFreeRun (BEGIN)
+                                           ; SOURCE LINE # 13
+                                           ; SOURCE LINE # 14
+                                           ; SOURCE LINE # 15
+0000 900000      E     MOV     DPTR,#GPCRH0
+0003 7440              MOV     A,#040H
+0005 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 16
+0006 900000      E     MOV     DPTR,#GPDRH
+0009 E0                MOVX    A,@DPTR
+000A 54FE              ANL     A,#0FEH
+000C F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 17
+000D 22                RET     
+             ; FUNCTION SetLPCClockFreeRun (END)
+
+             ; FUNCTION LPC_RamCode (BEGIN)
+                                           ; SOURCE LINE # 23
+                                           ; SOURCE LINE # 24
+                                           ; SOURCE LINE # 26
+0000 E4                CLR     A
+0001 900000      E     MOV     DPTR,#RamcodeCmd
+0004 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 28
+0005 900000      E     MOV     DPTR,#SMECCS
+0008 E0                MOVX    A,@DPTR
+0009 4420              ORL     A,#020H
+000B F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 30
+000C 900000      E     MOV     DPTR,#RamCodePort
+000F E0                MOVX    A,@DPTR
+0010 B46405            CJNE    A,#064H,?C0002
+                                           ; SOURCE LINE # 31
+                                           ; SOURCE LINE # 32
+0013 900000      E     MOV     DPTR,#KBHIKDOR
+                                           ; SOURCE LINE # 33
+0016 8016              SJMP    ?C0043
+0018         ?C0002:
+                                           ; SOURCE LINE # 34
+0018 900000      E     MOV     DPTR,#RamCodePort
+001B E0                MOVX    A,@DPTR
+001C B46605            CJNE    A,#066H,?C0004
+                                           ; SOURCE LINE # 35
+                                           ; SOURCE LINE # 36
+001F 900000      E     MOV     DPTR,#PM1DO
+0022         ?C0042:
+                                           ; SOURCE LINE # 37
+0022 800A              SJMP    ?C0043
+0024         ?C0004:
+                                           ; SOURCE LINE # 38
+0024 900000      E     MOV     DPTR,#RamCodePort
+0027 E0                MOVX    A,@DPTR
+0028 B46C06            CJNE    A,#06CH,?C0007
+                                           ; SOURCE LINE # 39
+                                           ; SOURCE LINE # 40
+002B 900000      E     MOV     DPTR,#PM2DO
+002E         ?C0043:
+002E 74FA              MOV     A,#0FAH
+0030 F0                MOVX    @DPTR,A
+C51 COMPILER V7.50   OEM_FLASH                                                             09/08/2020 15:56:23 PAGE 6   
+
+                                           ; SOURCE LINE # 41
+0031         ?C0007:
+                                           ; SOURCE LINE # 42
+                                           ; SOURCE LINE # 43
+                                           ; SOURCE LINE # 44
+0031 900000      E     MOV     DPTR,#RamCodePort
+0034 E0                MOVX    A,@DPTR
+0035 B46413            CJNE    A,#064H,?C0009
+                                           ; SOURCE LINE # 45
+                                           ; SOURCE LINE # 46
+0038 900000      E     MOV     DPTR,#KBHISR
+003B E0                MOVX    A,@DPTR
+003C 30E1F2            JNB     ACC.1,?C0007
+003F         ?C0010:
+                                           ; SOURCE LINE # 47
+003F 900000      E     MOV     DPTR,#KBHISR
+0042 E0                MOVX    A,@DPTR
+0043 30E3EB            JNB     ACC.3,?C0007
+0046         ?C0011:
+                                           ; SOURCE LINE # 48
+0046 900000      E     MOV     DPTR,#KBHIDIR
+                                           ; SOURCE LINE # 49
+0049 8032              SJMP    ?C0045
+004B         ?C0009:
+                                           ; SOURCE LINE # 50
+004B 900000      E     MOV     DPTR,#RamCodePort
+004E E0                MOVX    A,@DPTR
+004F B46613            CJNE    A,#066H,?C0013
+                                           ; SOURCE LINE # 51
+                                           ; SOURCE LINE # 52
+0052 900000      E     MOV     DPTR,#PM1STS
+0055 E0                MOVX    A,@DPTR
+0056 30E1D8            JNB     ACC.1,?C0007
+0059         ?C0014:
+                                           ; SOURCE LINE # 53
+0059 900000      E     MOV     DPTR,#PM1STS
+005C E0                MOVX    A,@DPTR
+005D 30E3D1            JNB     ACC.3,?C0007
+0060         ?C0015:
+                                           ; SOURCE LINE # 54
+0060 900000      E     MOV     DPTR,#PM1DI
+0063         ?C0044:
+                                           ; SOURCE LINE # 55
+0063 8018              SJMP    ?C0045
+0065         ?C0013:
+                                           ; SOURCE LINE # 56
+0065 900000      E     MOV     DPTR,#RamCodePort
+0068 E0                MOVX    A,@DPTR
+0069 B46C16            CJNE    A,#06CH,?C0012
+                                           ; SOURCE LINE # 57
+                                           ; SOURCE LINE # 58
+006C 900000      E     MOV     DPTR,#PM2STS
+006F E0                MOVX    A,@DPTR
+0070 30E1BE            JNB     ACC.1,?C0007
+0073         ?C0018:
+                                           ; SOURCE LINE # 59
+0073 900000      E     MOV     DPTR,#PM2STS
+0076 E0                MOVX    A,@DPTR
+0077 30E3B7            JNB     ACC.3,?C0007
+007A         ?C0019:
+                                           ; SOURCE LINE # 60
+007A 900000      E     MOV     DPTR,#PM2DI
+C51 COMPILER V7.50   OEM_FLASH                                                             09/08/2020 15:56:23 PAGE 7   
+
+007D         ?C0045:
+007D E0                MOVX    A,@DPTR
+007E 900000      E     MOV     DPTR,#RamcodeCmd
+0081 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 61
+0082         ?C0012:
+                                           ; SOURCE LINE # 63
+0082 900000      E     MOV     DPTR,#RamcodeCmd
+0085 E0                MOVX    A,@DPTR
+0086 B45502            CJNE    A,#055H,?C0020
+                                           ; SOURCE LINE # 64
+                                           ; SOURCE LINE # 65
+                                           ; SOURCE LINE # 66
+0089 8014              SJMP    ?C0046
+                                           ; SOURCE LINE # 67
+008B         ?C0020:
+                                           ; SOURCE LINE # 68
+008B 900000      E     MOV     DPTR,#RamcodeCmd
+008E E0                MOVX    A,@DPTR
+008F B4AF06            CJNE    A,#0AFH,?C0022
+                                           ; SOURCE LINE # 69
+                                           ; SOURCE LINE # 70
+0092 D2D8              SETB    WDTRST
+                                           ; SOURCE LINE # 71
+0094 D2D9              SETB    WDTEB
+0096         ?C0023:
+                                           ; SOURCE LINE # 72
+0096 80FE              SJMP    ?C0023
+                                           ; SOURCE LINE # 73
+0098         ?C0022:
+                                           ; SOURCE LINE # 76
+0098 900000      E     MOV     DPTR,#RamcodeCmd
+009B E0                MOVX    A,@DPTR
+009C B49508            CJNE    A,#095H,?C0026
+                                           ; SOURCE LINE # 77
+                                           ; SOURCE LINE # 78
+009F         ?C0046:
+009F 900000      E     MOV     DPTR,#WinFlashMark
+00A2 7433              MOV     A,#033H
+00A4 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 79
+00A5 8018              SJMP    ?C0008
+                                           ; SOURCE LINE # 80
+00A7         ?C0026:
+                                           ; SOURCE LINE # 82
+00A7 900000      E     MOV     DPTR,#RamcodeCmd
+00AA E0                MOVX    A,@DPTR
+00AB 64D7              XRL     A,#0D7H
+00AD 7082              JNZ     ?C0007
+                                           ; SOURCE LINE # 83
+                                           ; SOURCE LINE # 84
+00AF 900000      E     MOV     DPTR,#SMECCS
+00B2 E0                MOVX    A,@DPTR
+00B3 54DF              ANL     A,#0DFH
+00B5 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 85
+00B6 00                NOP     
+                                           ; SOURCE LINE # 86
+00B7 00                NOP     
+                                           ; SOURCE LINE # 87
+00B8 E0                MOVX    A,@DPTR
+00B9 4420              ORL     A,#020H
+C51 COMPILER V7.50   OEM_FLASH                                                             09/08/2020 15:56:23 PAGE 8   
+
+00BB F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 88
+                                           ; SOURCE LINE # 89
+00BC 020000      R     LJMP    ?C0007
+00BF         ?C0008:
+                                           ; SOURCE LINE # 91
+00BF 900000      E     MOV     DPTR,#SMECCS
+00C2 E0                MOVX    A,@DPTR
+00C3 54DF              ANL     A,#0DFH
+00C5 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 93
+00C6 00                NOP     
+                                           ; SOURCE LINE # 95
+00C7 E4                CLR     A
+00C8 900000      E     MOV     DPTR,#GPCRH0
+00CB F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 97
+00CC 020000      E     LJMP    main
+             ; FUNCTION LPC_RamCode (END)
+
+             ; FUNCTION _RamProgram (BEGIN)
+                                           ; SOURCE LINE # 103
+;---- Variable 'useport' assigned to Register 'R7' ----
+                                           ; SOURCE LINE # 104
+                                           ; SOURCE LINE # 105
+0000 120000      R     LCALL   SetLPCClockFreeRun
+                                           ; SOURCE LINE # 106
+0003 900000      E     MOV     DPTR,#RamCodePort
+0006 EF                MOV     A,R7
+0007 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 107
+0008 120000      E     LCALL   DisableAllInterrupt
+                                           ; SOURCE LINE # 109
+000B 7800        E     MOV     R0,#LOW Tmp_XPntr
+000D 7607              MOV     @R0,#07H
+000F 08                INC     R0
+0010 7600              MOV     @R0,#00H
+                                           ; SOURCE LINE # 117
+0012 750000      R     MOV     Tmp_code_pointer,#HIGH LPC_RamCode
+0015 750000      R     MOV     Tmp_code_pointer+01H,#LOW LPC_RamCode
+                                           ; SOURCE LINE # 120
+0018 E4                CLR     A
+0019 F500        E     MOV     ITempB01,A
+001B         ?C0030:
+                                           ; SOURCE LINE # 121
+                                           ; SOURCE LINE # 122
+001B 850082      E     MOV     DPL,Tmp_code_pointer+01H
+001E 850083      E     MOV     DPH,Tmp_code_pointer
+0021 E4                CLR     A
+0022 93                MOVC    A,@A+DPTR
+0023 FF                MOV     R7,A
+0024 7800        E     MOV     R0,#LOW Tmp_XPntr
+0026 E6                MOV     A,@R0
+0027 FC                MOV     R4,A
+0028 08                INC     R0
+0029 E6                MOV     A,@R0
+002A F582              MOV     DPL,A
+002C 8C83              MOV     DPH,R4
+002E EF                MOV     A,R7
+002F F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 123
+0030 06                INC     @R0
+C51 COMPILER V7.50   OEM_FLASH                                                             09/08/2020 15:56:23 PAGE 9   
+
+0031 E6                MOV     A,@R0
+0032 18                DEC     R0
+0033 7001              JNZ     ?C0040
+0035 06                INC     @R0
+0036         ?C0040:
+                                           ; SOURCE LINE # 124
+0036 0500        E     INC     Tmp_code_pointer+01H
+0038 E500        E     MOV     A,Tmp_code_pointer+01H
+003A 7002              JNZ     ?C0041
+003C 0500        E     INC     Tmp_code_pointer
+003E         ?C0041:
+                                           ; SOURCE LINE # 125
+003E 0500        E     INC     ITempB01
+0040 E500        E     MOV     A,ITempB01
+0042 B4FFD6            CJNE    A,#0FFH,?C0030
+0045         ?C0031:
+                                           ; SOURCE LINE # 126
+0045 900000      E     MOV     DPTR,#FBCFG
+0048 E0                MOVX    A,@DPTR
+0049 4480              ORL     A,#080H
+004B F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 132
+004C 00                NOP     
+                                           ; SOURCE LINE # 133
+004D 00                NOP     
+                                           ; SOURCE LINE # 134
+004E 00                NOP     
+                                           ; SOURCE LINE # 135
+004F 00                NOP     
+                                           ; SOURCE LINE # 136
+0050 00                NOP     
+                                           ; SOURCE LINE # 137
+0051 00                NOP     
+                                           ; SOURCE LINE # 138
+0052 00                NOP     
+                                           ; SOURCE LINE # 139
+0053 00                NOP     
+                                           ; SOURCE LINE # 141
+0054 020000      E     LJMP    RamCode
+             ; FUNCTION _RamProgram (END)
+
+             ; FUNCTION OEM_SPIProtectAll (BEGIN)
+                                           ; SOURCE LINE # 151
+                                           ; SOURCE LINE # 152
+                                           ; SOURCE LINE # 153
+0000 7FFC              MOV     R7,#0FCH
+0002 120000      E     LCALL   _Do_SPI_Write_Status
+                                           ; SOURCE LINE # 154
+0005 020000      E     LJMP    Do_SPI_Write_Disable
+             ; FUNCTION OEM_SPIProtectAll (END)
+
+             ; FUNCTION OEM_SPIUnlockAll (BEGIN)
+                                           ; SOURCE LINE # 157
+                                           ; SOURCE LINE # 158
+                                           ; SOURCE LINE # 159
+0000 E4                CLR     A
+0001 FF                MOV     R7,A
+0002 120000      E     LCALL   _Do_SPI_Write_Status
+                                           ; SOURCE LINE # 160
+0005 020000      E     LJMP    Do_SPI_Write_Enable
+             ; FUNCTION OEM_SPIUnlockAll (END)
+
+C51 COMPILER V7.50   OEM_FLASH                                                             09/08/2020 15:56:23 PAGE 10  
+
+             ; FUNCTION OEM_Write_SPI_256Bytes (BEGIN)
+                                           ; SOURCE LINE # 165
+                                           ; SOURCE LINE # 166
+                                           ; SOURCE LINE # 167
+0000 E4                CLR     A
+0001 FF                MOV     R7,A
+0002 120000      E     LCALL   _Do_SPI_Write_Status
+                                           ; SOURCE LINE # 168
+0005 120000      E     LCALL   Do_SPI_Write_Enable
+                                           ; SOURCE LINE # 169
+0008 E4                CLR     A
+0009 900000      E     MOV     DPTR,#?_Do_SPI_Erase?BYTE+03H
+000C F0                MOVX    @DPTR,A
+000D FB                MOV     R3,A
+000E 7D01              MOV     R5,#01H
+0010 7F20              MOV     R7,#020H
+0012 120000      E     LCALL   _Do_SPI_Erase
+                                           ; SOURCE LINE # 170
+0015 120000      E     LCALL   Do_SPI_Write_Enable
+                                           ; SOURCE LINE # 171
+0018 7E00        E     MOV     R6,#HIGH SPIBuffer
+001A 7F00        E     MOV     R7,#LOW SPIBuffer
+001C E4                CLR     A
+001D 900000      E     MOV     DPTR,#?_Do_SPI_Write_256Bytes?BYTE+04H
+0020 F0                MOVX    @DPTR,A
+0021 FB                MOV     R3,A
+0022 7D01              MOV     R5,#01H
+0024 120000      E     LCALL   _Do_SPI_Write_256Bytes
+                                           ; SOURCE LINE # 172
+0027 020000      E     LJMP    Do_SPI_Write_Disable
+             ; FUNCTION OEM_Write_SPI_256Bytes (END)
+
+             ; FUNCTION OEM_Read_SPI_256Bytes (BEGIN)
+                                           ; SOURCE LINE # 178
+                                           ; SOURCE LINE # 179
+                                           ; SOURCE LINE # 180
+0000 7E00        E     MOV     R6,#HIGH SPIBuffer
+0002 7F00        E     MOV     R7,#LOW SPIBuffer
+0004 E4                CLR     A
+0005 900000      E     MOV     DPTR,#?_Do_SPI_Read_256Bytes?BYTE+04H
+0008 F0                MOVX    @DPTR,A
+0009 FB                MOV     R3,A
+000A 7D01              MOV     R5,#01H
+000C 020000      E     LJMP    _Do_SPI_Read_256Bytes
+             ; FUNCTION OEM_Read_SPI_256Bytes (END)
+
+             ; FUNCTION OEM_SPI_Read_ID (BEGIN)
+                                           ; SOURCE LINE # 187
+                                           ; SOURCE LINE # 188
+                                           ; SOURCE LINE # 189
+0000 020000      E     LJMP    Do_SPI_Read_ID
+             ; FUNCTION OEM_SPI_Read_ID (END)
+
+             ; FUNCTION OEM_SPIReadStatus (BEGIN)
+                                           ; SOURCE LINE # 195
+                                           ; SOURCE LINE # 196
+                                           ; SOURCE LINE # 197
+0000 120000      E     LCALL   Do_SPI_Read_Status
+                                           ; SOURCE LINE # 198
+0003 900000      E     MOV     DPTR,#SPIReadStatus
+0006 E0                MOVX    A,@DPTR
+0007 FF                MOV     R7,A
+C51 COMPILER V7.50   OEM_FLASH                                                             09/08/2020 15:56:23 PAGE 11  
+
+                                           ; SOURCE LINE # 199
+0008         ?C0039:
+0008 22                RET     
+             ; FUNCTION OEM_SPIReadStatus (END)
+
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    393    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

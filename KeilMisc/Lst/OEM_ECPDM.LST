@@ -1,0 +1,1484 @@
+C51 COMPILER V7.50   OEM_ECPDM                                                             09/08/2020 15:56:26 PAGE 1   
+
+
+C51 COMPILER V7.50, COMPILATION OF MODULE OEM_ECPDM
+OBJECT MODULE PLACED IN Code\Oem\OEM_ECPDM.OBJ
+COMPILER INVOKED BY: C:\Keil\C51\BIN\c51.exe Code\Oem\OEM_ECPDM.C LA WL(1) CD OT(9,SIZE) NOAREGS OR INCDIR(.\Code\CORE\I
+                    -NCLUDE\;.\Code\OEM\INCLUDE\;.\Code\CHIP\INCLUDE\)
+
+line level    source
+
+   1          /*----------------------------------------------------------------------------
+   2           * Filename: OEM_ECPDM.C  For Chipset: ITE.IT85XX
+   3           *
+   4           * Function: The example of EC power down mode control.
+   5           *
+   6           * Author  : Dino
+   7           * 
+   8           * Copyright (c) 2012 - , ITE Tech. Inc. All Rights Reserved. 
+   9           *
+  10           * Note : These functions are reference only.
+  11           *        Please follow your project software specification to do some modification.
+  12           *---------------------------------------------------------------------------*/
+  13          
+  14          #include <CORE_INCLUDE.H>
+  15          #include <OEM_INCLUDE.H>
+  16          
+  17          #ifdef ECPowerDownModeSupport
+              //*****************************************************************************
+              //
+              // The hook function of EC prepare to enter idle mode.
+              // For OEM feature use.
+              //
+              //  parameter :
+              //      none
+              //
+              //  return :
+              //      none
+              //
+              //*****************************************************************************
+              void Hook_ECPrepareEnterIdleMode(void)
+              {
+              
+              }
+              
+              //*****************************************************************************
+              //
+              // The hook function of EC prepare to enter deep doze mode.
+              // For OEM feature use.
+              //
+              //  parameter :
+              //      none
+              //
+              //  return :
+              //      none
+              //
+              //*****************************************************************************
+              void Hook_ECPrepareEnterDeepDozeMode(void)
+              {
+              
+              }
+              
+              //*****************************************************************************
+              //
+              // The hook function of EC prepare to enter deep sleep mode.
+C51 COMPILER V7.50   OEM_ECPDM                                                             09/08/2020 15:56:26 PAGE 2   
+
+              // For OEM feature use.
+              //
+              //  parameter :
+              //      none
+              //
+              //  return :
+              //      none
+              //
+              //*****************************************************************************
+              void Hook_ECPrepareEnterDeepSleepMode(void)
+              {
+              
+              }
+              
+              //*****************************************************************************
+              //
+              // The EC exit idle mode hook function.
+              // For OEM feature use.
+              //
+              //  parameter :
+              //      none
+              //
+              //  return :
+              //      none
+              //
+              //*****************************************************************************
+              void Hook_ECExitIdleMode(void)
+              {
+                
+              }
+              
+              //*****************************************************************************
+              //
+              // The EC exit deep doze mode hook function.
+              // For OEM feature use.
+              //
+              //  parameter :
+              //      none
+              //
+              //  return :
+              //      none
+              //
+              //*****************************************************************************
+              void Hook_ECExitDeepDozeMode(void)
+              {
+              
+              }
+              
+              //*****************************************************************************
+              //
+              // The EC exit deep sleep mode hook function.
+              // For OEM feature use.
+              //
+              //  parameter :
+              //      none
+              //
+              //  return :
+              //      none
+              //
+              //*****************************************************************************
+              void Hook_ECExitDeepSleepMode(void)
+              {
+C51 COMPILER V7.50   OEM_ECPDM                                                             09/08/2020 15:56:26 PAGE 3   
+
+              
+              }
+              
+              //*****************************************************************************
+              //
+              // The hook function of checking EC can enter any power down mode or not.
+              // For OEM feature use.
+              //
+              //  Note : 10ms time based.
+              //          
+              //
+              //  parameter :
+              //      none
+              //
+              //  return :
+              //      "EC_PD_Idle"        EC can enter idle mode
+              //      "EC_PD_DeepDoze"    EC can enter deep doze mode
+              //      "EC_PD_DeepSleep"   EC can enter deep sleep mode
+              //      "EC_PD_Normal"      EC no power down mode
+              //
+              //*****************************************************************************
+              BYTE Hook_ECAllowPowerDownMode(void)
+              {
+                  BYTE ECLastPDMode;
+              
+                  ECLastPDMode = EC_PD_Normal;    // Pre-set normal mode
+              
+                  //-------------------------------------------------------
+                  // To add OEM feature condition here (start)
+                  // Idle / deep doze / deep sleep
+              
+              
+                  ECLastPDMode = g_ECPowerDownModeTest;  // For testing only.
+              
+              
+              
+              
+              
+                  // To add OEM feature condition here (end)
+                  //-------------------------------------------------------
+                  
+                  if(ECLastPDMode != EC_PD_Normal)
+                  {   
+                      //
+                      // To set externel timer1 for period wake up EC from power down mode here.
+                      //
+                      SetPeriodWakeUpTimerForPDMode(3,50);
+                  }
+              
+                  return(ECLastPDMode);
+              }
+              
+              //*****************************************************************************
+              //
+              // After "x10ms_delay" x 10 ms, OEM feature allow firmware enter power down mode
+              //  Note : time based is 10ms.
+              //
+              //  parameter :
+              //      x10ms_delay 0 ~ 0xFFFF, time based is 10ms
+              //
+              //  return :
+              //      none
+C51 COMPILER V7.50   OEM_ECPDM                                                             09/08/2020 15:56:26 PAGE 4   
+
+              //
+              //*****************************************************************************
+              void Hook_OEMDelayPowerDownMode(XWORD x10ms_delay)
+              {
+                  #ifdef ECPowerDownModeStressTest
+                  g_OEMDelayPowerDownMode=0x00;
+                  #else
+                  if((x10ms_delay>g_OEMDelayPowerDownMode)||(x10ms_delay=0x00))
+                  {
+                      g_OEMDelayPowerDownMode = x10ms_delay;
+                  }
+                  #endif
+              }
+              
+              
+              //*****************************************************************************
+              //*****************************************************************************
+              //*****************************************************************************
+              //
+              // If you don't understand the use of following function, doesn't change anything.
+              //
+              //*****************************************************************************
+              //*****************************************************************************
+              //*****************************************************************************
+              
+              //*****************************************************************************
+              //
+              // The hook function of setting externel timer1 for period wake up EC from power down mode.
+              // For OEM feature use.
+              //
+              //  parameter :
+              //      period : 0          --> disable externel timer. No period wake up EC from power down mode.
+              //               1 ~ 120    --> wake up EC per 1 ~ 120 seconds.
+              //               Other      --> wake up EC per 120 seconds.
+              //               Time based is 1 second.
+              //
+              //      keepwakeuptime : 0 ~ 65536
+              //               Time based is 10 ms.
+              //
+              //  return :
+              //      none
+              //
+              //*****************************************************************************
+              void SetPeriodWakeUpTimerForPDMode(BYTE period, WORD keepwakeuptime)
+              {
+                  if(period>120)
+                  {
+                      g_ECPowerDownPeriodWakeUpTime=120;
+                  }
+                  else
+                  {
+                      g_ECPowerDownPeriodWakeUpTime=period;
+                  }
+              
+                  Hook_OEMDelayPowerDownMode(keepwakeuptime);
+              }
+              
+              //*****************************************************************************
+              //
+              // EC power down mode manager.
+              // 10ms time based is required.
+              //
+C51 COMPILER V7.50   OEM_ECPDM                                                             09/08/2020 15:56:26 PAGE 5   
+
+              //  parameter :
+              //      none
+              //
+              //  return :
+              //      none
+              //
+              //*****************************************************************************
+              void ECPowerDownModeManager(void)
+              {
+                  BYTE NewPDMode;
+              
+                  NewPDMode = ECAllowPowerDownMode();     // EC normal/idle/deep doze/deep sleep mode. 
+                  ECPowerDownModeSelection(NewPDMode);    // EC enter normal/idle/deep doze/deep sleep mode.
+              }
+              
+              //*****************************************************************************
+              //
+              // Finel check kernel code can enter which power down mode.
+              //
+              //  parameter :
+              //      none
+              //
+              //  return :
+              //      EC_KernelEventClear : Kernel code no timer event pending
+              //      EC_KernelEventPending : Timer event pending of kernel code
+              //
+              //*****************************************************************************
+              BYTE KernelEnterPowerDownMode(void)
+              {
+                  if(IS_MASK_SET(KBHISR, IBF)||IS_MASK_SET(PM1STS,P_IBF)||
+                      PS2StartBit||IS_MASK_SET(PSSTS3, TDS)||IS_MASK_SET(PSSTS2, TDS)||IS_MASK_SET(PSSTS1, TDS))
+                  {
+                      return(EC_KernelEventPending);
+                  }
+                  else
+                  {
+                      return(EC_KernelEventClear);
+                  }
+              }
+              
+              //*****************************************************************************
+              //
+              // The EC enter idle mode.
+              //
+              //  parameter :
+              //      none
+              //
+              //  return :
+              //      none
+              //
+              //*****************************************************************************
+              #pragma ot(8, SPEED)
+              void ECEnterIdleMode(void)
+              {
+                  if(KernelEnterPowerDownMode()==EC_KernelEventPending)
+                  {
+                      ECExitIdleMode();       // To exit idle mode
+                      EnableAllInterrupt();   // Enalbe all interrupt 
+                  }
+                  else
+                  {
+                      ECPowerDownEnableExternalTimer1();
+C51 COMPILER V7.50   OEM_ECPDM                                                             09/08/2020 15:56:26 PAGE 6   
+
+                      g_ECPowerDownCurrentMode = EC_PD_Idle;
+                      
+                      EnableAllInterrupt();
+                      _nop_();
+                      _nop_();
+                      _nop_();
+                      _nop_();  
+                      
+                      if(Isr_Int1_Occur==0)
+                      {
+                          PCON=1;             // enter idle mode
+                          _nop_();
+                          _nop_();
+                          _nop_();
+                          _nop_();
+                          _nop_();
+                          _nop_();
+                          _nop_();
+                          _nop_();
+                      }
+              
+                      ECExitIdleMode();
+                      g_ECPowerDownCurrentMode = EC_PD_Normal;
+                  }
+              }
+              
+              //*****************************************************************************
+              //
+              // The EC enter deep doze mode.
+              //
+              //  parameter :
+              //      none
+              //
+              //  return :
+              //      none
+              //
+              //*****************************************************************************
+              #pragma ot(8, SPEED)
+              void ECEnterDeepDozeMode(void)
+              {
+                  if(KernelEnterPowerDownMode()==EC_KernelEventPending)
+                  {
+                      ECExitDeepDozeMode();
+                      EnableAllInterrupt();
+                  }
+                  else
+                  {
+                      ECPowerDownEnableExternalTimer1();
+                      g_ECPowerDownCurrentMode = EC_PD_DeepDoze;
+              
+                      EnableAllInterrupt();
+                      _nop_();
+                      _nop_();
+                      _nop_();
+                      _nop_(); 
+              
+                      if(Isr_Int1_Occur==0)
+                      {
+                              PLLCTRL = 3;        
+                              PCON |=2 ;           // enter deep doze mode
+                              _nop_();
+                              _nop_();
+C51 COMPILER V7.50   OEM_ECPDM                                                             09/08/2020 15:56:26 PAGE 7   
+
+                              _nop_();
+                              _nop_();
+                              _nop_();
+                              _nop_();
+                              _nop_();
+                              _nop_();
+                      }
+                      
+                      ECExitDeepDozeMode();
+                      g_ECPowerDownCurrentMode = EC_PD_Normal;
+                  }
+              }
+              
+              //*****************************************************************************
+              //
+              // The EC enter deep sleep mode.
+              //
+              //  parameter :
+              //      none
+              //
+              //  return :
+              //      none
+              //
+              //*****************************************************************************
+              #pragma ot(8, SPEED)
+              void ECEnterDeepSleepMode(void)
+              {
+                  if(KernelEnterPowerDownMode()==EC_KernelEventPending)
+                  {
+                      ECExitDeepSleepMode();
+                      EnableAllInterrupt();
+                  }
+                  else
+                  {
+                      ECPowerDownEnableExternalTimer1();
+                      g_ECPowerDownCurrentMode = EC_PD_DeepSleep;
+              
+                      EnableAllInterrupt();
+                      _nop_();
+                      _nop_();
+                      _nop_();
+                      _nop_(); 
+              
+                      if(Isr_Int1_Occur==0)
+                      {
+                              PLLCTRL = 1;
+                              PCON =2 ;           // enter sleep mode
+                              _nop_();
+                              _nop_();
+                              _nop_();
+                              _nop_();
+                              _nop_();
+                              _nop_();
+                              _nop_();
+                              _nop_();
+                      }
+              
+                      ECExitDeepSleepMode();
+                      g_ECPowerDownCurrentMode = EC_PD_Normal;
+                  }
+              }
+              
+C51 COMPILER V7.50   OEM_ECPDM                                                             09/08/2020 15:56:26 PAGE 8   
+
+              //*****************************************************************************
+              //
+              // The EC power down mode selection
+              //
+              //  parameter :
+              //      "EC_PD_Idle"        EC enter idle mode
+              //      "EC_PD_DeepDoze"    EC enter deep doze mode
+              //      "EC_PD_DeepSleep"   EC enter deep sleep mode
+              //
+              //  return :
+              //      none
+              //
+              //*****************************************************************************
+              void ECPowerDownModeSelection(BYTE PDMode)
+              {
+                  if(PDMode==EC_PD_Idle)
+                  {
+                      ECPrepareEnterIdleMode();
+                      ECEnterIdleMode();
+                  }
+                  else if(PDMode==EC_PD_DeepDoze)
+                  {
+                      ECPrepareEnterDeepDozeMode();
+                      ECEnterDeepDozeMode();
+                  }
+                  else if(PDMode==EC_PD_DeepSleep)
+                  {
+                      ECPrepareEnterDeepSleepMode();
+                      ECEnterDeepSleepMode();
+                  }
+                  else        // Illegal parameter or normal mode
+                  {
+              
+                  }
+              
+              }
+              
+              //*****************************************************************************
+              //
+              // After "x10ms_delay" x 10 ms, kernel allow firmware enter power down mode
+              //  Note : time based is 10ms.
+              //
+              //  parameter :
+              //      x10ms_delay 0 ~ 255
+              //
+              //  return :
+              //      none
+              //
+              //*****************************************************************************
+              void KernelDelayPowerDownMode(BYTE x10ms_delay)
+              {
+                  #ifdef ECPowerDownModeStressTest
+                  g_KernelDelayPowerDownMode=0x00;
+                  #else
+                  if((x10ms_delay>g_KernelDelayPowerDownMode)||(x10ms_delay=0x00))
+                  {
+                      g_KernelDelayPowerDownMode = x10ms_delay;
+                  }
+                  #endif
+              }
+              
+              //*****************************************************************************
+C51 COMPILER V7.50   OEM_ECPDM                                                             09/08/2020 15:56:26 PAGE 9   
+
+              //
+              // To check kernel code can enter which power down mode.
+              //
+              //  parameter :
+              //      none
+              //
+              //  return :
+              //      EC_KernelEventClear : Kernel code no timer event pending
+              //      EC_KernelEventPending : Timer event pending of kernel code
+              //
+              //*****************************************************************************
+              BYTE KernelTimerEventPending(void)
+              {
+                  BYTE eventpending;
+                  BYTE l_Service, l_Service1;
+              
+                  l_Service = Service & (~BIT5);      // F_Service_MS_1
+                  l_Service1 = Service1& (~BIT0);     // F_Service_Low_LV
+                  
+                  #ifdef SMBusServiceCenterFunc
+                  if((l_Service!=0x00)||(l_Service1!=0x00)||(CheckSMBusNeedService()==SMBus_NeedService))
+                  #else
+                  if((l_Service!=0x00)||(l_Service1!=0x00))
+                  #endif
+                  {
+                      eventpending = 0x01;
+                  }
+                  else
+                  {
+                      eventpending = 0x00;
+              
+                      if(scan.kbf_tail != scan.kbf_head)  // Keyboard buffer
+                      {
+                          eventpending++;
+                      }
+                      if(MSPending==0x33)                 // PS2 interface data pending
+                      {
+                          eventpending++;
+                      }  
+                      
+                      if(Timer_A.fbit.TMR_SCAN!=0)        // EC scaning internel keyboard
+                      {
+                          eventpending++;
+                      }
+              
+                      //if(TPACKCounter!=0)               //
+                      //{
+                      //    eventpending++;
+                      //}
+              
+                      if(AUXInactiveCounter!=0x00)
+                      {
+                          eventpending++;
+                      }
+              
+                      #if PS2IFHotPlugHotSwap
+                      if(ECSendtoAUXFlag)
+                      {
+                          eventpending++;
+                      }
+                      #endif
+              
+C51 COMPILER V7.50   OEM_ECPDM                                                             09/08/2020 15:56:26 PAGE 10  
+
+                      if(IS_MASK_SET(PSSTS1, SS)||IS_MASK_SET(PSSTS2, SS)||IS_MASK_SET(PSSTS3, SS)||PS2StartBit == 1)
+                      {
+                          eventpending++;
+                      }
+              
+                      if(IS_MASK_SET(KBHISR, IBF)||IS_MASK_SET(PM1STS,P_IBF))
+                      {
+                          eventpending++;
+                      }
+                  }
+                  
+                  if(eventpending==0x00)                      // no event pending
+                  {
+                      if(g_KernelDelayPowerDownMode!=0x00)
+                      {
+                          g_KernelDelayPowerDownMode--;
+                      }
+              
+                      if(g_OEMDelayPowerDownMode!=0x00)
+                      {
+                          g_OEMDelayPowerDownMode--;
+                      }
+              
+                      if((g_KernelDelayPowerDownMode==0x00) && (g_OEMDelayPowerDownMode==0x00))
+                      {
+                          return(EC_KernelEventClear);
+                      }
+                      else
+                      {
+                          return(EC_KernelEventPending);
+                      }
+                
+                  }
+                  else
+                  {
+                      return(EC_KernelEventPending);
+                  }
+              }
+              
+              //*****************************************************************************
+              //
+              // To check EC can enter any power down mode or not.
+              //
+              //  parameter :
+              //      none
+              //
+              //  return :
+              //      "EC_PD_Idle"        EC can enter idle mode
+              //      "EC_PD_DeepDoze"    EC can enter deep doze mode
+              //      "EC_PD_DeepSleep"   EC can enter deep sleep mode
+              //      "EC_PD_Normal"      EC no power down mode
+              //
+              //*****************************************************************************
+              BYTE ECAllowPowerDownMode(void)
+              {
+                  BYTE PDMode;
+                  BYTE KernelPDAllow;
+              
+                  PDMode = EC_PD_Normal;                              // Pre-set normal mode
+              
+                  if(KernelTimerEventPending()==EC_KernelEventClear)  // If no kernel event pending  
+                  {
+C51 COMPILER V7.50   OEM_ECPDM                                                             09/08/2020 15:56:26 PAGE 11  
+
+                      PDMode = Hook_ECAllowPowerDownMode();           // Hook function of checking power down condition.
+             - 
+                  }
+                  else                                                // kernel doesn't allow EC enter power down mode.
+                  {
+                                                                      
+                  }
+              
+                  return(PDMode);
+              }
+              
+              //*****************************************************************************
+              //
+              // The EC prepare to enter idle mode.
+              //
+              //  parameter :
+              //      none
+              //
+              //  return :
+              //      none
+              //
+              //*****************************************************************************
+              void ECPrepareEnterIdleMode(void)
+              {
+                  DisableAllInterrupt();
+                  Isr_Int1_Occur = 0;
+              
+                  //----------------------
+                  // OEM feature
+                  //----------------------
+                  Hook_ECPrepareEnterIdleMode();      // Always at the start
+              
+                  //----------------------
+                  // Stop internel timer 0
+                  //----------------------
+                  Stop_Timer_A();
+              
+                  //----------------------
+                  // LPC Interface
+                  //----------------------
+                  WUESR4 = BIT2;                      // Clear WU42 wakeup status
+                      WUENR4 |= BIT2;                     // Enable WU42
+              
+                  ISR0 = Int_WKINTAD;                         // Clear INT5 interrupt flag
+                  SET_MASK(IER0, Int_WKINTAD);        // Enable INT5
+              }
+              
+              //*****************************************************************************
+              //
+              // The EC exit idle mode.
+              //
+              //  parameter :
+              //      none
+              //
+              //  return :
+              //      none
+              //
+              //*****************************************************************************
+              void ECExitIdleMode(void)
+              {
+                  //----------------------
+                  // LPC Interface
+C51 COMPILER V7.50   OEM_ECPDM                                                             09/08/2020 15:56:26 PAGE 12  
+
+                  //----------------------
+                  CLEAR_MASK(WUENR4, BIT2);               // Disable WU42  
+                  WUESR4 = BIT2;                          // Clear WU42 wakeup status
+              
+                  //----------------------
+                  // INT5
+                  //----------------------
+                  CLEAR_MASK(IER0, Int_WKINTAD);          // Disable INT5
+                  ISR0 = Int_WKINTAD;                             // Clear INT5 interrupt flag
+                  
+                  //----------------------
+                  // Disable external timer 1 interrupt
+                  //----------------------
+                  ECDisableExternalTimer1();
+              
+                  //----------------------
+                  // Enable internel timer 0
+                  //----------------------
+                  Enable_Timer_A();
+              
+                  //----------------------
+                  // OEM feature
+                  //----------------------
+                  Hook_ECExitIdleMode();          // Always at the start
+              }
+              
+              //*****************************************************************************
+              //
+              // The EC prepare to enter deep doze mode.
+              //
+              //  parameter :
+              //      none
+              //
+              //  return :
+              //      none
+              //
+              //*****************************************************************************
+              void ECPrepareEnterDeepDozeMode(void)
+              {
+                  DisableAllInterrupt();
+                  Isr_Int1_Occur=0;
+              
+                  //----------------------
+                  // OEM feature
+                  //----------------------
+                  Hook_ECPrepareEnterDeepDozeMode();  // Always at the start
+              
+                  //----------------------
+                  // PS2 Interface
+                  //----------------------
+                  if(IS_MASK_SET(AuxFlags[0], DEVICE_IS_ATTACHED))    // PS2-0
+                  {
+                      WUEMR1 |= BIT1;             // PS2DAT0
+                      WUESR1 = BIT1;              // Clear WU42 wakeup status
+                      WUENR1 |= BIT1;             // Enable WU42
+                  }
+              
+                  if(IS_MASK_SET(AuxFlags[1], DEVICE_IS_ATTACHED))    // PS2-1
+                  {
+                      WUEMR1 |= BIT3;             // PS2DAT1
+                      WUESR1 = BIT3;              // Clear WU42 wakeup status
+                      WUENR1 |= BIT3;             // Enable WU42
+C51 COMPILER V7.50   OEM_ECPDM                                                             09/08/2020 15:56:26 PAGE 13  
+
+                  }
+              
+                  if(IS_MASK_SET(AuxFlags[2], DEVICE_IS_ATTACHED))    // PS2-2
+                  {
+                      WUEMR1 |= BIT5;             // PS2DAT2
+                      WUESR1 = BIT5;              // Clear WU42 wakeup status
+                      WUENR1 |= BIT5;             // Enable WU42
+                  }
+              
+                  //----------------------
+                  // LPC Interface
+                  //----------------------
+                  WUESR4 = BIT2;                  // Clear WU42 wakeup status
+                      WUENR4 |= BIT2;                 // Enable WU42
+              
+                  ISR0 = Int_WKINTAD;                     // Clear INT5 interrupt flag
+                  SET_MASK(IER0, Int_WKINTAD);    // Enable INT5
+              
+                  //----------------------
+                  // Internel keyboard
+                  //----------------------
+                  WUEMR3 = 0xFF;                  // KSI0 ~ KSI7 falling edge
+                  WUESR3 = 0xFF;                  // Clear WU20 ~ WU27 wakeup status
+                  WUENR3 = 0xFF;                  // Enable WU20 ~ WU27
+              
+                  ISR1 = Int_WKINTC;              // Clear INT13 interrupt flag
+                  SET_MASK(IER1,Int_WKINTC);      // Enable INT13
+                  
+              }
+              
+              //*****************************************************************************
+              //
+              // The EC exit deep doze mode.
+              //
+              //  parameter :
+              //      none
+              //
+              //  return :
+              //      none
+              //
+              //*****************************************************************************
+              void ECExitDeepDozeMode(void)
+              {
+                  //----------------------
+                  // LPC Interface
+                  //----------------------
+                  CLEAR_MASK(WUENR4, BIT2);               // Disable WU42  
+                  WUESR4 = BIT2;                          // Clear WU42 wakeup status
+              
+                  //----------------------
+                  // PS2 Interface
+                  //----------------------
+                  CLEAR_MASK(WUENR1, (BIT1+BIT3+BIT5));
+                  WUESR1 = BIT1+BIT3+BIT5;                // Clear WU42 wakeup status  
+              
+                  //----------------------
+                  // INT5
+                  //----------------------
+                  CLEAR_MASK(IER0, Int_WKINTAD);          // Disable INT5
+                  ISR0 = Int_WKINTAD;                             // Clear INT5 interrupt flag
+              
+                  //----------------------
+C51 COMPILER V7.50   OEM_ECPDM                                                             09/08/2020 15:56:26 PAGE 14  
+
+                  // Disable external timer 1 interrupt
+                  //----------------------
+                  ECDisableExternalTimer1();
+                  
+                  //----------------------
+                  // Internel keyboard
+                  //----------------------
+                  WUENR3 = 0x00;                          // Disable WU20 ~ WU27 (KSI0 ~ KSI7)
+                  WUESR3 = 0xFF;                          // Clear WU20 ~ WU27 wakeup status
+                      CLEAR_MASK(IER1,Int_WKINTC);            // Disable INT13
+                  ISR1 = Int_WKINTC;                      // Write to clear INT13
+              
+                  //----------------------
+                  // Enable internel timer
+                  //----------------------
+                  Init_Timers();
+                  
+                  //----------------------
+                  // OEM feature
+                  //----------------------
+                  Hook_ECExitDeepDozeMode();              // Always at the start
+              }
+              
+              //*****************************************************************************
+              //
+              // The EC prepare to enter deep sleep mode.
+              //
+              //  parameter :
+              //      none
+              //
+              //  return :
+              //      none
+              //
+              //*****************************************************************************
+              void ECPrepareEnterDeepSleepMode(void)
+              {
+                  DisableAllInterrupt();
+                  Isr_Int1_Occur=0;
+              
+                  //----------------------
+                  // OEM feature
+                  //----------------------
+                  Hook_ECPrepareEnterDeepSleepMode(); // Always at the start
+              
+                  //----------------------
+                  // Internel keyboard
+                  //----------------------
+                  WUEMR3 = 0xFF;                      // KSI0 ~ KSI7 falling edge
+                  WUESR3 = 0xFF;                      // Clear WU20 ~ WU27 wakeup status
+                  WUENR3 = 0xFF;                      // Enable WU20 ~ WU27
+              
+                  ISR1 = Int_WKINTC;                  // Clear INT13 interrupt flag
+                  SET_MASK(IER1,Int_WKINTC);          // Enable INT13
+              }
+              
+              //*****************************************************************************
+              //
+              // The EC exit deep sleep mode
+              //
+              //  parameter :
+              //      none
+              //
+C51 COMPILER V7.50   OEM_ECPDM                                                             09/08/2020 15:56:26 PAGE 15  
+
+              //  return :
+              //      none
+              //
+              //*****************************************************************************
+              void ECExitDeepSleepMode(void)
+              {
+                  //----------------------
+                  // Internel keyboard
+                  //----------------------
+                  WUENR3 = 0x00;                          // Disable WU20 ~ WU27 (KSI0 ~ KSI7)
+                  WUESR3 = 0xFF;                          // Clear WU20 ~ WU27 wakeup status
+                      CLEAR_MASK(IER1,Int_WKINTC);            // Disable INT13
+                  ISR1 = Int_WKINTC;                      // Write to clear INT13
+              
+                  //----------------------
+                  // Disable external timer 1 interrupt
+                  //----------------------
+                  ECDisableExternalTimer1();
+              
+                  //----------------------
+                  // Enable internel timer
+                  //----------------------
+                  Init_Timers();
+                      
+                  //----------------------
+                  // OEM feature
+                  //----------------------
+                  Hook_ECExitDeepSleepMode();     // Always at the start  
+              }
+              
+              //*****************************************************************************
+              //
+              // To enable external timer 1 for period wake up EC from power down mode.
+              //
+              //  parameter :
+              //      none
+              //
+              //  return :
+              //      none
+              //
+              //*****************************************************************************
+              void ECPowerDownEnableExternalTimer1(void)
+              {
+                  #ifdef ECPowerDownModeStressTest
+              
+                  #else
+                  WORD timersetting;
+                  
+                  if(g_ECPowerDownPeriodWakeUpTime!=0x00)
+                  {
+                      timersetting = (WORD)(g_ECPowerDownPeriodWakeUpTime*32);
+                      
+                      CLEAR_MASK(CGCTRL1R, BIT6);     // ETWD clock operation
+              
+                      ETPSR = 0x02;                   // Prescaler 32 HZ      
+                      ETCNTLHR = timersetting>>8;     //
+                      ETCNTLLR = timersetting;        // "g_ECPowerDownPeriodWakeUpTime" second
+              
+                      ISR3 = Int_EXTimer;             // Write to clear external timer 1 interrupt 
+                      SET_MASK(IER3, Int_EXTimer);    // Enable external timer 1 interrupt 
+                  }
+                  #endif
+C51 COMPILER V7.50   OEM_ECPDM                                                             09/08/2020 15:56:26 PAGE 16  
+
+              }
+              
+              //*****************************************************************************
+              //
+              // To disable external timer 1 after wake up EC from power down mode.
+              //
+              //  parameter :
+              //      none
+              //
+              //  return :
+              //      none
+              //
+              //*****************************************************************************
+              void ECDisableExternalTimer1(void)
+              {
+                  #ifdef ECPowerDownModeStressTest
+              
+                  #else
+                  CLEAR_MASK(IER3, Int_EXTimer);  // Disable external timer 1 interrupt 
+                  ISR3 = Int_EXTimer;             // Write to clear external timer 1 interrupt 
+                  #endif
+              }
+              
+              #endif
+ 946          
+ 947          /*-----------------------------------------------------------------------------
+ 948           * @subroutine - i2c_read_reg
+ 949           * @function - i2c_read_reg
+ 950           * @Upstream - By call
+ 951           * @input    - None
+ 952           * @return   - None
+ 953           * @note     - None
+ 954           *---------------------------------------------------------------------------*/
+ 955          BYTE i2c_read_reg(BYTE i2c_addr, BYTE reg)
+ 956          {
+ 957   1          BYTE    ret;
+ 958   1      
+ 959   1          SPIBuffer[0] = reg;
+ 960   1          ret = I2C_WriteStream(_SMB_TYPE_C,  
+ 961   1                              i2c_addr,
+ 962   1                              &SPIBuffer[0],
+ 963   1                              1);
+ 964   1          if (ret > 0)
+ 965   1          {
+ 966   2              ret = 0;
+ 967   2              ret = I2C_ReadStream(_SMB_TYPE_C,
+ 968   2                                  i2c_addr,
+ 969   2                                  &SPIBuffer[0],
+ 970   2                                  2);
+ 971   2          }
+ 972   1      
+ 973   1          if (ret == 0)
+ 974   1          {
+ 975   2              //TypeC_I2C_error++;
+ 976   2              return (0x00);  /* Error retun values */
+ 977   2          }
+ 978   1          ret = SPIBuffer[0];
+ 979   1          return (ret);
+ 980   1      }
+ 981          
+ 982          /*-----------------------------------------------------------------------------
+ 983           * @subroutine - i2c_write_reg
+C51 COMPILER V7.50   OEM_ECPDM                                                             09/08/2020 15:56:26 PAGE 17  
+
+ 984           * @function - i2c_write_reg
+ 985           * @Upstream - By call
+ 986           * @input    - None
+ 987           * @return   - None
+ 988           * @note     - None
+ 989           *---------------------------------------------------------------------------*/
+ 990          void i2c_write_reg(BYTE i2c_addr, BYTE reg, BYTE data1)
+ 991          {
+ 992   1          BYTE    ret;
+ 993   1      
+ 994   1          SPIBuffer[0] = reg;
+ 995   1          SPIBuffer[1] = data1;
+ 996   1          ret = I2C_WriteStream(_SMB_TYPE_C,  
+ 997   1                              i2c_addr,
+ 998   1                              &SPIBuffer[0],
+ 999   1                              2);
+1000   1          if (ret == 0)
+1001   1          {
+1002   2              //TypeC_I2C_error++;
+1003   2          }
+1004   1      }
+1005          
+1006          /*-----------------------------------------------------------------------------
+1007           * @subroutine - i2c_read_block_reg
+1008           * @function - i2c_read_block_reg
+1009           * @Upstream - By call
+1010           * @input    - None
+1011           * @return   - None
+1012           * @note     - None
+1013           *---------------------------------------------------------------------------*/
+1014          void i2c_read_block_reg(BYTE i2c_addr, BYTE reg, BYTE length, BYTE *buf)
+1015          {
+1016   1          BYTE    ret;
+1017   1              if (length == 1)
+1018   1                      length = 2;
+1019   1          SPIBuffer[0] = reg;
+1020   1          ret = I2C_WriteStream(_SMB_TYPE_C,  
+1021   1                              i2c_addr,
+1022   1                              &SPIBuffer[0],
+1023   1                              1);
+1024   1              
+1025   1          if (ret > 0)
+1026   1          {
+1027   2              ret = 0;
+1028   2              ret = I2C_ReadStream(_SMB_TYPE_C,
+1029   2                                  i2c_addr,
+1030   2                                  &buf[0],
+1031   2                                  length);
+1032   2          }
+1033   1      
+1034   1          if (ret == 0)
+1035   1          {
+1036   2              //TypeC_I2C_error++;
+1037   2          }
+1038   1      }
+1039          
+1040          /*-----------------------------------------------------------------------------
+1041           * @subroutine - i2c_write_block_reg
+1042           * @function - i2c_write_block_reg
+1043           * @Upstream - By call
+1044           * @input    - None
+1045           * @return   - None
+C51 COMPILER V7.50   OEM_ECPDM                                                             09/08/2020 15:56:26 PAGE 18  
+
+1046           * @note     - None
+1047           *---------------------------------------------------------------------------*/
+1048          void i2c_write_block_reg_b(BYTE i2c_addr, BYTE reg, BYTE length, BYTE *buf)
+1049          {
+1050   1          BYTE    i;
+1051   1      
+1052   1          SPIBuffer[0] = reg;
+1053   1          for (i = 1; i < (length+1); i++)
+1054   1          {
+1055   2              SPIBuffer[i] = *buf;
+1056   2              buf++;
+1057   2          }
+1058   1          if (I2C_WriteStream(_SMB_TYPE_C,    
+1059   1                              i2c_addr,
+1060   1                              &SPIBuffer[0],
+1061   1                              (length+1)))
+1062   1          {
+1063   2              ;
+1064   2          }
+1065   1          else
+1066   1          {
+1067   2              //TypeC_I2C_error++;
+1068   2          }
+1069   1      }
+1070          
+1071          
+1072          void i2c_write_block_reg(BYTE i2c_addr, BYTE reg, BYTE length, BYTE *buf)
+1073          {
+1074   1          BYTE    i;
+1075   1      
+1076   1          SPIBuffer[0] = reg;
+1077   1          for (i = 1; i < length; i++)
+1078   1          {
+1079   2              SPIBuffer[i] = *buf;
+1080   2              buf++;
+1081   2          }
+1082   1          length++;
+1083   1          if (I2C_WriteStream(_SMB_TYPE_C,    
+1084   1                              i2c_addr,
+1085   1                              &SPIBuffer[0],
+1086   1                              length))
+1087   1          {
+1088   2              ;
+1089   2          }
+1090   1          else
+1091   1          {
+1092   2              //TypeC_I2C_error++;
+1093   2          }
+1094   1      }
+1095          
+C51 COMPILER V7.50   OEM_ECPDM                                                             09/08/2020 15:56:26 PAGE 19  
+
+ASSEMBLY LISTING OF GENERATED OBJECT CODE
+
+
+             ; FUNCTION Com0016 (BEGIN)
+0000         L?0023:
+0000 E0                MOVX    A,@DPTR
+0001 FD                MOV     R5,A
+0002 7401              MOV     A,#01H
+0004         L?0024:
+0004 7A00        E     MOV     R2,#HIGH SPIBuffer
+0006 7B00        E     MOV     R3,#LOW SPIBuffer
+0008 900000      E     MOV     DPTR,#?_I2C_WriteStream?BYTE+04H
+000B F0                MOVX    @DPTR,A
+000C 22                RET     
+000D         L?0025:
+000D         L?0026:
+000D E0                MOVX    A,@DPTR
+000E FD                MOV     R5,A
+000F 7A00        E     MOV     R2,#HIGH SPIBuffer
+0011 7B00        E     MOV     R3,#LOW SPIBuffer
+0013 22                RET     
+             ; FUNCTION Com0016 (END)
+
+             ; FUNCTION _i2c_read_reg (BEGIN)
+                                           ; SOURCE LINE # 955
+0000 900000      R     MOV     DPTR,#i2c_addr
+0003 EF                MOV     A,R7
+0004 F0                MOVX    @DPTR,A
+;---- Variable 'reg' assigned to Register 'R5' ----
+                                           ; SOURCE LINE # 956
+                                           ; SOURCE LINE # 959
+0005 900000      E     MOV     DPTR,#SPIBuffer
+0008 ED                MOV     A,R5
+0009 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 960
+000A 900000      R     MOV     DPTR,#i2c_addr
+000D 120000      R     LCALL   L?0023
+0010 FF                MOV     R7,A
+0011 120000      E     LCALL   _I2C_WriteStream
+;---- Variable 'ret' assigned to Register 'R7' ----
+                                           ; SOURCE LINE # 964
+0014 EF                MOV     A,R7
+0015 D3                SETB    C
+0016 9400              SUBB    A,#00H
+0018 4012              JC      ?C0001
+                                           ; SOURCE LINE # 965
+                                           ; SOURCE LINE # 966
+001A E4                CLR     A
+001B FF                MOV     R7,A
+                                           ; SOURCE LINE # 967
+001C 900000      R     MOV     DPTR,#i2c_addr
+001F 120000      R     LCALL   L?0025
+0022 900000      E     MOV     DPTR,#?_I2C_ReadStream?BYTE+04H
+0025 7402              MOV     A,#02H
+0027 F0                MOVX    @DPTR,A
+0028 0F                INC     R7
+0029 120000      E     LCALL   _I2C_ReadStream
+                                           ; SOURCE LINE # 971
+002C         ?C0001:
+                                           ; SOURCE LINE # 973
+002C EF                MOV     A,R7
+002D 7002              JNZ     ?C0002
+C51 COMPILER V7.50   OEM_ECPDM                                                             09/08/2020 15:56:26 PAGE 20  
+
+                                           ; SOURCE LINE # 974
+                                           ; SOURCE LINE # 976
+002F FF                MOV     R7,A
+0030 22                RET     
+                                           ; SOURCE LINE # 977
+0031         ?C0002:
+                                           ; SOURCE LINE # 978
+0031 900000      E     MOV     DPTR,#SPIBuffer
+0034 E0                MOVX    A,@DPTR
+0035 FF                MOV     R7,A
+                                           ; SOURCE LINE # 979
+                                           ; SOURCE LINE # 980
+0036         ?C0003:
+0036 22                RET     
+             ; FUNCTION _i2c_read_reg (END)
+
+             ; FUNCTION _i2c_write_reg (BEGIN)
+                                           ; SOURCE LINE # 990
+;---- Variable 'i2c_addr' assigned to Register 'R7' ----
+;---- Variable 'data1' assigned to Register 'R3' ----
+;---- Variable 'reg' assigned to Register 'R5' ----
+                                           ; SOURCE LINE # 991
+                                           ; SOURCE LINE # 994
+0000 900000      E     MOV     DPTR,#SPIBuffer
+0003 ED                MOV     A,R5
+0004 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 995
+0005 A3                INC     DPTR
+0006 EB                MOV     A,R3
+0007 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 996
+0008 CD                XCH     A,R5
+0009 EF                MOV     A,R7
+000A CD                XCH     A,R5
+000B 7402              MOV     A,#02H
+000D 120000      R     LCALL   L?0024
+0010 7F01              MOV     R7,#01H
+0012 120000      E     LCALL   _I2C_WriteStream
+0015 900000      R     MOV     DPTR,#ret
+0018 EF                MOV     A,R7
+0019 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 1000
+                                           ; SOURCE LINE # 1001
+                                           ; SOURCE LINE # 1003
+                                           ; SOURCE LINE # 1004
+001A         ?C0005:
+001A 22                RET     
+             ; FUNCTION _i2c_write_reg (END)
+
+             ; FUNCTION _i2c_read_block_reg (BEGIN)
+                                           ; SOURCE LINE # 1014
+0000 900000      R     MOV     DPTR,#i2c_addr
+0003 EF                MOV     A,R7
+0004 F0                MOVX    @DPTR,A
+;---- Variable 'reg' assigned to Register 'R5' ----
+0005 900000      R     MOV     DPTR,#length
+0008 EB                MOV     A,R3
+0009 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 1015
+                                           ; SOURCE LINE # 1017
+000A BB0103            CJNE    R3,#01H,?C0006
+                                           ; SOURCE LINE # 1018
+C51 COMPILER V7.50   OEM_ECPDM                                                             09/08/2020 15:56:26 PAGE 21  
+
+000D 7402              MOV     A,#02H
+000F F0                MOVX    @DPTR,A
+0010         ?C0006:
+                                           ; SOURCE LINE # 1019
+0010 900000      E     MOV     DPTR,#SPIBuffer
+0013 ED                MOV     A,R5
+0014 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 1020
+0015 900000      R     MOV     DPTR,#i2c_addr
+0018 120000      R     LCALL   L?0023
+001B FF                MOV     R7,A
+001C 120000      E     LCALL   _I2C_WriteStream
+;---- Variable 'ret' assigned to Register 'R7' ----
+                                           ; SOURCE LINE # 1025
+001F EF                MOV     A,R7
+0020 D3                SETB    C
+0021 9400              SUBB    A,#00H
+0023 401C              JC      ?C0007
+                                           ; SOURCE LINE # 1026
+                                           ; SOURCE LINE # 1027
+0025 E4                CLR     A
+0026 FF                MOV     R7,A
+                                           ; SOURCE LINE # 1028
+0027 900000      R     MOV     DPTR,#i2c_addr
+002A E0                MOVX    A,@DPTR
+002B FD                MOV     R5,A
+002C 900000      R     MOV     DPTR,#buf
+002F 120000      E     LCALL   ?C?PLDXDATA
+0032 CB                XCH     A,R3
+0033 E9                MOV     A,R1
+0034 CB                XCH     A,R3
+0035 900000      R     MOV     DPTR,#length
+0038 E0                MOVX    A,@DPTR
+0039 900000      E     MOV     DPTR,#?_I2C_ReadStream?BYTE+04H
+003C F0                MOVX    @DPTR,A
+003D 0F                INC     R7
+003E 120000      E     LCALL   _I2C_ReadStream
+                                           ; SOURCE LINE # 1032
+0041         ?C0007:
+                                           ; SOURCE LINE # 1034
+                                           ; SOURCE LINE # 1035
+                                           ; SOURCE LINE # 1037
+                                           ; SOURCE LINE # 1038
+0041         ?C0009:
+0041 22                RET     
+             ; FUNCTION _i2c_read_block_reg (END)
+
+             ; FUNCTION _i2c_write_block_reg_b (BEGIN)
+                                           ; SOURCE LINE # 1048
+0000 900000      R     MOV     DPTR,#i2c_addr
+0003 EF                MOV     A,R7
+0004 F0                MOVX    @DPTR,A
+0005 900000      R     MOV     DPTR,#length
+0008 EB                MOV     A,R3
+0009 F0                MOVX    @DPTR,A
+;---- Variable 'reg' assigned to Register 'R5' ----
+                                           ; SOURCE LINE # 1049
+                                           ; SOURCE LINE # 1052
+000A 900000      E     MOV     DPTR,#SPIBuffer
+000D ED                MOV     A,R5
+000E F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 1053
+C51 COMPILER V7.50   OEM_ECPDM                                                             09/08/2020 15:56:26 PAGE 22  
+
+000F 900000      R     MOV     DPTR,#i
+0012 7401              MOV     A,#01H
+0014 F0                MOVX    @DPTR,A
+0015         ?C0010:
+0015 900000      R     MOV     DPTR,#length
+0018 E0                MOVX    A,@DPTR
+0019 2401              ADD     A,#01H
+001B FF                MOV     R7,A
+001C E4                CLR     A
+001D 33                RLC     A
+001E FE                MOV     R6,A
+001F 900000      R     MOV     DPTR,#i
+0022 E0                MOVX    A,@DPTR
+0023 C3                CLR     C
+0024 9F                SUBB    A,R7
+0025 EE                MOV     A,R6
+0026 6480              XRL     A,#080H
+0028 F8                MOV     R0,A
+0029 7480              MOV     A,#080H
+002B 98                SUBB    A,R0
+002C 502B              JNC     ?C0011
+                                           ; SOURCE LINE # 1054
+                                           ; SOURCE LINE # 1055
+002E 900000      R     MOV     DPTR,#buf
+0031 120000      E     LCALL   ?C?PLDXDATA
+0034 120000      E     LCALL   ?C?CLDPTR
+0037 FF                MOV     R7,A
+0038 900000      R     MOV     DPTR,#i
+003B E0                MOVX    A,@DPTR
+003C 2400        E     ADD     A,#LOW SPIBuffer
+003E F582              MOV     DPL,A
+0040 E4                CLR     A
+0041 3400        E     ADDC    A,#HIGH SPIBuffer
+0043 F583              MOV     DPH,A
+0045 EF                MOV     A,R7
+0046 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 1056
+0047 900000      R     MOV     DPTR,#buf+01H
+004A E4                CLR     A
+004B 75F001            MOV     B,#01H
+004E 120000      E     LCALL   ?C?IILDX
+                                           ; SOURCE LINE # 1057
+0051 900000      R     MOV     DPTR,#i
+0054 E0                MOVX    A,@DPTR
+0055 04                INC     A
+0056 F0                MOVX    @DPTR,A
+0057 80BC              SJMP    ?C0010
+0059         ?C0011:
+                                           ; SOURCE LINE # 1058
+0059 900000      R     MOV     DPTR,#i2c_addr
+005C 120000      R     LCALL   L?0025
+005F 900000      R     MOV     DPTR,#length
+0062 E0                MOVX    A,@DPTR
+0063 04                INC     A
+0064 900000      E     MOV     DPTR,#?_I2C_WriteStream?BYTE+04H
+0067 F0                MOVX    @DPTR,A
+0068 7F01              MOV     R7,#01H
+006A 120000      E     LCALL   _I2C_WriteStream
+                                           ; SOURCE LINE # 1062
+                                           ; SOURCE LINE # 1064
+                                           ; SOURCE LINE # 1066
+                                           ; SOURCE LINE # 1068
+C51 COMPILER V7.50   OEM_ECPDM                                                             09/08/2020 15:56:26 PAGE 23  
+
+                                           ; SOURCE LINE # 1069
+006D         ?C0015:
+006D 22                RET     
+             ; FUNCTION _i2c_write_block_reg_b (END)
+
+             ; FUNCTION _i2c_write_block_reg (BEGIN)
+                                           ; SOURCE LINE # 1072
+0000 900000      R     MOV     DPTR,#i2c_addr
+0003 EF                MOV     A,R7
+0004 F0                MOVX    @DPTR,A
+;---- Variable 'length' assigned to Register 'R7' ----
+0005 CF                XCH     A,R7
+0006 EB                MOV     A,R3
+0007 CF                XCH     A,R7
+;---- Variable 'reg' assigned to Register 'R5' ----
+                                           ; SOURCE LINE # 1073
+                                           ; SOURCE LINE # 1076
+0008 900000      E     MOV     DPTR,#SPIBuffer
+000B ED                MOV     A,R5
+000C F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 1077
+;---- Variable 'i' assigned to Register 'R6' ----
+000D 7E01              MOV     R6,#01H
+000F         ?C0016:
+000F EE                MOV     A,R6
+0010 C3                CLR     C
+0011 9F                SUBB    A,R7
+0012 5023              JNC     ?C0017
+                                           ; SOURCE LINE # 1078
+                                           ; SOURCE LINE # 1079
+0014 900000      R     MOV     DPTR,#buf
+0017 120000      E     LCALL   ?C?PLDXDATA
+001A 120000      E     LCALL   ?C?CLDPTR
+001D FD                MOV     R5,A
+001E 7400        E     MOV     A,#LOW SPIBuffer
+0020 2E                ADD     A,R6
+0021 F582              MOV     DPL,A
+0023 E4                CLR     A
+0024 3400        E     ADDC    A,#HIGH SPIBuffer
+0026 F583              MOV     DPH,A
+0028 ED                MOV     A,R5
+0029 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 1080
+002A 900000      R     MOV     DPTR,#buf+01H
+002D E4                CLR     A
+002E 75F001            MOV     B,#01H
+0031 120000      E     LCALL   ?C?IILDX
+                                           ; SOURCE LINE # 1081
+0034 0E                INC     R6
+0035 80D8              SJMP    ?C0016
+0037         ?C0017:
+                                           ; SOURCE LINE # 1082
+0037 0F                INC     R7
+                                           ; SOURCE LINE # 1083
+0038 900000      R     MOV     DPTR,#i2c_addr
+003B 120000      R     LCALL   L?0026
+003E 900000      E     MOV     DPTR,#?_I2C_WriteStream?BYTE+04H
+0041 EF                MOV     A,R7
+0042 F0                MOVX    @DPTR,A
+0043 7F01              MOV     R7,#01H
+0045 120000      E     LCALL   _I2C_WriteStream
+                                           ; SOURCE LINE # 1087
+C51 COMPILER V7.50   OEM_ECPDM                                                             09/08/2020 15:56:26 PAGE 24  
+
+                                           ; SOURCE LINE # 1089
+                                           ; SOURCE LINE # 1091
+                                           ; SOURCE LINE # 1093
+                                           ; SOURCE LINE # 1094
+0048         ?C0021:
+0048 22                RET     
+             ; FUNCTION _i2c_write_block_reg (END)
+
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    351    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----      21
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

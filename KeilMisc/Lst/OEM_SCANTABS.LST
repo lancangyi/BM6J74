@@ -1,0 +1,2501 @@
+C51 COMPILER V7.50   OEM_SCANTABS                                                          09/08/2020 15:56:21 PAGE 1   
+
+
+C51 COMPILER V7.50, COMPILATION OF MODULE OEM_SCANTABS
+OBJECT MODULE PLACED IN Code\OEM\OEM_SCANTABS.OBJ
+COMPILER INVOKED BY: C:\Keil\C51\BIN\c51.exe Code\OEM\OEM_SCANTABS.C LA WL(1) CD OT(9,SIZE) NOAREGS OR INCDIR(.\Code\COR
+                    -E\INCLUDE\;.\Code\OEM\INCLUDE\;.\Code\CHIP\INCLUDE\)
+
+line level    source
+
+   1          /*-----------------------------------------------------------------
+   2           * TITLE: OEM_SCANTABS.C - RC Table(s) for Scan Matix
+   3           *
+   4           * Copyright (c) 1983-2007, Insyde Software Corporation. All Rights Reserved.
+   5           *
+   6           * You may not reproduce, distribute, publish, display, perform, modify, adapt,
+   7           * transmit, broadcast, present, recite, release, license or otherwise exploit
+   8           * any part of this publication in any form, by any means, without the prior
+   9           * written permission of Insyde Software Corporation.
+  10           *----------------------------------------------------------------*/
+  11           
+  12          #include <CORE_INCLUDE.H>
+  13          #include <OEM_INCLUDE.H>
+  14          
+  15          const unsigned char code Rc_ROM_Tables[] =   
+  16          {
+  17          //-------------------------------------------------------------------------------------------
+  18          //0     1          2     3        4     5         6     7         8     9         A     B         C     D         E     F
+  19          //ESC   F4         NUL   NUL    G         H          F6    NUL   "'     NUL   F5         NUL   L-Alt NUL    U-Arr NUL
+  20            0x76, 0xE3, 0x00, 0x00, 0x34, 0x33, 0xE5, 0x00, 0x52, 0x00, 0xE4, 0x00, 0x8A, 0x00, 0xED, 0x00,
+  21          //Tab   F3         apL   NUL    T         Y          }]    F7    {[     L-Sh  Bksps      NUL   NUL       NUL    NUL       NUL
+  22            0x0D, 0xE2, 0x58, 0x00, 0x2C, 0x35, 0x5B, 0xE6, 0x54, 0x88, 0x66, 0x00, 0x00, 0x00, 0x00, 0x00,
+  23          //Q     E          W     NUL    R         U          I     O     P      NUL   NUL        NUL   NUL       NUL    NUL       L-Win
+  24            0x15, 0x24, 0x1D, 0x00, 0x2D, 0x3C, 0x43, 0x44, 0x4D, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x82,
+  25          //~`    F2         F1    L-Ctl  %5        ^6    +=         F8    _-         NUL   F9     NUL   NUL   Insert    Home  End
+  26            0x0E, 0xE1, 0xE0, 0x8C, 0x2E, 0x36, 0x55, 0xE7, 0x4E, 0x00, 0xE8, 0x00, 0x00, 0xF5, 0xF3, 0xF4,
+  27          //A     D          S     NUL    F         J     K          L     ;:     NUL   |\         NUL   NUL       NUL    Fn        App
+  28            0x1C, 0x23, 0x1B, 0x00, 0x2B, 0x3B, 0x42, 0x4B, 0x4C, 0x00, 0x5D, 0x00, 0x00, 0x00, 0x8E, 0x84,
+  29          //!1    #3         @2    NUL   $4         &7    *8        (9     )0     NUL   F10        F11   PtSc  F12        P-D   P-U
+  30            0x16, 0x26, 0x1E, 0x00, 0x25, 0x3D, 0x3E, 0x46, 0x45, 0x00, 0xE9, 0xEA, 0xF1, 0xEB, 0xF8, 0xF7,
+  31          //Z     C      X         R-Ctl  V         M         ,<     >.    NUL    R-Sh  Enter  NUL   NUL   NUL   Del        NUL
+  32            0x1A, 0x21, 0x22, 0x8D, 0x2A, 0x3A, 0x41, 0x49, 0x00, 0x89, 0x5A, 0x00, 0x00, 0x00, 0xF6, 0x00,
+  33          //NUL   NUL    NUL       NUL    B         N         NUL    NUL    ?/    NUL   Space  D-Arr R-Alt R-Arr L-Arr  NUL
+  34            0x00, 0x00, 0x00, 0x00, 0x32, 0x31, 0x00, 0x00, 0x4A, 0x00, 0xFA, 0xEE, 0x8B, 0xF0, 0xEF, 0x00,
+  35          };
+  36          
+  37          
+  38          //-------------------------------------------------------------------------------------------------
+  39          const unsigned char code EtKey_ROM_Tables[] =
+  40          {
+  41              //16    17    18    Extended - 19X8 Scan Table
+  42              
+  43            //Num/ NumEnter                                       //+CY_CR016
+  44              0x00,0x00,0x00,     // 00  0
+  45            //Num+ Num1
+  46              0x00,0x00,0x00,     // 03  1
+  47            //Num4 Num2
+  48              0x00,0x00,0x00,     // 01  2
+  49            //Num0 \_(JP)
+  50              0x00,0x00,0x00,     // 05  3
+  51            //PageUp  Num
+  52              0x96,0x00,0x00,     // 02  4
+  53            //Num9 PageDown
+  54              0x00,0x97,0x00,     // 04  5
+C51 COMPILER V7.50   OEM_SCANTABS                                                          09/08/2020 15:56:21 PAGE 2   
+
+  55            //Del    Num6
+  56              0xF6,0x00,0x00,     // 06  6
+  57            //Num3 Num5
+  58              0x00,0x00,0x00,     // 07  7                //-CY_CR016
+  59          };
+  60          
+  61          const unsigned char code KB_S3WakeUP_Tables[] =
+  62          {
+  63              // Scanner Table 1 
+  64                  //00   01   02   03   04   05   06   07   08   09   10   11   12   13   14   15
+  65                  0x55,0x55,0x55,0x55,0x55,0x55,0x55,0x55,0x55,0x55,0x55,0x55,0x55,0x55,0x55,0x55, //
+  66                  0x55,0x55,0x55,0x55,0x55,0x55,0x55,0x55,0x55,0x55,0x55,0x55,0x55,0x55,0x55,0x55, //
+  67                  0x55,0x55,0x55,0x55,0x55,0x55,0x55,0x55,0x55,0x55,0x55,0x55,0x55,0x55,0x55,0x55, //
+  68                  0x55,0x55,0x55,0x55,0x55,0x55,0x55,0x55,0x55,0x55,0x55,0x55,0x55,0x55,0x55,0x55, //
+  69                  0x55,0x55,0x55,0x55,0x55,0x55,0x55,0x55,0x55,0x55,0x55,0x55,0x55,0x55,0x55,0x55, //
+  70                  0x55,0x55,0x55,0x55,0x55,0x55,0x55,0x55,0x55,0x55,0x55,0x55,0x55,0x55,0x55,0x55, //
+  71                  0x55,0x55,0x55,0x55,0x55,0x55,0x55,0x55,0x55,0x55,0x55,0x55,0x55,0x55,0x55,0x55, //
+  72                  0x55,0x55,0x55,0x55,0x55,0x55,0x55,0x55,0x55,0x55,0x55,0x55,0x55,0x55,0x55,0x55  //
+  73          };
+  74          
+  75          const unsigned char code EtKey_S3WakeUP_Tables[] =
+  76          {       //16   17   18          // 19X8 Scan Table 
+  77                  0x55,0x55,0x55,
+  78                  0x55,0x55,0x55,
+  79                  0x55,0x55,0x55,
+  80                  0x55,0x55,0x55,
+  81                  0x55,0x55,0x55,
+  82                  0x55,0x55,0x55,
+  83                  0x55,0x55,0x55,
+  84                  0x55,0x55,0x55,
+  85          };
+  86          
+  87          BYTE OEM_SetBackBT_Value_Fn(BYTE Up_Down_f)
+  88          {
+  89   1      
+  90   1              if (((Oem_Globe_Flag & Brightness_Up_Pressed) == 0) && (Up_Down_f !=0))
+  91   1              {
+  92   2                      Oem_Globe_Flag |= Brightness_Up_Pressed;
+  93   2      
+  94   2                      if (LCD_BRIGHTNESS<MAX_LEVEL)
+  95   2                      {                                       
+  96   3                              LCD_BRIGHTNESS = LCD_BRIGHTNESS +1;
+  97   3                      }
+  98   2      
+  99   2                      return 1;
+ 100   2              }
+ 101   1      
+ 102   1              if (((Oem_Globe_Flag & Brightness_Down_Pressed) == 0) &&(Up_Down_f ==0))
+ 103   1              {
+ 104   2                      Oem_Globe_Flag |= Brightness_Down_Pressed;
+ 105   2                      
+ 106   2                      if (LCD_BRIGHTNESS > 0)
+ 107   2                      {
+ 108   3                              LCD_BRIGHTNESS = LCD_BRIGHTNESS - 1;
+ 109   3                      }       
+ 110   2      
+ 111   2                      return 1;
+ 112   2              }
+ 113   1              
+ 114   1                      return 0;
+ 115   1      
+ 116   1      }
+C51 COMPILER V7.50   OEM_SCANTABS                                                          09/08/2020 15:56:21 PAGE 3   
+
+ 117          
+ 118          void OEM_SetBackBT_Value_Fn_NoEM_linux(BYTE Up_Down_f)
+ 119          {
+ 120   1              if(Up_Down_f !=0)
+ 121   1              {
+ 122   2                      if (LCD_BRIGHTNESS<MAX_LEVEL_linux)
+ 123   2                              {
+ 124   3                              LCD_BRIGHTNESS = LCD_BRIGHTNESS +1;
+ 125   3                              ECQEvent(0xd2,SCIMode_Normal);
+ 126   3                              }
+ 127   2      
+ 128   2              }
+ 129   1              else
+ 130   1              {
+ 131   2              
+ 132   2                      if (LCD_BRIGHTNESS > 0)
+ 133   2                              {
+ 134   3                              LCD_BRIGHTNESS = LCD_BRIGHTNESS - 1;
+ 135   3                              ECQEvent(0xd1,SCIMode_Normal);
+ 136   3                              }
+ 137   2      
+ 138   2              }
+ 139   1      }
+ 140          
+ 141          void OEM_SetBackBT_Value_Fn_NoEM(BYTE Up_Down_f)
+ 142          {
+ 143   1              if(Up_Down_f !=0)
+ 144   1              {
+ 145   2                      if (LCD_BRIGHTNESS<MAX_LEVEL)
+ 146   2                              LCD_BRIGHTNESS = LCD_BRIGHTNESS +1;
+ 147   2      
+ 148   2              }
+ 149   1              else
+ 150   1              {
+ 151   2              
+ 152   2                      if (LCD_BRIGHTNESS > 0)
+ 153   2                              LCD_BRIGHTNESS = LCD_BRIGHTNESS - 1;
+ 154   2      
+ 155   2              }
+ 156   1      }
+ 157          void OEM_Win7_SetBackBt_Fn(BYTE Up_Down_f)
+ 158          {
+ 159   1              if(OEM_SetBackBT_Value_Fn(Up_Down_f))
+ 160   1              {               
+ 161   2                      VPC_Lenovo |= Brightness_Bit_vpc;
+ 162   2                      ECQEvent(FN_SETBK_EVT,SCIMode_Normal);
+ 163   2              }
+ 164   1      }
+ 165          
+ 166          
+ 167          void OEM_Win7_SetBackBt_Fn_NoEM(BYTE Up_Down_f)
+ 168          {
+ 169   1              OEM_SetBackBT_Value_Fn_NoEM(Up_Down_f);
+ 170   1              ECQEvent(FN_SETBK_EVT,SCIMode_Normal);
+ 171   1      }
+ 172          void OEM_WinXP_SetBackBt_Fn(BYTE Up_Down_f) 
+ 173          {
+ 174   1              if(OEM_SetBackBT_Value_Fn(Up_Down_f))
+ 175   1              {
+ 176   2                      VPC_Lenovo |= Brightness_Bit_vpc;
+ 177   2                      ECQEvent(FN_SETBK_EVT,SCIMode_Normal);
+ 178   2                      Setup_Brightness(LCD_BRIGHTNESS);
+C51 COMPILER V7.50   OEM_SCANTABS                                                          09/08/2020 15:56:21 PAGE 4   
+
+ 179   2              }
+ 180   1      }
+ 181          
+ 182          
+ 183          
+ 184          void OEM_Fn_SetBK_NO_ACPI(BYTE Up_Down_f)
+ 185          {
+ 186   1              
+ 187   1              OEM_SetBackBT_Value_Fn_NoEM(Up_Down_f);
+ 188   1              Setup_Brightness(LCD_BRIGHTNESS);
+ 189   1      
+ 190   1      }
+ 191          
+ 192          
+ 193          
+ 194          
+ 195          
+ 196          
+ 197          
+ 198          //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 199          
+ 200          
+ 201          
+ 202          //----------------------------------------------------------------------------
+ 203          // The function of hotkey Fn + F1
+ 204          //----------------------------------------------------------------------------
+ 205          void HotKey_Fn_F1(BYTE event)  //no use
+ 206          {
+ 207   1              if(event == MAKE_EVENT)
+ 208   1              {
+ 209   2                      e0_prefix_code(0x23, MAKE_EVENT);
+ 210   2              }
+ 211   1              else if(event == BREAK_EVENT)
+ 212   1              {
+ 213   2                      e0_prefix_code(0x23, BREAK_EVENT);
+ 214   2              }
+ 215   1      }
+ 216          
+ 217          //----------------------------------------------------------------------------
+ 218          // The function of hotkey Fn + F2
+ 219          //----------------------------------------------------------------------------
+ 220          void HotKey_Fn_F2(BYTE event)  //no use
+ 221          {
+ 222   1              e0_prefix_code(0x21,event);
+ 223   1      }
+ 224          
+ 225          //----------------------------------------------------------------------------
+ 226          // The function of hotkey Fn + F3
+ 227          //----------------------------------------------------------------------------
+ 228          void HotKey_Fn_F3(BYTE event)
+ 229          {
+ 230   1              e0_prefix_code(0x32,event);
+ 231   1      }
+ 232          
+ 233          //----------------------------------------------------------------------------
+ 234          // The function of hotkey Fn + F4
+ 235          //----------------------------------------------------------------------------
+ 236          void HotKey_Fn_F4(BYTE event)      
+ 237          {
+ 238   1              if(event != BREAK_EVENT)
+ 239   1                      return;
+ 240   1                      
+C51 COMPILER V7.50   OEM_SCANTABS                                                          09/08/2020 15:56:21 PAGE 5   
+
+ 241   1              #if Lenovo_Support      
+ 242   1              if(IS_MASK_SET(OemAllDevices_state,Pm_Em_exist))
+ 243   1              {
+ 244   2                      SET_MASK(VPC2_Lenovo,MIC_VPC2);
+ 245   2                      ECQEvent(Fn_CAM_EVT,SCIMode_Normal);
+ 246   2              }
+ 247   1      
+ 248   1              if(IS_MASK_SET(Device_Status_AllRF,MIC_S_B))
+ 249   1              {
+ 250   2                      CLEAR_MASK(Device_Status_AllRF,MIC_S_B);
+ 251   2                      Buffer_Key(0x38);       // SEt2 MAKE 0x38(SET1 6A)  windows not used
+ 252   2                      Buffer_Key(0xEA);       // SEt1 BREAK 0xEA windows not used
+ 253   2              }
+ 254   1              else
+ 255   1              {       
+ 256   2                      SET_MASK(Device_Status_AllRF,MIC_S_B);
+ 257   2                      Buffer_Key(0x40);       // SEt2 MAKE 0x40(SET1 6B)  windows not used
+ 258   2                      Buffer_Key(0xEB);       // SEt1 BREAK 0xEB windows not used
+ 259   2              }
+ 260   1              #endif
+ 261   1      }
+ 262          
+ 263          //----------------------------------------------------------------------------
+ 264          // The function of hotkey Fn + F5
+ 265          //----------------------------------------------------------------------------
+ 266          void HotKey_Fn_F5(BYTE event)
+ 267          {
+ 268   1              e0_prefix_code(0x20,event);
+ 269   1      }
+ 270          
+ 271          //----------------------------------------------------------------------------
+ 272          // The function of hotkey Fn + F6
+ 273          //----------------------------------------------------------------------------
+ 274          void HotKey_Fn_F6(BYTE event)
+ 275          {
+ 276   1              if(event != MAKE_EVENT)
+ 277   1              {
+ 278   2                      return;
+ 279   2              }
+ 280   1      #if Lenovo_Support
+ 281   1              if( 0 != (Device_Status_Lenovo & TouchPad_S_B))
+ 282   1              {
+ 283   2                      Device_Status_Lenovo &= ~TouchPad_S_B;
+ 284   2              
+ 285   2                      if(1)//OS_Type == 3)
+ 286   2                      {
+ 287   3                              Hook_DisablePS2Port_0();
+ 288   3                      }                       
+ 289   2                      
+ 290   2              }
+ 291   1              else
+ 292   1              {       
+ 293   2                      Device_Status_Lenovo |= TouchPad_S_B;
+ 294   2      
+ 295   2                      if(1)//OS_Type == 3)
+ 296   2                      {
+ 297   3                              Hook_EnablePS2Port_0();
+ 298   3                      }
+ 299   2              }
+ 300   1      
+ 301   1              VPC_Lenovo |= TouchPad_Bit_vpc;
+ 302   1      #endif
+C51 COMPILER V7.50   OEM_SCANTABS                                                          09/08/2020 15:56:21 PAGE 6   
+
+ 303   1              
+ 304   1              ECQEvent(FN_TP_EVT,SCIMode_Normal); // touchpad
+ 305   1      }
+ 306          
+ 307          //----------------------------------------------------------------------------
+ 308          // The function of hotkey Fn + F7
+ 309          //----------------------------------------------------------------------------
+ 310          void HotKey_Fn_F7(BYTE event)
+ 311          {
+ 312   1              if(event != BREAK_EVENT)
+ 313   1                      return;
+ 314   1              
+ 315   1              switch(OS_Type)
+ 316   1              {
+ 317   2                      case 3:
+ 318   2                              Buffer_Key(0x08);
+ 319   2                              Buffer_Key(0xE4);                       
+ 320   2                              break;
+ 321   2                      default:
+ 322   2                              break;
+ 323   2              }
+ 324   1                                      
+ 325   1              #if Lenovo_Support      
+ 326   1                      VPC2_Lenovo |= All_RF_VPC2;
+ 327   1                      VPC2_Lenovo |= App_Control_RF_VPC2;
+ 328   1                      ECQEvent(FN_RF_EVT,SCIMode_Normal);
+ 329   1              #endif
+ 330   1      }
+ 331          
+ 332          //----------------------------------------------------------------------------
+ 333          // The function of hotkey Fn + F8
+ 334          //----------------------------------------------------------------------------
+ 335          void HotKey_Fn_F8(BYTE event)
+ 336          {
+ 337   1              if (event != BREAK_EVENT)
+ 338   1                      return;
+ 339   1                      
+ 340   1      #if 0
+                              
+                      if( 0 != (Device_Status_Lenovo & Camera_S_B))
+                      {
+                              Device_Status_Lenovo &= ~Camera_S_B;
+                      }
+                      else
+                      {
+                              Device_Status_Lenovo |= Camera_S_B; 
+                      }
+                      
+                      SET_MASK(VPC_Lenovo,Camera_Bit_vpc);
+                      ECQEvent(Fn_CAM_EVT,SCIMode_Normal);
+              #endif
+ 354   1              #if Lenovo_Support
+ 355   1              if(IS_MASK_SET(OemAllDevices_state,Pm_Em_exist))  // EM exist, notify EM by BIOS
+ 356   1              {
+ 357   2                      SET_MASK(VPC_Lenovo,Camera_Bit_vpc);
+ 358   2                      ECQEvent(Fn_CAM_EVT,SCIMode_Normal);
+ 359   2              }
+ 360   1              if(IS_MASK_SET(Oem_Device_Status,Camera_IN))
+ 361   1              {
+ 362   2                      CLEAR_MASK(Device_Status_Lenovo,Camera_S_B);
+ 363   2                      CLEAR_MASK(Oem_Device_Status,Camera_IN);
+ 364   2                      CAM_PWR_EN_OFF();
+C51 COMPILER V7.50   OEM_SCANTABS                                                          09/08/2020 15:56:21 PAGE 7   
+
+ 365   2                      Buffer_Key(0x10);// SET2  MAKE 10 (SET1 65)
+ 366   2                      Buffer_Key(0xE5);// SET1  BREAK E5 (SET2 F0 10)
+ 367   2              }
+ 368   1              else
+ 369   1              {
+ 370   2                      SET_MASK(Device_Status_Lenovo,Camera_S_B);
+ 371   2                      SET_MASK(Oem_Device_Status,Camera_IN);
+ 372   2                      CAM_PWR_EN_ON();
+ 373   2                      Buffer_Key(0x18);// SET2  MAKE 18 (SET1 66)
+ 374   2                      Buffer_Key(0xE6);// SET1  BREAK E6 (SET2 F0 18)
+ 375   2              }
+ 376   1              #endif
+ 377   1      }
+ 378          
+ 379          //----------------------------------------------------------------------------
+ 380          // The function of hotkey Fn + F9
+ 381          //----------------------------------------------------------------------------
+ 382          void HotKey_Fn_F9(BYTE event)
+ 383          {
+ 384   1              if(event == MAKE_EVENT)
+ 385   1              {
+ 386   2                      //TF_002-->>
+ 387   2                      /*
+ 388   2                      e0_prefix_code(0x14, MAKE_EVENT);
+ 389   2                      e0_prefix_code(0x11, MAKE_EVENT);
+ 390   2                      */
+ 391   2                      //TF_002--<<
+ 392   2                      e0_prefix_code(0x1F, event);    //TF_002++
+ 393   2                      simple_code(0x4B,event);//L
+ 394   2              }
+ 395   1              else if (event == BREAK_EVENT)
+ 396   1              { 
+ 397   2                      simple_code(0x4B,event);//L
+ 398   2                      //TF_002-->>
+ 399   2                      /*
+ 400   2                      e0_prefix_code(0x11, event);
+ 401   2                      e0_prefix_code(0x14, event);
+ 402   2                      */
+ 403   2                      //TF_002--<<
+ 404   2                      e0_prefix_code(0x1F, event);    //TF_002++
+ 405   2              }
+ 406   1      }
+ 407          
+ 408          //----------------------------------------------------------------------------
+ 409          // The function of hotkey Fn + F10 
+ 410          //----------------------------------------------------------------------------
+ 411          void HotKey_Fn_F10(BYTE event)
+ 412          {       
+ 413   1              if((event == MAKE_EVENT) || (event == REPEAT_EVENT))
+ 414   1                      ECQEvent(FN_DisplayMode_EVT,SCIMode_Normal);    
+ 415   1      }
+ 416          
+ 417          //----------------------------------------------------------------------------
+ 418          // The function of hotkey Fn + F11
+ 419          //----------------------------------------------------------------------------
+ 420          void HotKey_Fn_F11(BYTE event)
+ 421          {
+ 422   1              if((event == MAKE_EVENT) || (event == REPEAT_EVENT))
+ 423   1                      ECQEvent(BackLight_DOWN_EVT,SCIMode_Normal);
+ 424   1      }
+ 425          
+ 426          //----------------------------------------------------------------------------
+C51 COMPILER V7.50   OEM_SCANTABS                                                          09/08/2020 15:56:21 PAGE 8   
+
+ 427          // The function of hotkey Fn + F12
+ 428          //----------------------------------------------------------------------------
+ 429          void HotKey_Fn_F12(BYTE event)
+ 430          {
+ 431   1              if((event == MAKE_EVENT) || (event == REPEAT_EVENT))
+ 432   1                      ECQEvent(BackLight_UP_EVT,SCIMode_Normal);
+ 433   1      }
+ 434          
+ 435          //----------------------------------------------------------------------------
+ 436          // The function of hotkey Fn + ESC
+ 437          //----------------------------------------------------------------------------
+ 438          void HotKey_Fn_ESC(BYTE event)
+ 439          {
+ 440   1      
+ 441   1              if(event == MAKE_EVENT)
+ 442   1              {       
+ 443   2                      if(LCD_CTRL == 0) 
+ 444   2                              LCD_CTRL = 0xAA;
+ 445   2                      else
+ 446   2                              LCD_CTRL = 0x00;
+ 447   2              }
+ 448   1      }
+ 449          
+ 450          //----------------------------------------------------------------------------
+ 451          // The function of hotkey Fn + up arrow
+ 452          //----------------------------------------------------------------------------
+ 453          void HotKey_Fn_UP(BYTE event)
+ 454          {RamDebug(0x8C);
+ 455   1              e0_prefix_code(0x7D,event);//page up
+ 456   1      }
+ 457          
+ 458          //----------------------------------------------------------------------------
+ 459          // The function of hotkey Fn + down arrow
+ 460          //----------------------------------------------------------------------------
+ 461          void HotKey_Fn_DOWN(BYTE event)
+ 462          {RamDebug(0x8D);
+ 463   1              e0_prefix_code(0x7A,event);//page down
+ 464   1      }
+ 465          
+ 466          //----------------------------------------------------------------------------
+ 467          // The function of hotkey Fn + left arrow
+ 468          //----------------------------------------------------------------------------
+ 469          void HotKey_Fn_LEFT(BYTE event)
+ 470          {RamDebug(0x8E);
+ 471   1              e0_prefix_code(0x6C,event);//home
+ 472   1      }
+ 473          
+ 474          //----------------------------------------------------------------------------
+ 475          // The function of hotkey Fn + right arrow
+ 476          //----------------------------------------------------------------------------
+ 477          void HotKey_Fn_RIGHT(BYTE event)
+ 478          {RamDebug(0x8F);
+ 479   1              e0_prefix_code(0x69,event);//end
+ 480   1      }
+ 481          
+ 482          //----------------------------------------------------------------------------
+ 483          // The function of hotkey Fn + Ins (Scr Lk)
+ 484          //---------------------------------------------------------------------------
+ 485          void HotKey_Fn_Ins(BYTE event)
+ 486          {
+ 487   1      
+ 488   1      }
+C51 COMPILER V7.50   OEM_SCANTABS                                                          09/08/2020 15:56:21 PAGE 9   
+
+ 489          
+ 490          //----------------------------------------------------------------------------
+ 491          // The function of hotkey Fn + Del (NumLk)
+ 492          //---------------------------------------------------------------------------
+ 493          void HotKey_Fn_Del(BYTE event)
+ 494          {
+ 495   1      
+ 496   1      }
+ 497          
+ 498          void HotKey_Fn_SPACE(BYTE event)    // Fn + space
+ 499          {RamDebug(0x90);
+ 500   1              if(event == MAKE_EVENT)
+ 501   1              {       
+ 502   2                      if(KBLED_Status == 0)
+ 503   2                      {
+ 504   3                              Process_KBLED_Control(SET_KBLED_ON,SysPowState);
+ 505   3                              
+ 506   3                      }
+ 507   2                      else if(KBLED_Status == 1)
+ 508   2                      {
+ 509   3                              Process_KBLED_Control(SET_KBLED_OFF,SysPowState);
+ 510   3                      }
+ 511   2              }
+ 512   1      }
+ 513          
+ 514          
+ 515          
+ 516          const FUNCT_PTR_V_B code HotKey_Fn_Fx[] =
+ 517          {
+ 518                  HotKey_Fn_F1,           // Fn + F1
+ 519                  HotKey_Fn_F2,           // Fn + F2
+ 520                  HotKey_Fn_F3,           // Fn + F3
+ 521                  HotKey_Fn_F4,       // Fn + F4
+ 522                  HotKey_Fn_F5,           // Fn + F5
+ 523                  HotKey_Fn_F6,           // Fn + F6
+ 524                  HotKey_Fn_F7,           // Fn + F7
+ 525                  HotKey_Fn_F8,       // Fn + F8
+ 526                  HotKey_Fn_F9,           // Fn + F9
+ 527                  HotKey_Fn_F10,          // Fn + F10
+ 528                  HotKey_Fn_F11,          // Fn + F11
+ 529                  HotKey_Fn_F12,          // Fn + F12     
+ 530                  HotKey_Fn_ESC,          // Fn + ESC     
+ 531                  HotKey_Fn_UP,           // Fn + up arrow        
+ 532                  HotKey_Fn_DOWN,         // Fn + down arrow      
+ 533                  HotKey_Fn_LEFT,         // Fn + left arrow      
+ 534                  HotKey_Fn_RIGHT,        // Fn + right arrow     
+ 535                  HotKey_Fn_SPACE,        // Fn + space
+ 536                  //HotKey_Fn_Ins,        // Fn + Ins (Scr Lk)
+ 537                  //HotKey_Fn_Del,        // Fn + Del (NumLk)
+ 538          };
+ 539          
+ 540          //---------------------------------------------------------------------------
+ 541          //      Numpad 7 Home   [B0h]
+ 542          //      Numpad 8 UP     [B1h]
+ 543          //      Numpad 9 PGUp   [B2h]
+ 544          //      Numpad *                [B3h]
+ 545          //      Numpad 4 Left   [B4h]
+ 546          //      Numpad 5                [B5h]
+ 547          //      Numpad 6 Right  [B6h]
+ 548          //      Numpad -                [B7h]
+ 549          //      Numpad 1 End    [B8h]
+ 550          //      Numpad 2 Down   [B9h]
+C51 COMPILER V7.50   OEM_SCANTABS                                                          09/08/2020 15:56:21 PAGE 10  
+
+ 551          //      Numpad 3 PGDn   [BAh]
+ 552          //      Numpad +                [BBh]
+ 553          //      Numpad 0 Ins    [BCh]
+ 554          //      Numpad . Del    [BDh]
+ 555          //      Numpad /        [BEh]
+ 556          //---------------------------------------------------------------------------
+ 557          #if !NUMPAD_USE_OEM
+ 558          const BYTE code ss2_9C[] =      // Numpad 7 
+ 559          {
+ 560              0x3D,   // Normal           // 7
+ 561              0xB0,   // Numlock 
+ 562              0xB0,   // Fn 
+ 563              0xB0    // Fn+Numlock 
+ 564          };
+ 565          
+ 566          const BYTE code ss2_9D[] =      // Numpad 8   
+ 567          {
+ 568              0x3E,   // Normal           // 8
+ 569              0xB1,   // Numlock 
+ 570              0xB1,   // Fn 
+ 571              0xB1    // Fn+Numlock 
+ 572          };
+ 573          
+ 574          const BYTE code ss2_9E[] =      // Numpad 9  
+ 575          {
+ 576              0x46,   // Normal           // 9
+ 577              0xB2,   // Numlock 
+ 578              0xB2,   // Fn 
+ 579              0xB2    // Fn+Numlock 
+ 580          };
+ 581          
+ 582          const BYTE code ss2_9F[] =      // Numpad 0  
+ 583          {
+ 584              0x45,   // Normal           // 0
+ 585              0xBE,   // Numlock 
+ 586              0xBE,   // Fn 
+ 587              0xBE    // Fn+Numlock 
+ 588          };
+ 589          
+ 590          const BYTE code ss2_A0[] =      // Numpad U  
+ 591          {
+ 592              0x3C,   // Normal           // U
+ 593              0xB4,   // Numlock 
+ 594              0xB4,   // Fn 
+ 595              0xB4    // Fn+Numlock 
+ 596          };
+ 597          
+ 598          const BYTE code ss2_A1[] =      // Numpad I  
+ 599          {
+ 600              0x43,   // Normal           // I
+ 601              0xB5,   // Numlock 
+ 602              0xB5,   // Fn 
+ 603              0xB5    // Fn+Numlock 
+ 604          };
+ 605          
+ 606          const BYTE code ss2_A2[] =      // Numpad O 
+ 607          {
+ 608              0x44,   // Normal           // O
+ 609              0xB6,   // Numlock 
+ 610              0xB6,   // Fn 
+ 611              0xB6    // Fn+Numlock 
+ 612          };
+C51 COMPILER V7.50   OEM_SCANTABS                                                          09/08/2020 15:56:21 PAGE 11  
+
+ 613          
+ 614          const BYTE code ss2_A3[] =      // Numpad P 
+ 615          {
+ 616              0x4D,   // Normal           // P
+ 617              0xB3,   // Numlock 
+ 618              0xB3,   // Fn 
+ 619              0xB3    // Fn+Numlock 
+ 620          };
+ 621          
+ 622          const BYTE code ss2_A4[] =      // Numpad J 
+ 623          {
+ 624              0x3B,   // Normal           // J
+ 625              0xB8,   // Numlock 
+ 626              0xB8,   // Fn 
+ 627              0xB8    // Fn+Numlock 
+ 628          };
+ 629          
+ 630          const BYTE code ss2_A5[] =      // Numpad K 
+ 631          {
+ 632              0x42,   // Normal           // K
+ 633              0xB9,   // Numlock 
+ 634              0xB9,   // Fn 
+ 635              0xB9    // Fn+Numlock 
+ 636          };
+ 637          
+ 638          const BYTE code ss2_A6[] =      // Numpad L 
+ 639          {
+ 640              0x4B,   // Normal           // L
+ 641              0xBA,   // Numlock 
+ 642              0xBA,   // Fn 
+ 643              0xBA    // Fn+Numlock 
+ 644          };
+ 645          
+ 646          const BYTE code ss2_A7[] =      // Numpad ;:  
+ 647          {
+ 648              0x4C,   // Normal           // ;:
+ 649              0xB7,   // Numlock 
+ 650              0xB7,   // Fn 
+ 651              0xB7    // Fn+Numlock 
+ 652          };
+ 653          
+ 654          const BYTE code ss2_A8[] =      // Numpad M  
+ 655          {
+ 656              0x3A,   // Normal           // M
+ 657              0xBC,   // Numlock 
+ 658              0xBC,   // Fn 
+ 659              0xBC    // Fn+Numlock 
+ 660          };
+ 661          
+ 662          const BYTE code ss2_A9[] =      // Numpad ,<  
+ 663          {
+ 664              0x41,   // Normal           // ,< 
+ 665              0x41,   // Numlock 
+ 666              0x41,   // Fn 
+ 667              0x41    // Fn+Numlock 
+ 668          };
+ 669          
+ 670          const BYTE code ss2_AA[] =      // Numpad .>   
+ 671          {
+ 672              0x49,   // Normal           // .> 
+ 673              0xBD,   // Numlock 
+ 674              0xBD,   // Fn 
+C51 COMPILER V7.50   OEM_SCANTABS                                                          09/08/2020 15:56:21 PAGE 12  
+
+ 675              0xBD    // Fn+Numlock 
+ 676          };
+ 677          #endif
+ 678          
+ 679          const BYTE code ss2_AB[] =      // Numpad /?      
+ 680          {
+ 681              0x4A,   // Normal           // /? 
+ 682              0xBB,   // Numlock 
+ 683              0xBB,   // Fn 
+ 684              0xBB    // Fn+Numlock 
+ 685          };
+ 686          
+ 687          const BYTE code ss2_AC[] =   
+ 688          {
+ 689              0x5A,   // Normal 
+ 690              0x81,   // Fn 
+ 691          };
+ 692          //----------------------------------------------------------------
+ 693          // Function key F1 ~ F12
+ 694          //----------------------------------------------------------------
+ 695          const BYTE code ss2_AD[] =      // F1  //Mute
+ 696          {
+ 697              0x05,   // Normal 
+ 698              0xD0,   // Fn 
+ 699          };
+ 700          
+ 701          const BYTE code ss2_AE[] =      // F2  //Volume Down
+ 702          {
+ 703              0x06,   // Normal 
+ 704              0xD1,   // Fn 
+ 705          };
+ 706          
+ 707          const BYTE code ss2_AF[] =      // F3  //Volume Up
+ 708          {
+ 709              0x04,   // Normal 
+ 710              0xD2,   // Fn 
+ 711          };
+ 712          
+ 713          const BYTE code ss2_B0[] =      // F4  //Disable Mic
+ 714          {
+ 715              0x0C,   // Normal 
+ 716              0xD3,   // Fn 
+ 717          };
+ 718          
+ 719          const BYTE code ss2_B1[] =      // F5  
+ 720          {
+ 721              0x03,   // Normal 
+ 722              0x03,
+ 723          };
+ 724          
+ 725          const BYTE code ss2_B2[] =      // F6  //Disable/Enable Touchpad
+ 726          {
+ 727              0x0B,   // Normal 
+ 728              0xD5,   // Fn 
+ 729          };
+ 730          
+ 731          const BYTE code ss2_B3[] =      // F7  //Airplane
+ 732          {
+ 733              0x80,   // Normal 
+ 734              0xD6,   // Fn 
+ 735          };
+ 736          
+C51 COMPILER V7.50   OEM_SCANTABS                                                          09/08/2020 15:56:21 PAGE 13  
+
+ 737          const BYTE code ss2_B4[] =      // F8  //Disable Camera
+ 738          {
+ 739              0x0A,   // Normal 
+ 740              0xD7,   // Fn 
+ 741          };
+ 742          
+ 743          const BYTE code ss2_B5[] =      // F9  //Win + P
+ 744          {
+ 745              0x01,   // Normal 
+ 746              0xD8,   // Fn 
+ 747              //0x01,   // Normal 
+ 748          };
+ 749          
+ 750          const BYTE code ss2_B6[] =      // F10  //Switch display mode
+ 751          {
+ 752              0x09,   // Normal 
+ 753                  //0x09,   // Fn 
+ 754              0xD9,   // Fn 
+ 755              //0x09,   // Normal 
+ 756          };
+ 757          
+ 758          const BYTE code ss2_B7[] =      // F11  //Brightness dn
+ 759          {
+ 760              0x78,   // Normal 
+ 761              0xDA,   // Fn 
+ 762              //0x78,   // Normal 
+ 763          };
+ 764          
+ 765          const BYTE code ss2_B8[] =      // F12  //Brightness up
+ 766          {
+ 767              0x07,   // Normal 
+ 768              0xDB,   // Fn 
+ 769              //0x07,
+ 770          };
+ 771          
+ 772          const BYTE code ss2_B9[] =  // Fn+Space
+ 773          {
+ 774              0x29,   // Normal
+ 775                  0x29,   // Fn
+ 776          };
+ 777          
+ 778          /* ----------------------------------------------------------------------------
+ 779           * FUNCTION: sskey2_A2_table
+ 780           *
+ 781           * The A2_TABLE structure contains the following.
+ 782           *
+ 783           * BYTE comb;  Bit   Setting Combination Key
+ 784           *            ---   -----------------------
+ 785           *             7    Hook_calc_index_comb_BIT7
+ 786           *             6    Hook_calc_index_comb_BIT6
+ 787           *             5    Fn
+ 788           *             4    Numlock
+ 789           *             3    Ctrl
+ 790           *             2    Alt
+ 791           *             1    Shift
+ 792           *             0    reserved
+ 793           *
+ 794           * BYTE *pntr; Pointer to array for key.
+ 795           * ------------------------------------------------------------------------- */
+ 796          const A2_TABLE sskey2_A2_table[] =
+ 797          {                                                                                       // Keyboard matrix index
+ 798                  // Keypad -->
+C51 COMPILER V7.50   OEM_SCANTABS                                                          09/08/2020 15:56:21 PAGE 14  
+
+ 799                  {0x30, ss2_9C },    /* index = 00h */   // 0x9C 
+ 800              {0x30, ss2_9D },    /* index = 01h */       // 0x9D
+ 801              {0x30, ss2_9E },    /* index = 02h */       // 0x9E 
+ 802              {0x30, ss2_9F },    /* index = 03h */       // 0x9F 
+ 803              {0x30, ss2_A0 },    /* index = 04h */       // 0xA0
+ 804              {0x30, ss2_A1 },    /* index = 05h */       // 0xA1
+ 805              {0x30, ss2_A2 },    /* index = 06h */       // 0xA2
+ 806              {0x30, ss2_A3 },    /* index = 07h */       // 0xA3
+ 807              {0x30, ss2_A4 },    /* index = 08h */       // 0xA4
+ 808              {0x30, ss2_A5 },    /* index = 09h */       // 0xA5
+ 809              {0x30, ss2_A6 },    /* index = 0Ah */       // 0xA6
+ 810              {0x30, ss2_A7 },    /* index = 0Bh */       // 0xA7
+ 811              {0x30, ss2_A8 },    /* index = 0Ch */       // 0xA8
+ 812              {0x30, ss2_A9 },    /* index = 0Dh */       // 0xA9
+ 813              {0x30, ss2_AA },    /* index = 0Eh */       // 0xAA
+ 814              {0x30, ss2_AB },    /* index = 0Fh */       // 0xAB
+ 815              {0x20, ss2_AC },    /* index = 10h */       // 0xAC
+ 816                  // Keypad <--
+ 817                  
+ 818                  // F1~F12 hotkeys -->
+ 819              {0x20, ss2_AD },    /* index = 11h */   // 0xAD=>F1
+ 820              {0x20, ss2_AE },    /* index = 12h */   // 0xAE=>F2
+ 821              {0x20, ss2_AF },    /* index = 13h */   // 0xAF=>F3
+ 822              {0x20, ss2_B0 },    /* index = 14h */   // 0xB0=>F4
+ 823              {0x20, ss2_B1 },    /* index = 15h */   // 0xB1=>F5
+ 824              {0x20, ss2_B2 },    /* index = 16h */   // 0xB2=>F6
+ 825              {0x20, ss2_B3 },    /* index = 17h */   // 0xB3=>F7
+ 826              {0x20, ss2_B4 },    /* index = 18h */   // 0xB4=>F8
+ 827              {0x20, ss2_B5 },    /* index = 19h */   // 0xB5=>F9
+ 828              {0x20, ss2_B6 },    /* index = 1Ah */   // 0xB6=>F10
+ 829              {0x20, ss2_B7 },    /* index = 1Bh */   // 0xB7=>F11
+ 830              {0x20, ss2_B8 },    /* index = 1Ch */   // 0xB8=>F12
+ 831              // F1~F12 hotkeys <--
+ 832          
+ 833                  // Other hotkeys
+ 834                  {0x80, ss2_B9 }     /* index = 1Dh */   // 0xB9=>Space
+ 835          };
+ 836                                                                                                  // Reserved 0xB9 ~ 0xDF
+ 837           
+ 838          /* ----------------------------------------------------------------------------
+ 839           * FUNCTION: sskey2_overlay_table
+ 840           * ------------------------------------------------------------------------- */
+ 841          const BYTE code  sskey2_overlay_table[] =
+ 842          {
+ 843          //index                     Normal              Fn
+ 844            0x86,0x05,    // E0H  sleep                   F1
+ 845            0xD8,0x06,    // E1H  lock                    F2      
+ 846            0xD9,0x04,    // E2H  display mode       F3   
+ 847            0xD5,0x0C,    // E3H  TP                      F4
+ 848            0x03,0x03,    // E4H                                  F5      
+ 849            0xDC,0x0B,    // E5H   BKLT                           F6
+ 850            0xE1,0x80,    // E6H   KBLT                           F7
+ 851            0xD0,0x0A,    // E7H  mute                            F8      
+ 852            0xA2,0x01,    // E8H   vol down                       F9
+ 853            0xA1,0x09,    // E9H   vol up                 F10
+ 854            0xDA,0x78,    // EAH  Brightness Down F11  
+ 855            0xDB,0x07,    // EBH  Brightness Up           F12
+ 856            0x00,0x76,    // ECH                                  ESC
+ 857            0x98,0x96,    // EDH  UpArrow                 PageUp
+ 858            0x99,0x97,    // EEH  DnArrow                 PageDown
+ 859            0x9A,0x94,    // EFH  LeftArr                 Home
+ 860            0x9B,0x95,    // F0H  RightArr                        End
+C51 COMPILER V7.50   OEM_SCANTABS                                                          09/08/2020 15:56:21 PAGE 15  
+
+ 861            0xC3,0xC3,    // F1H  PrtSc
+ 862            0x2D,0x4F,    // F2H  R                 Fn+R
+ 863            0x94,0x00,    // F3h  Home            <-> pause
+ 864            0x95,0x00,    // F4h  End             <-> break       
+ 865            0xC2,0xC2,    // F5h  Insert  <-> Null
+ 866            0xC0,0xC0,    // F6h  Delete  <-> Null
+ 867            0x96,0x94,    // F7h  PageUp  <-> Home
+ 868            0x97,0x95,    // F8h  PageDown        <-> end
+ 869            0x92,0x91,   // F9h   Pause   <-> Break
+ 870            0x29,0xE1,   // FAh   SPACE              Fn+Space
+ 871          };
+ 872                                          // Reserved0xFA~ 0xFF           
+ 873          
+ 874          const BYTE code  sskey2_overlay_table1[] =
+ 875          {
+ 876          //index                          Fn                     Normal
+ 877            0x05,0x86,  // E0H     F1                             sleep 
+ 878            0x06,0xD8,  // E1H  F2                                lock
+ 879            0x04,0xD9,  // E2H  F3                                display mode  
+ 880            0x0C,0xD5,  // E3H     F4                             TP
+ 881            0x03,0x03,  // E4H     F5     
+ 882            0x0B,0xDC,  // E5H     F6                             BKLT
+ 883            0x80,0xE1,  // E6H     F7                             KBLT
+ 884            0x0A,0xD0,  // E7H     F8                             mute    
+ 885            0x01,0xA2,  // E8H     F9                             vol down                
+ 886            0x09,0xA1,  // E9H     F10                            vol up
+ 887            0x78,0xDA,  // EAH     F11                            Brightness Down          
+ 888            0x07,0xDB,  // EBH     F12                            Brightness Up  
+ 889            0x76,0x00,  // ECH     ESC       
+ 890            0x98,0x96,  // EDH    UpArrow                 <->       PageUp                                                                   
+ 891            0x99,0x97,  // EEH    DnArrow                 <->       PageDown                                                         
+ 892            0x9A,0x94,  // EFH    LeftArr                 <->       Home                                                                           
+ 893            0x9B,0x95,  // F0H    RightArr                <->       End    
+ 894            0xC3,0xC3,  // F1H    PrtSc     
+ 895            0x2D,0x4F,  // F2H     R                              Fn+R
+ 896            0x94,0x00,  // F3h    Home                    <-> Null                                           
+ 897            0x95,0x00,  // F4h    End                     <-> Null                                                   
+ 898            0xC2,0x00,  // F5h    Insert                  <-> Null                           
+ 899            0xC0,0x00,  // F6h    Delete                  <-> Null                                        
+ 900            0x96,0x94,  // F7h    PageUp                  <-> Home                                           
+ 901            0x97,0x95,  // F8h    PageDown                <-> End                         
+ 902            0x91,0x92,  // F9h    Pause                   <-> Break 
+ 903            0x29,0xE1,  // FAh    SPACE         Fn+Space
+ 904          };
+ 905                                          
+ 906          
+ 907          
+ 908          /* ----------------------------------------------------------------------------
+ 909           * Insyde Software Key Number 2
+ 910           *
+ 911           * 00h         Null
+ 912           * 01h - 7Fh   Same as IBM Scan Code, Set2
+ 913           * 80h - BFh   Pre-Index for generation Scan Code, Set2
+ 914           * C0h - DFh   Pre-Index for PPK function
+ 915           * C0h - DFh   Pre-Index for SMI function
+ 916           * ------------------------------------------------------------------------- */
+ 917          /* ----------------------------------------------------------------------------
+ 918           * FUNCTION: sskey3_80_table - Insyde Software Key Number 2
+ 919           * 80h - BFh   Pre-Index for generation Scan Code, Set2
+ 920           * ------------------------------------------------------------------------- */
+ 921          const BYTE code sskey3_80_table[] =
+ 922          {
+C51 COMPILER V7.50   OEM_SCANTABS                                                          09/08/2020 15:56:21 PAGE 16  
+
+ 923          //-----------------------------------------------------------------
+ 924          // Index from keyboard matrix
+ 925          //-----------------------------------------------------------------     
+ 926                                                                                  // Keyboard matrix index
+ 927                  0x83,   DO_SIMPLE_CODE,         // [80h] F7 (118) 
+ 928                  0x5A,   DO_E0_PREFIX_CODE,      // [81h] Numpad Enter (108) 
+ 929              0x1F,       DO_E0_PREFIX_CODE,      // [82h] Windows Left 
+ 930              0x27,       DO_E0_PREFIX_CODE,      // [83h] Windows Right 
+ 931              0x2F,       DO_E0_PREFIX_CODE,      // [84h] Application 
+ 932              0x37,       DO_E0_PREFIX_CODE,      // [85h] Power event 
+ 933              0x3F,       DO_E0_PREFIX_CODE,      // [86h] Sleep event 
+ 934              0x5E,       DO_E0_PREFIX_CODE,              // [87h] Wake event 
+ 935              LShift, DO_CONTROL_EFFECT,          // [88h] 12 Shift(L) 
+ 936              RShift, DO_CONTROL_EFFECT,          // [89h] 59 Shift(R) 
+ 937              LAlt,       DO_CONTROL_EFFECT,      // [8Ah] 11 Alt(L) 
+ 938              RAlt,       DO_CONTROL_EFFECT_E0,   // [8Bh] E0 11 Alt(R) 
+ 939              LCtrl,      DO_CONTROL_EFFECT,              // [8Ch] 14 Crtl(L) 
+ 940              RCtrl,      DO_CONTROL_EFFECT_E0,   // [8Dh] E0 14 Ctrl(R) 
+ 941              FN,         DO_CONTROL_EFFECT,      // [8Eh] Fn 
+ 942              OVLAY,      DO_CONTROL_EFFECT,              // [8Fh] Overlay 
+ 943              0x00,       DO_SIMPLE_CODE,         // [90h] Reserved 
+ 944              0x00,       DO_SPECIAL_CODE,        // [91h] Pause (126) 
+ 945              0x01,       DO_SPECIAL_CODE,        // [92h] Break 
+ 946              0x84,       DO_SIMPLE_CODE,         // [93h] (124) Alt-Case (SysRq) 
+ 947                  0x6C,   DO_E0_PREFIX_CODE,      // [94h] Home 
+ 948              0x69,       DO_E0_PREFIX_CODE,      // [95h] End 
+ 949              0x7D,       DO_E0_PREFIX_CODE,      // [96h] Page up 
+ 950              0x7A,       DO_E0_PREFIX_CODE,      // [97h] Page down 
+ 951                  0x75,   DO_E0_PREFIX_CODE,      // [98h] UP arrow 
+ 952              0x72,       DO_E0_PREFIX_CODE,      // [99h] Down arrow 
+ 953              0x6B,       DO_E0_PREFIX_CODE,      // [9Ah] Left arrow 
+ 954              0x74,       DO_E0_PREFIX_CODE,      // [9Bh] Right arrow 
+ 955              
+ 956          //-----------------------------------------------------------------
+ 957          // For MicroSoft enhance keyboard feature.
+ 958          //-----------------------------------------------------------------
+ 959                  0x4D, DO_E0_PREFIX_CODE,        // [9Ch] Next Track event 
+ 960              0x15, DO_E0_PREFIX_CODE,            // [9Dh] Prev Track event 
+ 961              0x3B, DO_E0_PREFIX_CODE,            // [9Eh] Stop event 
+ 962              0x34, DO_E0_PREFIX_CODE,            // [9Fh] Play/Pause event 
+ 963              0x23, DO_E0_PREFIX_CODE,            // [A0h] Mute event 
+ 964              0x32, DO_E0_PREFIX_CODE,            // [A1h] Volume Up event 
+ 965              0x21, DO_E0_PREFIX_CODE,            // [A2h] Volume Down event 
+ 966              0x48, DO_E0_PREFIX_CODE,            // [A3h] Mail event 
+ 967              0x10, DO_E0_PREFIX_CODE,            // [A4h] Search event 
+ 968              0x3A, DO_E0_PREFIX_CODE,            // [A5h] Web/Home event 
+ 969              0x38, DO_E0_PREFIX_CODE,            // [A6h] Back event 
+ 970              0x30, DO_E0_PREFIX_CODE,            // [A7h] Forward event 
+ 971              0x28, DO_E0_PREFIX_CODE,            // [A8h] Stop event 
+ 972              0x20, DO_E0_PREFIX_CODE,            // [A9h] Refresh event 
+ 973              0x18, DO_E0_PREFIX_CODE,            // [AAh] Favorites event 
+ 974              0x2B, DO_E0_PREFIX_CODE,            // [ABh] Caluator event 
+ 975              0x40, DO_E0_PREFIX_CODE,            // [ACh] My Computer event 
+ 976              0x50, DO_E0_PREFIX_CODE,            // [ADh] Media event 
+ 977              0x00, DO_SIMPLE_CODE,               // [AEh] Reserved 
+ 978              0x00, DO_SIMPLE_CODE,               // [AFh] Reserved 
+ 979              
+ 980          //-----------------------------------------------------------------
+ 981          // Index from sskey2_A2_table
+ 982          //-----------------------------------------------------------------
+ 983                  0x6C, DO_SIMPLE_CODE,                   // Numpad 7 Home        [B0h]
+ 984                  0x75, DO_SIMPLE_CODE,                   // Numpad 8 UP          [B1h]
+C51 COMPILER V7.50   OEM_SCANTABS                                                          09/08/2020 15:56:21 PAGE 17  
+
+ 985                  0x7D, DO_SIMPLE_CODE,           // Numpad 9 PGUp        [B2h]
+ 986                  0x7C, DO_SIMPLE_CODE,           // Numpad *             [B3h]
+ 987                  0x6B, DO_SIMPLE_CODE,           // Numpad 4 Left        [B4h]
+ 988                  0x73, DO_SIMPLE_CODE,           // Numpad 5             [B5h]
+ 989                  0x74, DO_SIMPLE_CODE,           // Numpad 6 Right       [B6h]
+ 990                  0x7B, DO_SIMPLE_CODE,           // Numpad -             [B7h]
+ 991                  0x69, DO_SIMPLE_CODE,           // Numpad 1 End         [B8h]
+ 992                  0x72, DO_SIMPLE_CODE,           // Numpad 2 Down        [B9h]
+ 993                  0x7A, DO_SIMPLE_CODE,           // Numpad 3 PGDn        [BAh]
+ 994                  0x79, DO_SIMPLE_CODE,           // Numpad +             [BBh]
+ 995                  0x70, DO_SIMPLE_CODE,           // Numpad 0 Ins         [BCh]
+ 996                  0x71, DO_SIMPLE_CODE,                   // Numpad . Del         [BDh]
+ 997                  0x4A, DO_E0_PREFIX_CODE,                // Numpad /             [BEh]
+ 998                  
+ 999                  0x00, DO_SIMPLE_CODE,                   // Reserved             [BFh]
+1000                  
+1001              0x71, DO_E0_PREFIX_CODE,            // Delete                       [C0h]  
+1002              0x84, DO_SIMPLE_CODE,               // SysRq                        [C1h]  
+1003              0x70, DO_E0_PREFIX_CODE,            // Insert                       [C2h]  
+1004              0x7C, DO_E0_PREFIX_CODE,            // Print Screen         [C3h] 
+1005                  0x41, DO_E0_PREFIX_CODE,        // Euro Sign            [C4h]
+1006                  0x49, DO_E0_PREFIX_CODE,        // Dollar Sign          [C5h]
+1007                  0x00, DO_SIMPLE_CODE,                   // Reserved             [C6h]
+1008                  0x00, DO_SIMPLE_CODE,                   // Reserved             [C7h]
+1009                  0x00, DO_SIMPLE_CODE,                   // Reserved             [C8h]
+1010                  0x00, DO_SIMPLE_CODE,                   // Reserved             [C9h]
+1011                  0x00, DO_SIMPLE_CODE,                   // Reserved             [CAh]
+1012                  0x00, DO_SIMPLE_CODE,                   // Reserved             [CBh]
+1013                  0x00, DO_SIMPLE_CODE,                   // Reserved             [CCh]
+1014                  0x00, DO_SIMPLE_CODE,                   // Reserved             [CDh]
+1015                  0x00, DO_SIMPLE_CODE,                   // Reserved             [CEh]
+1016                  0x00, DO_SIMPLE_CODE,                   // Reserved             [CFh]
+1017                  
+1018          // Function key F1 ~ F12     
+1019              0   , DO_COSTOMER_FUNCTION,         // Function key F1      [D0h]  
+1020              1   , DO_COSTOMER_FUNCTION,         // Function key F2      [D1h]  
+1021              2   , DO_COSTOMER_FUNCTION,         // Function key F3      [D2h] 
+1022              3   , DO_COSTOMER_FUNCTION,         // Function key F4      [D3h] 
+1023              4   , DO_COSTOMER_FUNCTION,         // Function key F5      [D4h] 
+1024              5   , DO_COSTOMER_FUNCTION,         // Function key F6      [D5h] 
+1025              6   , DO_COSTOMER_FUNCTION,         // Function key F7      [D6h] 
+1026              7   , DO_COSTOMER_FUNCTION,         // Function key F8      [D7h] 
+1027              8   , DO_COSTOMER_FUNCTION,         // Function key F9      [D8h] 
+1028              9   , DO_COSTOMER_FUNCTION,         // Function key F10     [D9h] 
+1029              10  , DO_COSTOMER_FUNCTION,         // Function key F11     [DAh]  
+1030              11  , DO_COSTOMER_FUNCTION,         // Function key F12     [DBh] 
+1031                  12      , DO_COSTOMER_FUNCTION,         // Function key Esc     [DCh]
+1032                  13      , DO_COSTOMER_FUNCTION,         // Function key Up arrow        [DDh]
+1033                  14      , DO_COSTOMER_FUNCTION,         // Function key Down arrow      [DEh]
+1034                  15      , DO_COSTOMER_FUNCTION,         // Function key Left arrow      [DFh]
+1035                  16      , DO_COSTOMER_FUNCTION,         // Function key Right arrow     [E0h]   
+1036                  17  , DO_COSTOMER_FUNCTION,     // Function key Space [E1h]
+1037          };
+1038          
+1039                                                                                  // Reserved 0xE0 ~ 0xFF         
+1040          
+1041          //-----------------------------------------------------------------
+1042          // The function of checking boot hotkey Dino 1024    
+1043          //-----------------------------------------------------------------
+1044          #define Crisiskey01        0x8E         // Fn
+1045          #define Crisiskey02        0x2D         // R
+1046          
+C51 COMPILER V7.50   OEM_SCANTABS                                                          09/08/2020 15:56:21 PAGE 18  
+
+1047          void CrisisHotkey01(BYTE event)
+1048          {
+1049   1          if(event == BREAK_EVENT)
+1050   1          {
+1051   2              CrisisKeyStatus=0x00;
+1052   2          }
+1053   1          else if(event == MAKE_EVENT)
+1054   1          {
+1055   2              CrisisKeyStatus++;
+1056   2          }
+1057   1      }
+1058          
+1059          void CrisisHotkey02(BYTE event)
+1060          {
+1061   1          if(event == BREAK_EVENT)
+1062   1          {
+1063   2              CrisisKeyStatus=0x00;
+1064   2          }
+1065   1          else if(event == MAKE_EVENT)
+1066   1          {
+1067   2              CrisisKeyStatus++;
+1068   2          }
+1069   1      }
+1070          
+1071          
+1072          const sBootHotKeyStruct code asBootHotKeyStruct[]=
+1073          {
+1074                  { Crisiskey01, CrisisHotkey01   },
+1075                  { Crisiskey02, CrisisHotkey02   },
+1076          };
+1077          
+1078          void CheckBootHotKey(BYTE matrix,BYTE event)
+1079          {
+1080   1              BYTE index;
+1081   1          for(index=0x00; index<(sizeof(asBootHotKeyStruct)/sizeof(sBootHotKeyStruct)); index++)
+1082   1          {
+1083   2                      if(matrix==asBootHotKeyStruct[index].matrix)
+1084   2                  {
+1085   3                      (asBootHotKeyStruct[index].pfunction)(event);
+1086   3                  return;
+1087   3              }
+1088   2          }
+1089   1          CrisisKeyStatus=0x00;
+1090   1      }
+1091          
+1092          //-----------------------------------------------------------------------------
+1093          // Keyboard wake up system from S3
+1094          //-----------------------------------------------------------------------------
+1095          void CheckKBS3Wake(BYTE BKSI,BYTE BKSO)
+1096          {
+1097   1              BYTE wuv;
+1098   1      
+1099   1          wuv = ((BKSI << 4)|BKSO);
+1100   1          Tmp_code_pointer = &KB_S3WakeUP_Tables;
+1101   1          if(*(Tmp_code_pointer + wuv)==0x55)
+1102   1          {
+1103   2              PulseSBPowerButton();
+1104   2          }
+1105   1      }
+1106          
+1107          void Et_CheckKBS3Wake(BYTE BKSI,BYTE BKSO)
+1108          {
+C51 COMPILER V7.50   OEM_SCANTABS                                                          09/08/2020 15:56:21 PAGE 19  
+
+1109   1              BYTE wuv;
+1110   1      
+1111   1          wuv = ((BKSI*3)+BKSO);
+1112   1          Tmp_code_pointer = &EtKey_S3WakeUP_Tables;
+1113   1          if(*(Tmp_code_pointer + wuv)==0x55)
+1114   1          {
+1115   2              PulseSBPowerButton();
+1116   2          }
+1117   1      }
+1118          
+1119          //----------------------------------------------------------------------------
+1120          // table_entry : value of keyboard matrix table. for example Rc_ROM_Tables[]
+1121          // event : key MAKE_EVENT or BREAK_EVENT or REPEAT_EVENT
+1122          //----------------------------------------------------------------------------
+1123          void OEM_Hook_Send_Key(BYTE table_entry, BYTE event)
+1124          {
+1125   1          if(SystemNotS0)
+1126   1          {   
+1127   2              CheckBootHotKey(table_entry,event);
+1128   2          }
+1129   1      }
+1130          
+1131          //----------------------------------------------------------------------------
+1132          // Return : 0xFF --> Send_Key function will be break; (no any scan code to host)
+1133          //----------------------------------------------------------------------------
+1134          BYTE OEM_Hook_Skip_Send_Key(void)
+1135          {
+1136   1          return(0x00);
+1137   1      }
+1138                                                                          
+1139          //-----------------------------------------------------------------------------
+1140          // Keyboard hook function (KSO0 - KSO15)
+1141          // KSIValus : keyboard KSI
+1142          // KSOValus : keyboard KSO
+1143          //-----------------------------------------------------------------------------
+1144          void Hook_keyboard(BYTE KSIValus, BYTE KSOValus)
+1145          {
+1146   1      #if S3KeyboardWakeUp 
+1147   1              if(SystemIsS3)
+1148   1              {
+1149   2                      CheckKBS3Wake(KSIValus,KSOValus);
+1150   2              }
+1151   1      #endif  
+1152   1      }               
+1153          
+1154          //-----------------------------------------------------------------------------
+1155          // Keyboard hook function (KSO16 - KSO17 and GPIO KSO)
+1156          // KSIValus : keyboard KSI
+1157          // KSOValus : keyboard KSO
+1158          //-----------------------------------------------------------------------------
+1159          void Et_Hook_keyboard(BYTE KSIValus, BYTE KSOValus)
+1160          {
+1161   1      #if S3KeyboardWakeUp 
+1162   1              if(SystemIsS3)
+1163   1              {
+1164   2                      Et_CheckKBS3Wake(KSIValus,KSOValus);
+1165   2              }
+1166   1      #endif  
+1167   1      }
+1168          
+1169          /* ---------------------------------------------------------------------------
+1170           * FUNCTION: Hook_Setup_Scanner_Pntr - to define the possible scanner tables
+C51 COMPILER V7.50   OEM_SCANTABS                                                          09/08/2020 15:56:21 PAGE 20  
+
+1171           *
+1172           *     0   Rc_RAM_Table
+1173           *     1   ROM Table 1
+1174           *     ...
+1175           * ------------------------------------------------------------------------ */
+1176          void Hook_Setup_Scanner_Pntr(void)
+1177          {                                               
+1178   1              Scanner_Table_Pntr = &Rc_ROM_Tables;
+1179   1              Extendkey_Table_Pntr = &EtKey_ROM_Tables;
+1180   1      }
+1181          
+1182          //-----------------------------------------------------------------------------
+1183          // The function of setting GPIO scan pin to high
+1184          //-----------------------------------------------------------------------------
+1185          void Hook_SetGPIOScanPinH(void)
+1186          {
+1187   1              #if 0
+                      if(ExternMatrixGPO)
+                      {
+                              GPOKeyPin1H;
+                      }
+                      #endif
+1193   1      }
+1194          
+1195          //-----------------------------------------------------------------------------
+1196          // The function of setting GPIO scan pin to low
+1197          //-----------------------------------------------------------------------------
+1198          void Hook_SetGPIOScanPinL(void)
+1199          {
+1200   1              #if 0
+                      if(ExternMatrixGPO)
+                      {
+                              GPOKeyPin1L;
+                      }
+                      #endif
+1206   1      }
+1207          
+1208          //-----------------------------------------------------------------------------
+1209          // The function of setting GPIO scan pin output
+1210          //-----------------------------------------------------------------------------
+1211          void Hook_SetGPIOScanPinCtrl(void)
+1212          {
+1213   1              #if 0
+                      if(ExternMatrixGPO)
+                      {
+                              GPOKeyPin1Ctl = 0x40;           // output
+                      }
+                      #endif
+1219   1      }
+1220          
+1221          //-----------------------------------------------------------------------------
+1222          // Fn key make
+1223          //-----------------------------------------------------------------------------
+1224          void Hook_Fn_Key_Make(void)
+1225          {
+1226   1      
+1227   1      }
+1228          
+1229          //-----------------------------------------------------------------------------
+1230          // Fn key break
+1231          //-----------------------------------------------------------------------------
+1232          void Hook_Fn_Key_Break(void)
+C51 COMPILER V7.50   OEM_SCANTABS                                                          09/08/2020 15:56:21 PAGE 21  
+
+1233          {
+1234   1      
+1235   1      }
+1236          
+1237          //-----------------------------------------------------------------------------
+1238          // Return : 0xFF --> sskey2_A2_table contains bit6
+1239          //-----------------------------------------------------------------------------
+1240          BYTE Hook_calc_index_comb_BIT6(void)
+1241          {
+1242   1          return(0x00);
+1243   1      }
+1244          
+1245          //-----------------------------------------------------------------------------
+1246          // Return : 0xFF --> sskey2_A2_table contains bit7
+1247          //-----------------------------------------------------------------------------
+1248          BYTE Hook_calc_index_comb_BIT7(void)
+1249          {
+1250   1          return(0x00);
+1251   1      }
+C51 COMPILER V7.50   OEM_SCANTABS                                                          09/08/2020 15:56:21 PAGE 22  
+
+ASSEMBLY LISTING OF GENERATED OBJECT CODE
+
+
+             ; FUNCTION Com0073 (BEGIN)
+0000         L?0116:
+0000         L?0117:
+0000 900000      E     MOV     DPTR,#LCD_BRIGHTNESS
+0003 E0                MOVX    A,@DPTR
+0004 C3                CLR     C
+0005 940A              SUBB    A,#0AH
+0007 22                RET     
+0008         L?0118:
+0008         L?0119:
+0008 900000      E     MOV     DPTR,#LCD_BRIGHTNESS
+000B E0                MOVX    A,@DPTR
+000C D3                SETB    C
+000D 9400              SUBB    A,#00H
+000F 22                RET     
+0010         L?0120:
+0010 900000      E     MOV     DPTR,#VPC_Lenovo
+0013 E0                MOVX    A,@DPTR
+0014 4410              ORL     A,#010H
+0016 F0                MOVX    @DPTR,A
+0017 E4                CLR     A
+0018 FD                MOV     R5,A
+0019 7F44              MOV     R7,#044H
+001B 22                RET     
+001C         L?0121:
+001C 2500        E     ADD     A,Tmp_code_pointer+01H
+001E F582              MOV     DPL,A
+0020 E4                CLR     A
+0021 3500        E     ADDC    A,Tmp_code_pointer
+0023 F583              MOV     DPH,A
+0025 E4                CLR     A
+0026 93                MOVC    A,@A+DPTR
+0027 22                RET     
+             ; FUNCTION Com0073 (END)
+
+             ; FUNCTION _OEM_SetBackBT_Value_Fn (BEGIN)
+                                           ; SOURCE LINE # 87
+;---- Variable 'Up_Down_f' assigned to Register 'R5' ----
+0000 CD                XCH     A,R5
+0001 EF                MOV     A,R7
+0002 CD                XCH     A,R5
+                                           ; SOURCE LINE # 88
+                                           ; SOURCE LINE # 90
+0003 900000      E     MOV     DPTR,#Oem_Globe_Flag
+0006 E0                MOVX    A,@DPTR
+0007 20E212            JB      ACC.2,?C0001
+000A EF                MOV     A,R7
+000B 600F              JZ      ?C0001
+                                           ; SOURCE LINE # 91
+                                           ; SOURCE LINE # 92
+000D E0                MOVX    A,@DPTR
+000E 4404              ORL     A,#04H
+0010 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 94
+0011 120000      R     LCALL   L?0116
+0014 5003              JNC     ?C0002
+                                           ; SOURCE LINE # 95
+                                           ; SOURCE LINE # 96
+0016 E0                MOVX    A,@DPTR
+C51 COMPILER V7.50   OEM_SCANTABS                                                          09/08/2020 15:56:21 PAGE 23  
+
+0017 04                INC     A
+0018 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 97
+0019         ?C0002:
+                                           ; SOURCE LINE # 99
+0019 7F01              MOV     R7,#01H
+001B 22                RET     
+                                           ; SOURCE LINE # 100
+001C         ?C0001:
+                                           ; SOURCE LINE # 102
+001C 900000      E     MOV     DPTR,#Oem_Globe_Flag
+001F E0                MOVX    A,@DPTR
+0020 20E112            JB      ACC.1,?C0004
+0023 ED                MOV     A,R5
+0024 700F              JNZ     ?C0004
+                                           ; SOURCE LINE # 103
+                                           ; SOURCE LINE # 104
+0026 E0                MOVX    A,@DPTR
+0027 4402              ORL     A,#02H
+0029 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 106
+002A 120000      R     LCALL   L?0118
+002D 4003              JC      ?C0005
+                                           ; SOURCE LINE # 107
+                                           ; SOURCE LINE # 108
+002F E0                MOVX    A,@DPTR
+0030 14                DEC     A
+0031 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 109
+0032         ?C0005:
+                                           ; SOURCE LINE # 111
+0032 7F01              MOV     R7,#01H
+0034 22                RET     
+                                           ; SOURCE LINE # 112
+0035         ?C0004:
+                                           ; SOURCE LINE # 114
+0035 7F00              MOV     R7,#00H
+                                           ; SOURCE LINE # 116
+0037         ?C0003:
+0037 22                RET     
+             ; FUNCTION _OEM_SetBackBT_Value_Fn (END)
+
+             ; FUNCTION _OEM_SetBackBT_Value_Fn_NoEM_linux (BEGIN)
+                                           ; SOURCE LINE # 118
+;---- Variable 'Up_Down_f' assigned to Register 'R7' ----
+                                           ; SOURCE LINE # 119
+                                           ; SOURCE LINE # 120
+0000 EF                MOV     A,R7
+0001 600E              JZ      ?C0006
+                                           ; SOURCE LINE # 121
+                                           ; SOURCE LINE # 122
+0003 120000      R     LCALL   L?0116
+0006 5018              JNC     ?C0010
+                                           ; SOURCE LINE # 123
+                                           ; SOURCE LINE # 124
+0008 E0                MOVX    A,@DPTR
+0009 04                INC     A
+000A F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 125
+000B E4                CLR     A
+000C FD                MOV     R5,A
+000D 7FD2              MOV     R7,#0D2H
+C51 COMPILER V7.50   OEM_SCANTABS                                                          09/08/2020 15:56:21 PAGE 24  
+
+                                           ; SOURCE LINE # 126
+                                           ; SOURCE LINE # 128
+000F 800C              SJMP    ?C0110
+0011         ?C0006:
+                                           ; SOURCE LINE # 130
+                                           ; SOURCE LINE # 132
+0011 120000      R     LCALL   L?0118
+0014 400A              JC      ?C0010
+                                           ; SOURCE LINE # 133
+                                           ; SOURCE LINE # 134
+0016 E0                MOVX    A,@DPTR
+0017 14                DEC     A
+0018 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 135
+0019 E4                CLR     A
+001A FD                MOV     R5,A
+001B 7FD1              MOV     R7,#0D1H
+001D         ?C0110:
+001D 120000      E     LCALL   _ECQEvent
+                                           ; SOURCE LINE # 136
+                                           ; SOURCE LINE # 138
+                                           ; SOURCE LINE # 139
+0020         ?C0010:
+0020 22                RET     
+             ; FUNCTION _OEM_SetBackBT_Value_Fn_NoEM_linux (END)
+
+             ; FUNCTION _OEM_SetBackBT_Value_Fn_NoEM (BEGIN)
+                                           ; SOURCE LINE # 141
+;---- Variable 'Up_Down_f' assigned to Register 'R7' ----
+                                           ; SOURCE LINE # 142
+                                           ; SOURCE LINE # 143
+0000 EF                MOV     A,R7
+0001 6009              JZ      ?C0011
+                                           ; SOURCE LINE # 144
+                                           ; SOURCE LINE # 145
+0003 120000      R     LCALL   L?0117
+0006 500C              JNC     ?C0015
+                                           ; SOURCE LINE # 146
+0008 E0                MOVX    A,@DPTR
+0009 04                INC     A
+000A F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 148
+000B 22                RET     
+000C         ?C0011:
+                                           ; SOURCE LINE # 150
+                                           ; SOURCE LINE # 152
+000C 120000      R     LCALL   L?0119
+000F 4003              JC      ?C0015
+                                           ; SOURCE LINE # 153
+0011 E0                MOVX    A,@DPTR
+0012 14                DEC     A
+0013 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 155
+                                           ; SOURCE LINE # 156
+0014         ?C0015:
+0014 22                RET     
+             ; FUNCTION _OEM_SetBackBT_Value_Fn_NoEM (END)
+
+             ; FUNCTION _OEM_Win7_SetBackBt_Fn (BEGIN)
+                                           ; SOURCE LINE # 157
+;---- Variable 'Up_Down_f' assigned to Register 'R7' ----
+                                           ; SOURCE LINE # 158
+C51 COMPILER V7.50   OEM_SCANTABS                                                          09/08/2020 15:56:21 PAGE 25  
+
+                                           ; SOURCE LINE # 159
+0000 120000      R     LCALL   _OEM_SetBackBT_Value_Fn
+0003 EF                MOV     A,R7
+0004 6006              JZ      ?C0017
+                                           ; SOURCE LINE # 160
+                                           ; SOURCE LINE # 161
+                                           ; SOURCE LINE # 162
+0006 120000      R     LCALL   L?0120
+0009 120000      E     LCALL   _ECQEvent
+                                           ; SOURCE LINE # 163
+                                           ; SOURCE LINE # 164
+000C         ?C0017:
+000C 22                RET     
+             ; FUNCTION _OEM_Win7_SetBackBt_Fn (END)
+
+             ; FUNCTION _OEM_Win7_SetBackBt_Fn_NoEM (BEGIN)
+                                           ; SOURCE LINE # 167
+;---- Variable 'Up_Down_f' assigned to Register 'R7' ----
+                                           ; SOURCE LINE # 168
+                                           ; SOURCE LINE # 169
+0000 120000      R     LCALL   _OEM_SetBackBT_Value_Fn_NoEM
+                                           ; SOURCE LINE # 170
+0003 E4                CLR     A
+0004 FD                MOV     R5,A
+0005 7F44              MOV     R7,#044H
+0007 020000      E     LJMP    _ECQEvent
+             ; FUNCTION _OEM_Win7_SetBackBt_Fn_NoEM (END)
+
+             ; FUNCTION _OEM_WinXP_SetBackBt_Fn (BEGIN)
+                                           ; SOURCE LINE # 172
+;---- Variable 'Up_Down_f' assigned to Register 'R7' ----
+                                           ; SOURCE LINE # 173
+                                           ; SOURCE LINE # 174
+0000 120000      R     LCALL   _OEM_SetBackBT_Value_Fn
+0003 EF                MOV     A,R7
+0004 600E              JZ      ?C0020
+                                           ; SOURCE LINE # 175
+                                           ; SOURCE LINE # 176
+                                           ; SOURCE LINE # 177
+0006 120000      R     LCALL   L?0120
+0009 120000      E     LCALL   _ECQEvent
+                                           ; SOURCE LINE # 178
+000C 900000      E     MOV     DPTR,#LCD_BRIGHTNESS
+000F E0                MOVX    A,@DPTR
+0010 FF                MOV     R7,A
+0011 120000      E     LCALL   _Setup_Brightness
+                                           ; SOURCE LINE # 179
+                                           ; SOURCE LINE # 180
+0014         ?C0020:
+0014 22                RET     
+             ; FUNCTION _OEM_WinXP_SetBackBt_Fn (END)
+
+             ; FUNCTION _OEM_Fn_SetBK_NO_ACPI (BEGIN)
+                                           ; SOURCE LINE # 184
+;---- Variable 'Up_Down_f' assigned to Register 'R7' ----
+                                           ; SOURCE LINE # 185
+                                           ; SOURCE LINE # 187
+0000 120000      R     LCALL   _OEM_SetBackBT_Value_Fn_NoEM
+                                           ; SOURCE LINE # 188
+0003 900000      E     MOV     DPTR,#LCD_BRIGHTNESS
+0006 E0                MOVX    A,@DPTR
+0007 FF                MOV     R7,A
+C51 COMPILER V7.50   OEM_SCANTABS                                                          09/08/2020 15:56:21 PAGE 26  
+
+0008 020000      E     LJMP    _Setup_Brightness
+             ; FUNCTION _OEM_Fn_SetBK_NO_ACPI (END)
+
+             ; FUNCTION _HotKey_Fn_F1 (BEGIN)
+                                           ; SOURCE LINE # 205
+0000 900000      R     MOV     DPTR,#event
+0003 EF                MOV     A,R7
+0004 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 206
+                                           ; SOURCE LINE # 207
+0005 7003              JNZ     ?C0022
+                                           ; SOURCE LINE # 208
+                                           ; SOURCE LINE # 209
+0007 FD                MOV     R5,A
+                                           ; SOURCE LINE # 210
+0008 8009              SJMP    ?C0111
+000A         ?C0022:
+                                           ; SOURCE LINE # 211
+000A 900000      R     MOV     DPTR,#event
+000D E0                MOVX    A,@DPTR
+000E B40107            CJNE    A,#01H,?C0025
+                                           ; SOURCE LINE # 212
+                                           ; SOURCE LINE # 213
+0011 7D01              MOV     R5,#01H
+0013         ?C0111:
+0013 7F23              MOV     R7,#023H
+0015 120000      E     LCALL   _e0_prefix_code
+                                           ; SOURCE LINE # 214
+                                           ; SOURCE LINE # 215
+0018         ?C0025:
+0018 22                RET     
+             ; FUNCTION _HotKey_Fn_F1 (END)
+
+             ; FUNCTION _HotKey_Fn_F2 (BEGIN)
+                                           ; SOURCE LINE # 220
+;---- Variable 'event' assigned to Register 'R7' ----
+                                           ; SOURCE LINE # 221
+                                           ; SOURCE LINE # 222
+0000 CD                XCH     A,R5
+0001 EF                MOV     A,R7
+0002 CD                XCH     A,R5
+0003 7F21              MOV     R7,#021H
+0005 020000      E     LJMP    _e0_prefix_code
+             ; FUNCTION _HotKey_Fn_F2 (END)
+
+             ; FUNCTION _HotKey_Fn_F3 (BEGIN)
+                                           ; SOURCE LINE # 228
+;---- Variable 'event' assigned to Register 'R7' ----
+                                           ; SOURCE LINE # 229
+                                           ; SOURCE LINE # 230
+0000 CD                XCH     A,R5
+0001 EF                MOV     A,R7
+0002 CD                XCH     A,R5
+0003 7F32              MOV     R7,#032H
+0005 020000      E     LJMP    _e0_prefix_code
+             ; FUNCTION _HotKey_Fn_F3 (END)
+
+             ; FUNCTION _HotKey_Fn_F4 (BEGIN)
+                                           ; SOURCE LINE # 236
+;---- Variable 'event' assigned to Register 'R7' ----
+                                           ; SOURCE LINE # 237
+                                           ; SOURCE LINE # 238
+C51 COMPILER V7.50   OEM_SCANTABS                                                          09/08/2020 15:56:21 PAGE 27  
+
+0000 EF                MOV     A,R7
+0001 6401              XRL     A,#01H
+0003 703A              JNZ     ?C0029
+0005         ?C0028:
+                                           ; SOURCE LINE # 242
+0005 900000      E     MOV     DPTR,#OemAllDevices_state
+0008 E0                MOVX    A,@DPTR
+0009 30E50E            JNB     ACC.5,?C0030
+                                           ; SOURCE LINE # 243
+                                           ; SOURCE LINE # 244
+000C 900000      E     MOV     DPTR,#VPC2_Lenovo
+000F E0                MOVX    A,@DPTR
+0010 4401              ORL     A,#01H
+0012 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 245
+0013 E4                CLR     A
+0014 FD                MOV     R5,A
+0015 7F44              MOV     R7,#044H
+0017 120000      E     LCALL   _ECQEvent
+                                           ; SOURCE LINE # 246
+001A         ?C0030:
+                                           ; SOURCE LINE # 248
+001A 900000      E     MOV     DPTR,#Device_Status_AllRF
+001D E0                MOVX    A,@DPTR
+001E 30E50D            JNB     ACC.5,?C0031
+                                           ; SOURCE LINE # 249
+                                           ; SOURCE LINE # 250
+0021 E0                MOVX    A,@DPTR
+0022 54DF              ANL     A,#0DFH
+0024 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 251
+0025 7F38              MOV     R7,#038H
+0027 120000      E     LCALL   _Buffer_Key
+                                           ; SOURCE LINE # 252
+002A 7FEA              MOV     R7,#0EAH
+                                           ; SOURCE LINE # 253
+002C 800E              SJMP    ?C0112
+002E         ?C0031:
+                                           ; SOURCE LINE # 255
+                                           ; SOURCE LINE # 256
+002E 900000      E     MOV     DPTR,#Device_Status_AllRF
+0031 E0                MOVX    A,@DPTR
+0032 4420              ORL     A,#020H
+0034 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 257
+0035 7F40              MOV     R7,#040H
+0037 120000      E     LCALL   _Buffer_Key
+                                           ; SOURCE LINE # 258
+003A 7FEB              MOV     R7,#0EBH
+003C         ?C0112:
+003C 120000      E     LCALL   _Buffer_Key
+                                           ; SOURCE LINE # 259
+                                           ; SOURCE LINE # 261
+003F         ?C0029:
+003F 22                RET     
+             ; FUNCTION _HotKey_Fn_F4 (END)
+
+             ; FUNCTION _HotKey_Fn_F5 (BEGIN)
+                                           ; SOURCE LINE # 266
+;---- Variable 'event' assigned to Register 'R7' ----
+                                           ; SOURCE LINE # 267
+                                           ; SOURCE LINE # 268
+C51 COMPILER V7.50   OEM_SCANTABS                                                          09/08/2020 15:56:21 PAGE 28  
+
+0000 CD                XCH     A,R5
+0001 EF                MOV     A,R7
+0002 CD                XCH     A,R5
+0003 7F20              MOV     R7,#020H
+0005 020000      E     LJMP    _e0_prefix_code
+             ; FUNCTION _HotKey_Fn_F5 (END)
+
+             ; FUNCTION _HotKey_Fn_F6 (BEGIN)
+                                           ; SOURCE LINE # 274
+;---- Variable 'event' assigned to Register 'R7' ----
+                                           ; SOURCE LINE # 275
+                                           ; SOURCE LINE # 276
+0000 EF                MOV     A,R7
+0001 7028              JNZ     ?C0035
+                                           ; SOURCE LINE # 277
+                                           ; SOURCE LINE # 279
+0003         ?C0034:
+                                           ; SOURCE LINE # 281
+0003 900000      E     MOV     DPTR,#Device_Status_Lenovo
+0006 E0                MOVX    A,@DPTR
+0007 30E409            JNB     ACC.4,?C0036
+                                           ; SOURCE LINE # 282
+                                           ; SOURCE LINE # 283
+000A E0                MOVX    A,@DPTR
+000B 54EF              ANL     A,#0EFH
+000D F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 285
+                                           ; SOURCE LINE # 286
+                                           ; SOURCE LINE # 287
+000E 120000      E     LCALL   Hook_DisablePS2Port_0
+                                           ; SOURCE LINE # 288
+                                           ; SOURCE LINE # 290
+0011 800A              SJMP    ?C0038
+0013         ?C0036:
+                                           ; SOURCE LINE # 292
+                                           ; SOURCE LINE # 293
+0013 900000      E     MOV     DPTR,#Device_Status_Lenovo
+0016 E0                MOVX    A,@DPTR
+0017 4410              ORL     A,#010H
+0019 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 295
+                                           ; SOURCE LINE # 296
+                                           ; SOURCE LINE # 297
+001A 120000      E     LCALL   Hook_EnablePS2Port_0
+                                           ; SOURCE LINE # 298
+                                           ; SOURCE LINE # 299
+001D         ?C0038:
+                                           ; SOURCE LINE # 301
+001D 900000      E     MOV     DPTR,#VPC_Lenovo
+0020 E0                MOVX    A,@DPTR
+0021 4420              ORL     A,#020H
+0023 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 304
+0024 E4                CLR     A
+0025 FD                MOV     R5,A
+0026 7F36              MOV     R7,#036H
+0028 120000      E     LCALL   _ECQEvent
+                                           ; SOURCE LINE # 305
+002B         ?C0035:
+002B 22                RET     
+             ; FUNCTION _HotKey_Fn_F6 (END)
+
+C51 COMPILER V7.50   OEM_SCANTABS                                                          09/08/2020 15:56:21 PAGE 29  
+
+             ; FUNCTION _HotKey_Fn_F7 (BEGIN)
+                                           ; SOURCE LINE # 310
+;---- Variable 'event' assigned to Register 'R7' ----
+                                           ; SOURCE LINE # 311
+                                           ; SOURCE LINE # 312
+0000 EF                MOV     A,R7
+0001 6401              XRL     A,#01H
+0003 7024              JNZ     ?C0041
+0005         ?C0040:
+                                           ; SOURCE LINE # 315
+0005 900000      E     MOV     DPTR,#OS_Type
+0008 E0                MOVX    A,@DPTR
+0009 24FD              ADD     A,#0FDH
+000B 700A              JNZ     ?C0042
+                                           ; SOURCE LINE # 316
+                                           ; SOURCE LINE # 317
+000D         ?C0043:
+                                           ; SOURCE LINE # 318
+000D 7F08              MOV     R7,#08H
+000F 120000      E     LCALL   _Buffer_Key
+                                           ; SOURCE LINE # 319
+0012 7FE4              MOV     R7,#0E4H
+0014 120000      E     LCALL   _Buffer_Key
+                                           ; SOURCE LINE # 320
+                                           ; SOURCE LINE # 321
+                                           ; SOURCE LINE # 322
+                                           ; SOURCE LINE # 323
+0017         ?C0042:
+                                           ; SOURCE LINE # 326
+0017 900000      E     MOV     DPTR,#VPC2_Lenovo
+001A E0                MOVX    A,@DPTR
+001B 4402              ORL     A,#02H
+001D F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 327
+001E E0                MOVX    A,@DPTR
+001F 4420              ORL     A,#020H
+0021 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 328
+0022 E4                CLR     A
+0023 FD                MOV     R5,A
+0024 7F44              MOV     R7,#044H
+0026 120000      E     LCALL   _ECQEvent
+                                           ; SOURCE LINE # 330
+0029         ?C0041:
+0029 22                RET     
+             ; FUNCTION _HotKey_Fn_F7 (END)
+
+             ; FUNCTION _HotKey_Fn_F8 (BEGIN)
+                                           ; SOURCE LINE # 335
+;---- Variable 'event' assigned to Register 'R7' ----
+                                           ; SOURCE LINE # 336
+                                           ; SOURCE LINE # 337
+0000 EF                MOV     A,R7
+0001 6401              XRL     A,#01H
+0003 7056              JNZ     ?C0046
+0005         ?C0045:
+                                           ; SOURCE LINE # 355
+0005 900000      E     MOV     DPTR,#OemAllDevices_state
+0008 E0                MOVX    A,@DPTR
+0009 30E50E            JNB     ACC.5,?C0047
+                                           ; SOURCE LINE # 356
+                                           ; SOURCE LINE # 357
+C51 COMPILER V7.50   OEM_SCANTABS                                                          09/08/2020 15:56:21 PAGE 30  
+
+000C 900000      E     MOV     DPTR,#VPC_Lenovo
+000F E0                MOVX    A,@DPTR
+0010 4480              ORL     A,#080H
+0012 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 358
+0013 E4                CLR     A
+0014 FD                MOV     R5,A
+0015 7F44              MOV     R7,#044H
+0017 120000      E     LCALL   _ECQEvent
+                                           ; SOURCE LINE # 359
+001A         ?C0047:
+                                           ; SOURCE LINE # 360
+001A 900000      E     MOV     DPTR,#Oem_Device_Status
+001D E0                MOVX    A,@DPTR
+001E 900000      E     MOV     DPTR,#Device_Status_Lenovo
+0021 30E51B            JNB     ACC.5,?C0048
+                                           ; SOURCE LINE # 361
+                                           ; SOURCE LINE # 362
+0024 E0                MOVX    A,@DPTR
+0025 54DF              ANL     A,#0DFH
+0027 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 363
+0028 900000      E     MOV     DPTR,#Oem_Device_Status
+002B E0                MOVX    A,@DPTR
+002C 54DF              ANL     A,#0DFH
+002E F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 364
+002F 900000      E     MOV     DPTR,#GPDRC
+0032 E0                MOVX    A,@DPTR
+0033 54DF              ANL     A,#0DFH
+0035 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 365
+0036 7F10              MOV     R7,#010H
+0038 120000      E     LCALL   _Buffer_Key
+                                           ; SOURCE LINE # 366
+003B 7FE5              MOV     R7,#0E5H
+                                           ; SOURCE LINE # 367
+003D 8019              SJMP    ?C0113
+003F         ?C0048:
+                                           ; SOURCE LINE # 369
+                                           ; SOURCE LINE # 370
+003F E0                MOVX    A,@DPTR
+0040 4420              ORL     A,#020H
+0042 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 371
+0043 900000      E     MOV     DPTR,#Oem_Device_Status
+0046 E0                MOVX    A,@DPTR
+0047 4420              ORL     A,#020H
+0049 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 372
+004A 900000      E     MOV     DPTR,#GPDRC
+004D E0                MOVX    A,@DPTR
+004E 4420              ORL     A,#020H
+0050 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 373
+0051 7F18              MOV     R7,#018H
+0053 120000      E     LCALL   _Buffer_Key
+                                           ; SOURCE LINE # 374
+0056 7FE6              MOV     R7,#0E6H
+0058         ?C0113:
+0058 120000      E     LCALL   _Buffer_Key
+                                           ; SOURCE LINE # 375
+C51 COMPILER V7.50   OEM_SCANTABS                                                          09/08/2020 15:56:21 PAGE 31  
+
+                                           ; SOURCE LINE # 377
+005B         ?C0046:
+005B 22                RET     
+             ; FUNCTION _HotKey_Fn_F8 (END)
+
+             ; FUNCTION _HotKey_Fn_F9 (BEGIN)
+                                           ; SOURCE LINE # 382
+0000 900000      R     MOV     DPTR,#event
+0003 EF                MOV     A,R7
+0004 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 383
+                                           ; SOURCE LINE # 384
+0005 7011              JNZ     ?C0050
+                                           ; SOURCE LINE # 385
+                                           ; SOURCE LINE # 392
+0007 E0                MOVX    A,@DPTR
+0008 FD                MOV     R5,A
+0009 7F1F              MOV     R7,#01FH
+000B 120000      E     LCALL   _e0_prefix_code
+                                           ; SOURCE LINE # 393
+000E 900000      R     MOV     DPTR,#event
+0011 E0                MOVX    A,@DPTR
+0012 FD                MOV     R5,A
+0013 7F4B              MOV     R7,#04BH
+0015 020000      E     LJMP    _simple_code
+                                           ; SOURCE LINE # 394
+0018         ?C0050:
+                                           ; SOURCE LINE # 395
+0018 900000      R     MOV     DPTR,#event
+001B E0                MOVX    A,@DPTR
+001C FD                MOV     R5,A
+001D B4010F            CJNE    A,#01H,?C0053
+                                           ; SOURCE LINE # 396
+                                           ; SOURCE LINE # 397
+0020 7F4B              MOV     R7,#04BH
+0022 120000      E     LCALL   _simple_code
+                                           ; SOURCE LINE # 404
+0025 900000      R     MOV     DPTR,#event
+0028 E0                MOVX    A,@DPTR
+0029 FD                MOV     R5,A
+002A 7F1F              MOV     R7,#01FH
+002C 120000      E     LCALL   _e0_prefix_code
+                                           ; SOURCE LINE # 405
+                                           ; SOURCE LINE # 406
+002F         ?C0053:
+002F 22                RET     
+             ; FUNCTION _HotKey_Fn_F9 (END)
+
+             ; FUNCTION _HotKey_Fn_F10 (BEGIN)
+                                           ; SOURCE LINE # 411
+;---- Variable 'event' assigned to Register 'R7' ----
+                                           ; SOURCE LINE # 412
+                                           ; SOURCE LINE # 413
+0000 EF                MOV     A,R7
+0001 6003              JZ      ?C0055
+0003 B40207            CJNE    A,#02H,?C0056
+0006         ?C0055:
+                                           ; SOURCE LINE # 414
+0006 E4                CLR     A
+0007 FD                MOV     R5,A
+0008 7F3A              MOV     R7,#03AH
+000A 120000      E     LCALL   _ECQEvent
+C51 COMPILER V7.50   OEM_SCANTABS                                                          09/08/2020 15:56:21 PAGE 32  
+
+                                           ; SOURCE LINE # 415
+000D         ?C0056:
+000D 22                RET     
+             ; FUNCTION _HotKey_Fn_F10 (END)
+
+             ; FUNCTION _HotKey_Fn_F11 (BEGIN)
+                                           ; SOURCE LINE # 420
+;---- Variable 'event' assigned to Register 'R7' ----
+                                           ; SOURCE LINE # 421
+                                           ; SOURCE LINE # 422
+0000 EF                MOV     A,R7
+0001 6003              JZ      ?C0058
+0003 B40207            CJNE    A,#02H,?C0059
+0006         ?C0058:
+                                           ; SOURCE LINE # 423
+0006 E4                CLR     A
+0007 FD                MOV     R5,A
+0008 7F38              MOV     R7,#038H
+000A 120000      E     LCALL   _ECQEvent
+                                           ; SOURCE LINE # 424
+000D         ?C0059:
+000D 22                RET     
+             ; FUNCTION _HotKey_Fn_F11 (END)
+
+             ; FUNCTION _HotKey_Fn_F12 (BEGIN)
+                                           ; SOURCE LINE # 429
+;---- Variable 'event' assigned to Register 'R7' ----
+                                           ; SOURCE LINE # 430
+                                           ; SOURCE LINE # 431
+0000 EF                MOV     A,R7
+0001 6003              JZ      ?C0061
+0003 B40207            CJNE    A,#02H,?C0062
+0006         ?C0061:
+                                           ; SOURCE LINE # 432
+0006 E4                CLR     A
+0007 FD                MOV     R5,A
+0008 7F39              MOV     R7,#039H
+000A 120000      E     LCALL   _ECQEvent
+                                           ; SOURCE LINE # 433
+000D         ?C0062:
+000D 22                RET     
+             ; FUNCTION _HotKey_Fn_F12 (END)
+
+             ; FUNCTION _HotKey_Fn_ESC (BEGIN)
+                                           ; SOURCE LINE # 438
+;---- Variable 'event' assigned to Register 'R7' ----
+                                           ; SOURCE LINE # 439
+                                           ; SOURCE LINE # 441
+0000 EF                MOV     A,R7
+0001 700F              JNZ     ?C0066
+                                           ; SOURCE LINE # 442
+                                           ; SOURCE LINE # 443
+0003 900000      E     MOV     DPTR,#LCD_CTRL
+0006 E0                MOVX    A,@DPTR
+0007 7004              JNZ     ?C0064
+                                           ; SOURCE LINE # 444
+0009 74AA              MOV     A,#0AAH
+000B F0                MOVX    @DPTR,A
+000C 22                RET     
+000D         ?C0064:
+                                           ; SOURCE LINE # 446
+000D E4                CLR     A
+C51 COMPILER V7.50   OEM_SCANTABS                                                          09/08/2020 15:56:21 PAGE 33  
+
+000E 900000      E     MOV     DPTR,#LCD_CTRL
+0011 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 447
+                                           ; SOURCE LINE # 448
+0012         ?C0066:
+0012 22                RET     
+             ; FUNCTION _HotKey_Fn_ESC (END)
+
+             ; FUNCTION _HotKey_Fn_UP (BEGIN)
+                                           ; SOURCE LINE # 453
+0000 900000      R     MOV     DPTR,#event
+0003 EF                MOV     A,R7
+0004 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 454
+0005 7F8C              MOV     R7,#08CH
+0007 120000      E     LCALL   _RamDebug
+                                           ; SOURCE LINE # 455
+000A 900000      R     MOV     DPTR,#event
+000D E0                MOVX    A,@DPTR
+000E FD                MOV     R5,A
+000F 7F7D              MOV     R7,#07DH
+0011 020000      E     LJMP    _e0_prefix_code
+             ; FUNCTION _HotKey_Fn_UP (END)
+
+             ; FUNCTION _HotKey_Fn_DOWN (BEGIN)
+                                           ; SOURCE LINE # 461
+0000 900000      R     MOV     DPTR,#event
+0003 EF                MOV     A,R7
+0004 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 462
+0005 7F8D              MOV     R7,#08DH
+0007 120000      E     LCALL   _RamDebug
+                                           ; SOURCE LINE # 463
+000A 900000      R     MOV     DPTR,#event
+000D E0                MOVX    A,@DPTR
+000E FD                MOV     R5,A
+000F 7F7A              MOV     R7,#07AH
+0011 020000      E     LJMP    _e0_prefix_code
+             ; FUNCTION _HotKey_Fn_DOWN (END)
+
+             ; FUNCTION _HotKey_Fn_LEFT (BEGIN)
+                                           ; SOURCE LINE # 469
+0000 900000      R     MOV     DPTR,#event
+0003 EF                MOV     A,R7
+0004 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 470
+0005 7F8E              MOV     R7,#08EH
+0007 120000      E     LCALL   _RamDebug
+                                           ; SOURCE LINE # 471
+000A 900000      R     MOV     DPTR,#event
+000D E0                MOVX    A,@DPTR
+000E FD                MOV     R5,A
+000F 7F6C              MOV     R7,#06CH
+0011 020000      E     LJMP    _e0_prefix_code
+             ; FUNCTION _HotKey_Fn_LEFT (END)
+
+             ; FUNCTION _HotKey_Fn_RIGHT (BEGIN)
+                                           ; SOURCE LINE # 477
+0000 900000      R     MOV     DPTR,#event
+0003 EF                MOV     A,R7
+0004 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 478
+C51 COMPILER V7.50   OEM_SCANTABS                                                          09/08/2020 15:56:21 PAGE 34  
+
+0005 7F8F              MOV     R7,#08FH
+0007 120000      E     LCALL   _RamDebug
+                                           ; SOURCE LINE # 479
+000A 900000      R     MOV     DPTR,#event
+000D E0                MOVX    A,@DPTR
+000E FD                MOV     R5,A
+000F 7F69              MOV     R7,#069H
+0011 020000      E     LJMP    _e0_prefix_code
+             ; FUNCTION _HotKey_Fn_RIGHT (END)
+
+             ; FUNCTION _HotKey_Fn_Ins (BEGIN)
+                                           ; SOURCE LINE # 485
+0000 900000      R     MOV     DPTR,#event
+0003 EF                MOV     A,R7
+0004 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 486
+                                           ; SOURCE LINE # 488
+0005 22                RET     
+             ; FUNCTION _HotKey_Fn_Ins (END)
+
+             ; FUNCTION _HotKey_Fn_Del (BEGIN)
+                                           ; SOURCE LINE # 493
+0000 900000      R     MOV     DPTR,#event
+0003 EF                MOV     A,R7
+0004 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 494
+                                           ; SOURCE LINE # 496
+0005 22                RET     
+             ; FUNCTION _HotKey_Fn_Del (END)
+
+             ; FUNCTION _HotKey_Fn_SPACE (BEGIN)
+                                           ; SOURCE LINE # 498
+0000 900000      R     MOV     DPTR,#event
+0003 EF                MOV     A,R7
+0004 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 499
+0005 7F90              MOV     R7,#090H
+0007 120000      E     LCALL   _RamDebug
+                                           ; SOURCE LINE # 500
+000A 900000      R     MOV     DPTR,#event
+000D E0                MOVX    A,@DPTR
+000E 7020              JNZ     ?C0077
+                                           ; SOURCE LINE # 501
+                                           ; SOURCE LINE # 502
+0010 900000      E     MOV     DPTR,#KBLED_Status
+0013 E0                MOVX    A,@DPTR
+0014 7009              JNZ     ?C0074
+                                           ; SOURCE LINE # 503
+                                           ; SOURCE LINE # 504
+0016 900000      E     MOV     DPTR,#SysPowState
+0019 E0                MOVX    A,@DPTR
+001A FD                MOV     R5,A
+001B 7F01              MOV     R7,#01H
+                                           ; SOURCE LINE # 506
+001D 800E              SJMP    ?C0114
+001F         ?C0074:
+                                           ; SOURCE LINE # 507
+001F 900000      E     MOV     DPTR,#KBLED_Status
+0022 E0                MOVX    A,@DPTR
+0023 B4010A            CJNE    A,#01H,?C0077
+                                           ; SOURCE LINE # 508
+                                           ; SOURCE LINE # 509
+C51 COMPILER V7.50   OEM_SCANTABS                                                          09/08/2020 15:56:21 PAGE 35  
+
+0026 900000      E     MOV     DPTR,#SysPowState
+0029 E0                MOVX    A,@DPTR
+002A FD                MOV     R5,A
+002B E4                CLR     A
+002C FF                MOV     R7,A
+002D         ?C0114:
+002D 120000      E     LCALL   _Process_KBLED_Control
+                                           ; SOURCE LINE # 510
+                                           ; SOURCE LINE # 511
+                                           ; SOURCE LINE # 512
+0030         ?C0077:
+0030 22                RET     
+             ; FUNCTION _HotKey_Fn_SPACE (END)
+
+             ; FUNCTION _CrisisHotkey01 (BEGIN)
+                                           ; SOURCE LINE # 1047
+;---- Variable 'event' assigned to Register 'R7' ----
+                                           ; SOURCE LINE # 1048
+                                           ; SOURCE LINE # 1049
+0000 EF                MOV     A,R7
+0001 B40106            CJNE    A,#01H,?C0078
+                                           ; SOURCE LINE # 1050
+                                           ; SOURCE LINE # 1051
+0004 E4                CLR     A
+0005 900000      E     MOV     DPTR,#CrisisKeyStatus
+0008 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 1052
+0009 22                RET     
+000A         ?C0078:
+                                           ; SOURCE LINE # 1053
+000A EF                MOV     A,R7
+000B 7006              JNZ     ?C0081
+                                           ; SOURCE LINE # 1054
+                                           ; SOURCE LINE # 1055
+000D 900000      E     MOV     DPTR,#CrisisKeyStatus
+0010 E0                MOVX    A,@DPTR
+0011 04                INC     A
+0012 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 1056
+                                           ; SOURCE LINE # 1057
+0013         ?C0081:
+0013 22                RET     
+             ; FUNCTION _CrisisHotkey01 (END)
+
+             ; FUNCTION _CrisisHotkey02 (BEGIN)
+                                           ; SOURCE LINE # 1059
+;---- Variable 'event' assigned to Register 'R7' ----
+                                           ; SOURCE LINE # 1060
+                                           ; SOURCE LINE # 1061
+0000 EF                MOV     A,R7
+0001 B40106            CJNE    A,#01H,?C0082
+                                           ; SOURCE LINE # 1062
+                                           ; SOURCE LINE # 1063
+0004 E4                CLR     A
+0005 900000      E     MOV     DPTR,#CrisisKeyStatus
+0008 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 1064
+0009 22                RET     
+000A         ?C0082:
+                                           ; SOURCE LINE # 1065
+000A EF                MOV     A,R7
+000B 7006              JNZ     ?C0085
+C51 COMPILER V7.50   OEM_SCANTABS                                                          09/08/2020 15:56:21 PAGE 36  
+
+                                           ; SOURCE LINE # 1066
+                                           ; SOURCE LINE # 1067
+000D 900000      E     MOV     DPTR,#CrisisKeyStatus
+0010 E0                MOVX    A,@DPTR
+0011 04                INC     A
+0012 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 1068
+                                           ; SOURCE LINE # 1069
+0013         ?C0085:
+0013 22                RET     
+             ; FUNCTION _CrisisHotkey02 (END)
+
+             ; FUNCTION _CheckBootHotKey (BEGIN)
+                                           ; SOURCE LINE # 1078
+0000 900000      R     MOV     DPTR,#matrix
+0003 EF                MOV     A,R7
+0004 F0                MOVX    @DPTR,A
+0005 A3                INC     DPTR
+0006 ED                MOV     A,R5
+0007 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 1079
+                                           ; SOURCE LINE # 1081
+0008 E4                CLR     A
+0009 A3                INC     DPTR
+000A F0                MOVX    @DPTR,A
+000B         ?C0086:
+000B 900000      R     MOV     DPTR,#index
+000E E0                MOVX    A,@DPTR
+000F FF                MOV     R7,A
+0010 C3                CLR     C
+0011 9402              SUBB    A,#02H
+0013 503C              JNC     ?C0087
+                                           ; SOURCE LINE # 1082
+                                           ; SOURCE LINE # 1083
+0015 EF                MOV     A,R7
+0016 25E0              ADD     A,ACC
+0018 25E0              ADD     A,ACC
+001A 2400        R     ADD     A,#LOW asBootHotKeyStruct
+001C F582              MOV     DPL,A
+001E E4                CLR     A
+001F 3400        R     ADDC    A,#HIGH asBootHotKeyStruct
+0021 F583              MOV     DPH,A
+0023 E4                CLR     A
+0024 93                MOVC    A,@A+DPTR
+0025 FF                MOV     R7,A
+0026 900000      R     MOV     DPTR,#matrix
+0029 E0                MOVX    A,@DPTR
+002A 6F                XRL     A,R7
+002B 701C              JNZ     ?C0088
+                                           ; SOURCE LINE # 1084
+                                           ; SOURCE LINE # 1085
+002D A3                INC     DPTR
+002E E0                MOVX    A,@DPTR
+002F FF                MOV     R7,A
+0030 A3                INC     DPTR
+0031 E0                MOVX    A,@DPTR
+0032 25E0              ADD     A,ACC
+0034 25E0              ADD     A,ACC
+0036 2400        R     ADD     A,#LOW asBootHotKeyStruct+01H
+0038 F582              MOV     DPL,A
+003A E4                CLR     A
+003B 3400        R     ADDC    A,#HIGH asBootHotKeyStruct+01H
+C51 COMPILER V7.50   OEM_SCANTABS                                                          09/08/2020 15:56:21 PAGE 37  
+
+003D F583              MOV     DPH,A
+003F 120000      E     LCALL   ?C?PLDCODE
+0042 8982              MOV     DPL,R1
+0044 8A83              MOV     DPH,R2
+0046 020000      E     LJMP    ?C?ICALL2
+                                           ; SOURCE LINE # 1087
+                                           ; SOURCE LINE # 1088
+0049         ?C0088:
+0049 900000      R     MOV     DPTR,#index
+004C E0                MOVX    A,@DPTR
+004D 04                INC     A
+004E F0                MOVX    @DPTR,A
+004F 80BA              SJMP    ?C0086
+0051         ?C0087:
+                                           ; SOURCE LINE # 1089
+0051 E4                CLR     A
+0052 900000      E     MOV     DPTR,#CrisisKeyStatus
+0055 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 1090
+0056         ?C0090:
+0056 22                RET     
+             ; FUNCTION _CheckBootHotKey (END)
+
+             ; FUNCTION _CheckKBS3Wake (BEGIN)
+                                           ; SOURCE LINE # 1095
+;---- Variable 'BKSO' assigned to Register 'R5' ----
+;---- Variable 'BKSI' assigned to Register 'R7' ----
+                                           ; SOURCE LINE # 1096
+                                           ; SOURCE LINE # 1099
+0000 EF                MOV     A,R7
+0001 C4                SWAP    A
+0002 54F0              ANL     A,#0F0H
+0004 4D                ORL     A,R5
+0005 FF                MOV     R7,A
+;---- Variable 'wuv' assigned to Register 'R7' ----
+                                           ; SOURCE LINE # 1100
+0006 750000      R     MOV     Tmp_code_pointer,#HIGH KB_S3WakeUP_Tables
+0009 750000      R     MOV     Tmp_code_pointer+01H,#LOW KB_S3WakeUP_Tables
+                                           ; SOURCE LINE # 1101
+000C 120000      R     LCALL   L?0121
+000F B45503            CJNE    A,#055H,?C0092
+                                           ; SOURCE LINE # 1102
+                                           ; SOURCE LINE # 1103
+0012 120000      E     LCALL   PulseSBPowerButton
+                                           ; SOURCE LINE # 1104
+                                           ; SOURCE LINE # 1105
+0015         ?C0092:
+0015 22                RET     
+             ; FUNCTION _CheckKBS3Wake (END)
+
+             ; FUNCTION _Et_CheckKBS3Wake (BEGIN)
+                                           ; SOURCE LINE # 1107
+;---- Variable 'BKSO' assigned to Register 'R5' ----
+;---- Variable 'BKSI' assigned to Register 'R7' ----
+                                           ; SOURCE LINE # 1108
+                                           ; SOURCE LINE # 1111
+0000 EF                MOV     A,R7
+0001 75F003            MOV     B,#03H
+0004 A4                MUL     AB
+0005 2D                ADD     A,R5
+0006 FF                MOV     R7,A
+;---- Variable 'wuv' assigned to Register 'R7' ----
+C51 COMPILER V7.50   OEM_SCANTABS                                                          09/08/2020 15:56:21 PAGE 38  
+
+                                           ; SOURCE LINE # 1112
+0007 750000      R     MOV     Tmp_code_pointer,#HIGH EtKey_S3WakeUP_Tables
+000A 750000      R     MOV     Tmp_code_pointer+01H,#LOW EtKey_S3WakeUP_Tables
+                                           ; SOURCE LINE # 1113
+000D 120000      R     LCALL   L?0121
+0010 B45503            CJNE    A,#055H,?C0094
+                                           ; SOURCE LINE # 1114
+                                           ; SOURCE LINE # 1115
+0013 120000      E     LCALL   PulseSBPowerButton
+                                           ; SOURCE LINE # 1116
+                                           ; SOURCE LINE # 1117
+0016         ?C0094:
+0016 22                RET     
+             ; FUNCTION _Et_CheckKBS3Wake (END)
+
+             ; FUNCTION _OEM_Hook_Send_Key (BEGIN)
+                                           ; SOURCE LINE # 1123
+;---- Variable 'event' assigned to Register 'R5' ----
+;---- Variable 'table_entry' assigned to Register 'R7' ----
+                                           ; SOURCE LINE # 1124
+                                           ; SOURCE LINE # 1125
+0000 900000      E     MOV     DPTR,#SysPowState
+0003 E0                MOVX    A,@DPTR
+0004 6410              XRL     A,#010H
+0006 6003              JZ      ?C0096
+                                           ; SOURCE LINE # 1126
+                                           ; SOURCE LINE # 1127
+0008 120000      R     LCALL   _CheckBootHotKey
+                                           ; SOURCE LINE # 1128
+                                           ; SOURCE LINE # 1129
+000B         ?C0096:
+000B 22                RET     
+             ; FUNCTION _OEM_Hook_Send_Key (END)
+
+             ; FUNCTION OEM_Hook_Skip_Send_Key (BEGIN)
+                                           ; SOURCE LINE # 1134
+                                           ; SOURCE LINE # 1135
+                                           ; SOURCE LINE # 1136
+0000 7F00              MOV     R7,#00H
+                                           ; SOURCE LINE # 1137
+0002         ?C0097:
+0002 22                RET     
+             ; FUNCTION OEM_Hook_Skip_Send_Key (END)
+
+             ; FUNCTION _Hook_keyboard (BEGIN)
+                                           ; SOURCE LINE # 1144
+;---- Variable 'KSOValus' assigned to Register 'R5' ----
+;---- Variable 'KSIValus' assigned to Register 'R7' ----
+                                           ; SOURCE LINE # 1145
+                                           ; SOURCE LINE # 1147
+0000 900000      E     MOV     DPTR,#SysPowState
+0003 E0                MOVX    A,@DPTR
+0004 B43303            CJNE    A,#033H,?C0099
+                                           ; SOURCE LINE # 1148
+                                           ; SOURCE LINE # 1149
+0007 120000      R     LCALL   _CheckKBS3Wake
+                                           ; SOURCE LINE # 1150
+                                           ; SOURCE LINE # 1152
+000A         ?C0099:
+000A 22                RET     
+             ; FUNCTION _Hook_keyboard (END)
+
+C51 COMPILER V7.50   OEM_SCANTABS                                                          09/08/2020 15:56:21 PAGE 39  
+
+             ; FUNCTION _Et_Hook_keyboard (BEGIN)
+                                           ; SOURCE LINE # 1159
+;---- Variable 'KSOValus' assigned to Register 'R5' ----
+;---- Variable 'KSIValus' assigned to Register 'R7' ----
+                                           ; SOURCE LINE # 1160
+                                           ; SOURCE LINE # 1162
+0000 900000      E     MOV     DPTR,#SysPowState
+0003 E0                MOVX    A,@DPTR
+0004 B43303            CJNE    A,#033H,?C0101
+                                           ; SOURCE LINE # 1163
+                                           ; SOURCE LINE # 1164
+0007 120000      R     LCALL   _Et_CheckKBS3Wake
+                                           ; SOURCE LINE # 1165
+                                           ; SOURCE LINE # 1167
+000A         ?C0101:
+000A 22                RET     
+             ; FUNCTION _Et_Hook_keyboard (END)
+
+             ; FUNCTION Hook_Setup_Scanner_Pntr (BEGIN)
+                                           ; SOURCE LINE # 1176
+                                           ; SOURCE LINE # 1177
+                                           ; SOURCE LINE # 1178
+0000 900000      E     MOV     DPTR,#Scanner_Table_Pntr
+0003 7400        R     MOV     A,#HIGH Rc_ROM_Tables
+0005 F0                MOVX    @DPTR,A
+0006 A3                INC     DPTR
+0007 7400        R     MOV     A,#LOW Rc_ROM_Tables
+0009 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 1179
+000A 900000      E     MOV     DPTR,#Extendkey_Table_Pntr
+000D 7400        R     MOV     A,#HIGH EtKey_ROM_Tables
+000F F0                MOVX    @DPTR,A
+0010 A3                INC     DPTR
+0011 7400        R     MOV     A,#LOW EtKey_ROM_Tables
+0013 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 1180
+0014 22                RET     
+             ; FUNCTION Hook_Setup_Scanner_Pntr (END)
+
+             ; FUNCTION Hook_SetGPIOScanPinH (BEGIN)
+                                           ; SOURCE LINE # 1185
+                                           ; SOURCE LINE # 1186
+                                           ; SOURCE LINE # 1193
+0000 22                RET     
+             ; FUNCTION Hook_SetGPIOScanPinH (END)
+
+             ; FUNCTION Hook_SetGPIOScanPinL (BEGIN)
+                                           ; SOURCE LINE # 1198
+                                           ; SOURCE LINE # 1199
+                                           ; SOURCE LINE # 1206
+0000 22                RET     
+             ; FUNCTION Hook_SetGPIOScanPinL (END)
+
+             ; FUNCTION Hook_SetGPIOScanPinCtrl (BEGIN)
+                                           ; SOURCE LINE # 1211
+                                           ; SOURCE LINE # 1212
+                                           ; SOURCE LINE # 1219
+0000 22                RET     
+             ; FUNCTION Hook_SetGPIOScanPinCtrl (END)
+
+             ; FUNCTION Hook_Fn_Key_Make (BEGIN)
+                                           ; SOURCE LINE # 1224
+C51 COMPILER V7.50   OEM_SCANTABS                                                          09/08/2020 15:56:21 PAGE 40  
+
+                                           ; SOURCE LINE # 1225
+                                           ; SOURCE LINE # 1227
+0000 22                RET     
+             ; FUNCTION Hook_Fn_Key_Make (END)
+
+             ; FUNCTION Hook_Fn_Key_Break (BEGIN)
+                                           ; SOURCE LINE # 1232
+                                           ; SOURCE LINE # 1233
+                                           ; SOURCE LINE # 1235
+0000 22                RET     
+             ; FUNCTION Hook_Fn_Key_Break (END)
+
+             ; FUNCTION Hook_calc_index_comb_BIT6 (BEGIN)
+                                           ; SOURCE LINE # 1240
+                                           ; SOURCE LINE # 1241
+                                           ; SOURCE LINE # 1242
+0000 7F00              MOV     R7,#00H
+                                           ; SOURCE LINE # 1243
+0002         ?C0108:
+0002 22                RET     
+             ; FUNCTION Hook_calc_index_comb_BIT6 (END)
+
+             ; FUNCTION Hook_calc_index_comb_BIT7 (BEGIN)
+                                           ; SOURCE LINE # 1248
+                                           ; SOURCE LINE # 1249
+                                           ; SOURCE LINE # 1250
+0000 7F00              MOV     R7,#00H
+                                           ; SOURCE LINE # 1251
+0002         ?C0109:
+0002 22                RET     
+             ; FUNCTION Hook_calc_index_comb_BIT7 (END)
+
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    987    ----
+   CONSTANT SIZE    =    852    ----
+   XDATA SIZE       =   ----      12
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

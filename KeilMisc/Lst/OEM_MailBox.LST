@@ -1,0 +1,202 @@
+C51 COMPILER V7.50   OEM_MAILBOX                                                           09/08/2020 15:56:24 PAGE 1   
+
+
+C51 COMPILER V7.50, COMPILATION OF MODULE OEM_MAILBOX
+OBJECT MODULE PLACED IN Code\Oem\OEM_MailBox.OBJ
+COMPILER INVOKED BY: C:\Keil\C51\BIN\c51.exe Code\Oem\OEM_MailBox.C LA WL(1) CD OT(9,SIZE) NOAREGS OR INCDIR(.\Code\CORE
+                    -\INCLUDE\;.\Code\OEM\INCLUDE\;.\Code\CHIP\INCLUDE\)
+
+line level    source
+
+   1          /*-----------------------------------------------------------------------------
+   2           * TITLE: OEM_MAILBOX.C
+   3           *
+   4           * Author : Dino
+   5           *
+   6           * Note : These functions are reference only.
+   7           *        Please follow your project software specification to do some modification.
+   8           *---------------------------------------------------------------------------*/
+   9          
+  10          #include <CORE_INCLUDE.H>
+  11          #include <OEM_INCLUDE.H>
+  12          
+  13          void HandleMailBox(void)
+  14          {
+  15   1              if(SystemNotS0)
+  16   1              {
+  17   2                      return;
+  18   2              }
+  19   1      
+  20   1              if(MBox_Cmd==0x00)
+  21   1              {
+  22   2                      return;
+  23   2              }
+  24   1      
+  25   1              switch(MBox_Cmd)
+  26   1              {
+  27   2                      case MBox_Cmd_ReadByte:
+  28   2                              Tmp_XPntr=((MBox_ECRamAddrH<<8)+MBox_ECRamAddrL);
+  29   2                              MBox_ECRamData1 = *Tmp_XPntr;
+  30   2                              break;
+  31   2      
+  32   2                      case MBox_Cmd_WriteByte:
+  33   2                              Tmp_XPntr=((MBox_ECRamAddrH<<8)+MBox_ECRamAddrL);
+  34   2                              *Tmp_XPntr=MBox_ECRamData1;
+  35   2                              break;
+  36   2      
+  37   2                      default:
+  38   2                              break;
+  39   2      
+  40   2              }
+  41   1              
+  42   1              MBox_Cmd = 0x00;
+  43   1      
+  44   1      }
+  45          
+  46          
+  47          void ClearMBoxBuffer(void)
+  48          {
+  49   1              BYTE index;
+  50   1              for(index=0x00;index<MBoxBufferSize;index++)
+  51   1              {
+  52   2                      BRAM[index]=0x00;
+  53   2              }
+  54   1      }
+C51 COMPILER V7.50   OEM_MAILBOX                                                           09/08/2020 15:56:24 PAGE 2   
+
+ASSEMBLY LISTING OF GENERATED OBJECT CODE
+
+
+             ; FUNCTION Com000D (BEGIN)
+0000         L?0014:
+0000 900000      E     MOV     DPTR,#BRAM+01H
+0003 E0                MOVX    A,@DPTR
+0004 FE                MOV     R6,A
+0005 A3                INC     DPTR
+0006 E0                MOVX    A,@DPTR
+0007 7C00              MOV     R4,#00H
+0009 2400              ADD     A,#00H
+000B FF                MOV     R7,A
+000C EC                MOV     A,R4
+000D 3E                ADDC    A,R6
+000E 7800        E     MOV     R0,#LOW Tmp_XPntr
+0010 F6                MOV     @R0,A
+0011 08                INC     R0
+0012 EF                MOV     A,R7
+0013 F6                MOV     @R0,A
+0014 22                RET     
+             ; FUNCTION Com000D (END)
+
+             ; FUNCTION HandleMailBox (BEGIN)
+                                           ; SOURCE LINE # 13
+                                           ; SOURCE LINE # 14
+                                           ; SOURCE LINE # 15
+0000 900000      E     MOV     DPTR,#SysPowState
+0003 E0                MOVX    A,@DPTR
+0004 6410              XRL     A,#010H
+0006 703A              JNZ     ?C0002
+                                           ; SOURCE LINE # 16
+                                           ; SOURCE LINE # 18
+0008         ?C0001:
+                                           ; SOURCE LINE # 20
+0008 900000      E     MOV     DPTR,#BRAM
+000B E0                MOVX    A,@DPTR
+000C 6034              JZ      ?C0002
+                                           ; SOURCE LINE # 21
+                                           ; SOURCE LINE # 23
+000E         ?C0003:
+                                           ; SOURCE LINE # 25
+000E 900000      E     MOV     DPTR,#BRAM
+0011 E0                MOVX    A,@DPTR
+0012 24FE              ADD     A,#0FEH
+0014 6016              JZ      ?C0006
+0016 04                INC     A
+0017 7024              JNZ     ?C0004
+                                           ; SOURCE LINE # 26
+                                           ; SOURCE LINE # 27
+0019         ?C0005:
+                                           ; SOURCE LINE # 28
+0019 120000      R     LCALL   L?0014
+                                           ; SOURCE LINE # 29
+001C 18                DEC     R0
+001D E6                MOV     A,@R0
+001E FE                MOV     R6,A
+001F 08                INC     R0
+0020 E6                MOV     A,@R0
+0021 F582              MOV     DPL,A
+0023 8E83              MOV     DPH,R6
+0025 E0                MOVX    A,@DPTR
+C51 COMPILER V7.50   OEM_MAILBOX                                                           09/08/2020 15:56:24 PAGE 3   
+
+0026 900000      E     MOV     DPTR,#BRAM+03H
+0029 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 30
+002A 8011              SJMP    ?C0004
+                                           ; SOURCE LINE # 32
+002C         ?C0006:
+                                           ; SOURCE LINE # 33
+002C 120000      R     LCALL   L?0014
+                                           ; SOURCE LINE # 34
+002F A3                INC     DPTR
+0030 E0                MOVX    A,@DPTR
+0031 FF                MOV     R7,A
+0032 18                DEC     R0
+0033 E6                MOV     A,@R0
+0034 FC                MOV     R4,A
+0035 08                INC     R0
+0036 E6                MOV     A,@R0
+0037 F582              MOV     DPL,A
+0039 8C83              MOV     DPH,R4
+003B EF                MOV     A,R7
+003C F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 35
+                                           ; SOURCE LINE # 37
+                                           ; SOURCE LINE # 38
+                                           ; SOURCE LINE # 40
+003D         ?C0004:
+                                           ; SOURCE LINE # 42
+003D E4                CLR     A
+003E 900000      E     MOV     DPTR,#BRAM
+0041 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 44
+0042         ?C0002:
+0042 22                RET     
+             ; FUNCTION HandleMailBox (END)
+
+             ; FUNCTION ClearMBoxBuffer (BEGIN)
+                                           ; SOURCE LINE # 47
+                                           ; SOURCE LINE # 48
+                                           ; SOURCE LINE # 50
+;---- Variable 'index' assigned to Register 'R7' ----
+0000         ?C0008:
+                                           ; SOURCE LINE # 51
+                                           ; SOURCE LINE # 52
+0000 7F0A              MOV     R7,#0AH
+0002 900000      E     MOV     DPTR,#BRAM
+0005 E4                CLR     A
+0006         ?C0012:
+0006 F0                MOVX    @DPTR,A
+0007 A3                INC     DPTR
+0008 DFFC              DJNZ    R7,?C0012
+                                           ; SOURCE LINE # 53
+                                           ; SOURCE LINE # 54
+000A         ?C0011:
+000A 22                RET     
+             ; FUNCTION ClearMBoxBuffer (END)
+
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     99    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+C51 COMPILER V7.50   OEM_MAILBOX                                                           09/08/2020 15:56:24 PAGE 4   
+
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

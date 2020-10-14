@@ -1,0 +1,613 @@
+C51 COMPILER V7.50   OEM_GPIO                                                              09/08/2020 15:56:21 PAGE 1   
+
+
+C51 COMPILER V7.50, COMPILATION OF MODULE OEM_GPIO
+OBJECT MODULE PLACED IN Code\OEM\OEM_GPIO.OBJ
+COMPILER INVOKED BY: C:\Keil\C51\BIN\c51.exe Code\OEM\OEM_GPIO.C LA WL(1) CD OT(9,SIZE) NOAREGS OR INCDIR(.\Code\CORE\IN
+                    -CLUDE\;.\Code\OEM\INCLUDE\;.\Code\CHIP\INCLUDE\)
+
+line level    source
+
+   1          /*-----------------------------------------------------------------------------
+   2           * TITLE: OEM_GPIO.C
+   3           *
+   4           * Author : Dino
+   5           *
+   6           * Note : These functions are reference only.
+   7           *        Please follow your project software specification to do some modification.
+   8           *---------------------------------------------------------------------------*/
+   9           
+  10          #include <CORE_INCLUDE.H>
+  11          #include <OEM_INCLUDE.H>
+  12          
+  13          //-----------------------------------------------------------------
+  14          // External ram GPIO Registers 
+  15          //-----------------------------------------------------------------
+  16          const sInitGPIOReg code asInitGPIOReg[] = 
+  17          {
+  18                  { &GCR,         GCR_Init                },      // 
+  19                  { &GCR2,        GCR2_Init               },      //
+  20                  { &GPOTD,       0x80                },  // D7, Open-drain output
+  21                  
+  22                  { &GPDRA,       PortA_Init              },      // Port A Data port Init
+  23                  { &GPDRB,       PortB_Init              },      // Port B Data port Init
+  24                  { &GPDRC,       PortC_Init              },      // Port C Data port Init
+  25                  { &GPDRD,       PortD_Init              },      // Port D Data port Init
+  26                  { &GPDRE,       PortE_Init              },      // Port E Data port Init
+  27                  { &GPDRF,       PortF_Init              },      // Port F Data port Init
+  28                  { &GPDRG,       PortG_Init              },      // Port G Data port Init
+  29                  { &GPDRH,       PortH_Init              },      // Port H Data port Init
+  30                  { &GPDRI,       PortI_Init              },      // Port I Data port Init
+  31                  { &GPDRJ,       PortJ_Init              },      // Port J Data port Init
+  32          
+  33                  { &GPCRA0,      PortA0_Ctrl             },
+  34                  { &GPCRA1,      PortA1_Ctrl             },
+  35                  { &GPCRA2,      PortA2_Ctrl             },
+  36                  { &GPCRA3,      PortA3_Ctrl             },
+  37                  { &GPCRA4,      PortA4_Ctrl             },
+  38                  { &GPCRA5,      PortA5_Ctrl             },
+  39                  { &GPCRA6,      PortA6_Ctrl             },
+  40                  { &GPCRA7,      PortA7_Ctrl             },
+  41                  
+  42                  { &GPCRB0,      PortB0_Ctrl             },
+  43                  { &GPCRB1,      PortB1_Ctrl             },
+  44                  { &GPCRB2,      PortB2_Ctrl             },
+  45                  { &GPCRB3,      PortB3_Ctrl             },
+  46                  { &GPCRB4,      PortB4_Ctrl             },
+  47                  { &GPCRB5,      PortB5_Ctrl             },
+  48                  { &GPCRB6,      PortB6_Ctrl             },
+  49                  { &GPCRB7,      PortB7_Ctrl             },
+  50          
+  51                  { &GPCRC0,      PortC0_Ctrl             },
+  52                  { &GPCRC1,      PortC1_Ctrl             },
+  53                  { &GPCRC2,      PortC2_Ctrl             },
+  54                  { &GPCRC3,      PortC3_Ctrl             },
+C51 COMPILER V7.50   OEM_GPIO                                                              09/08/2020 15:56:21 PAGE 2   
+
+  55                  { &GPCRC4,      PortC4_Ctrl             },
+  56                  { &GPCRC5,      PortC5_Ctrl             },
+  57                  { &GPCRC6,      PortC6_Ctrl             },
+  58                  { &GPCRC7,      PortC7_Ctrl             },
+  59          
+  60                  { &GPCRD0,      PortD0_Ctrl             },
+  61                  { &GPCRD1,      PortD1_Ctrl             },
+  62                  { &GPCRD2,      PortD2_Ctrl             },
+  63                  { &GPCRD3,      PortD3_Ctrl             },
+  64                  { &GPCRD4,      PortD4_Ctrl             },
+  65                  { &GPCRD5,      PortD5_Ctrl             },
+  66                  { &GPCRD6,      PortD6_Ctrl             },
+  67                  { &GPCRD7,      PortD7_Ctrl             },
+  68                  
+  69                          
+  70          
+  71                  { &GPCRE0,      PortE0_Ctrl             },
+  72                  { &GPCRE1,      PortE1_Ctrl             },
+  73                  { &GPCRE2,      PortE2_Ctrl             },
+  74                  { &GPCRE3,      PortE3_Ctrl             },
+  75                  { &GPCRE4,      PortE4_Ctrl     },      
+  76                  { &GPCRE5,      PortE5_Ctrl             },
+  77                  { &GPCRE6,      PortE6_Ctrl             },
+  78                  { &GPCRE7,      PortE7_Ctrl             },      
+  79                  
+  80          
+  81                  { &GPCRF0,      PortF0_Ctrl             },
+  82                  { &GPCRF1,      PortF1_Ctrl             },
+  83                  { &GPCRF2,      PortF2_Ctrl             },
+  84                  { &GPCRF3,      PortF3_Ctrl             },
+  85                  { &GPCRF4,      PortF4_Ctrl             },
+  86                  { &GPCRF5,      PortF5_Ctrl             },
+  87                  { &GPCRF6,      PortF6_Ctrl             },
+  88                  { &GPCRF7,      PortF7_Ctrl             },
+  89          
+  90                  { &GPCRG0,      PortG0_Ctrl             },
+  91                  { &GPCRG1,      PortG1_Ctrl             },
+  92                  { &GPCRG2,      PortG2_Ctrl             },
+  93                  { &GPCRG3,      PortG3_Ctrl             },
+  94                  { &GPCRG4,      PortG4_Ctrl             },
+  95                  { &GPCRG5,      PortG5_Ctrl             },
+  96                  { &GPCRG6,      PortG6_Ctrl             },
+  97                  { &GPCRG7,      PortG7_Ctrl             },
+  98          
+  99                  { &GPCRH0,      PortH0_Ctrl             },
+ 100                  { &GPCRH1,      PortH1_Ctrl             },
+ 101                  { &GPCRH2,      PortH2_Ctrl             },
+ 102                  { &GPCRH3,      PortH3_Ctrl             },
+ 103                  { &GPCRH4,      PortH4_Ctrl             },
+ 104                  { &GPCRH5,      PortH5_Ctrl             },
+ 105                  { &GPCRH6,      PortH6_Ctrl             },
+ 106          
+ 107                  { &GPCRI0,      PortI0_Ctrl             },
+ 108                  { &GPCRI1,      PortI1_Ctrl             },
+ 109                  { &GPCRI2,      PortI2_Ctrl             },
+ 110                  { &GPCRI3,      PortI3_Ctrl             },
+ 111                  { &GPCRI4,      PortI4_Ctrl             },
+ 112                  { &GPCRI5,      PortI5_Ctrl             },
+ 113                  { &GPCRI6,      PortI6_Ctrl             },
+ 114                  { &GPCRI7,      PortI7_Ctrl             },
+ 115          
+ 116                  { &GPCRJ0,      PortJ0_Ctrl             },
+C51 COMPILER V7.50   OEM_GPIO                                                              09/08/2020 15:56:21 PAGE 3   
+
+ 117                  { &GPCRJ1,      PortJ1_Ctrl             },
+ 118                  { &GPCRJ2,      PortJ2_Ctrl             },
+ 119                  { &GPCRJ3,      PortJ3_Ctrl             },
+ 120                  { &GPCRJ4,      PortJ4_Ctrl             },
+ 121                  { &GPCRJ5,      PortJ5_Ctrl             }
+ 122          
+ 123          };
+ 124          
+ 125          //-----------------------------------------------------------------------------
+ 126          // The function of GPIO register init.
+ 127          //-----------------------------------------------------------------------------
+ 128          void Init_GPIO(void)
+ 129          {
+ 130   1              BYTE index;
+ 131   1              index=0x00;
+ 132   1              while(index<(sizeof(asInitGPIOReg)/sizeof(sInitGPIOReg)))
+ 133   1              {
+ 134   2                      *asInitGPIOReg[index].reg=asInitGPIOReg[index].value;
+ 135   2                      index++;
+ 136   2              }
+ 137   1      }
+ 138          
+ 139          
+ 140          void TurnOnOffCamera(void)
+ 141          {
+ 142   1              if(IS_MASK_SET(Device_Status_Lenovo,Camera_S_B))
+ 143   1              {
+ 144   2                      //CAM_PWR_EN_ON();
+ 145   2              }
+ 146   1              else
+ 147   1              {
+ 148   2                      //CAM_PWR_EN_OFF();
+ 149   2              }                                       
+ 150   1      }
+ 151          
+ 152          
+ 153          void TurnOnOffWlan(void)
+ 154          {
+ 155   1              if(IS_MASK_SET(Device_Status_Lenovo,Wireless_S_B))
+ 156   1              {
+ 157   2                      //WLAN_PWR_EN_ON();
+ 158   2              }
+ 159   1              else
+ 160   1              {
+ 161   2                      //WLAN_PWR_EN_OFF();
+ 162   2              }
+ 163   1      }
+ 164          
+ 165          void TurnOnOffBT(void)
+ 166          {
+ 167   1              if(OS_Type >= 12)
+ 168   1              {
+ 169   2                      if(IS_MASK_SET(Device_Status_Lenovo,Bluetooth_S_B))
+ 170   2                      {
+ 171   3                              //BT_EN_ON();
+ 172   3                      }
+ 173   2                      else
+ 174   2                      {
+ 175   3                              //BT_EN_OFF();
+ 176   3                      }
+ 177   2              }
+ 178   1              else
+C51 COMPILER V7.50   OEM_GPIO                                                              09/08/2020 15:56:21 PAGE 4   
+
+ 179   1              {
+ 180   2                      //BT_EN_OFF();
+ 181   2              }
+ 182   1      }
+ 183          
+ 184          
+ 185          
+ 186          //----------------------------------------------------------------------------
+ 187          // Hook function of SCI high
+ 188          //----------------------------------------------------------------------------
+ 189          void Hook_SCION(void)
+ 190          {
+ 191   1              CLEAR_MASK(PM1IC,PMIC_SCI);
+ 192   1      }
+ 193          
+ 194          //----------------------------------------------------------------------------
+ 195          // Hook function of SCI low
+ 196          //----------------------------------------------------------------------------
+ 197          void Hook_SCIOFF(void)
+ 198          {
+ 199   1              SET_MASK(PM1IC,PMIC_SCI);
+ 200   1      }
+ 201          
+ 202          //----------------------------------------------------------------------------
+ 203          // Hook function of SMI high
+ 204          //----------------------------------------------------------------------------
+ 205          void Hook_SMION(void)
+ 206          {
+ 207   1              SMI_ON();
+ 208   1      }
+ 209          
+ 210          //----------------------------------------------------------------------------
+ 211          // Hook function of SMI low
+ 212          //----------------------------------------------------------------------------
+ 213          void Hook_SMIOFF(void)
+ 214          {
+ 215   1              SMI_OFF();
+ 216   1      }
+ 217          
+ 218          //----------------------------------------------------------------------------
+ 219          // Hook function of A20 high
+ 220          //----------------------------------------------------------------------------
+ 221          void Hook_A20ON(void)
+ 222          {
+ 223   1              //GATEA20_ON();
+ 224   1      }
+ 225          
+ 226          //----------------------------------------------------------------------------
+ 227          // Hook function of A20 low
+ 228          //----------------------------------------------------------------------------
+ 229          void Hook_A20OFF(void)
+ 230          {
+ 231   1              //GATEA20_OFF();
+ 232   1      }
+ 233          
+ 234          //----------------------------------------------------------------------------
+ 235          // Hook function of keyboard reset low
+ 236          //----------------------------------------------------------------------------
+ 237          void Hook_KBRSTON(void)
+ 238          {
+ 239   1              //KBRST_ON();
+ 240   1      }
+C51 COMPILER V7.50   OEM_GPIO                                                              09/08/2020 15:56:21 PAGE 5   
+
+ 241          
+ 242          //----------------------------------------------------------------------------
+ 243          // Hook function of keyboard reset high
+ 244          //----------------------------------------------------------------------------
+ 245          void Hook_KBRSTOFF(void)
+ 246          {
+ 247   1              //KBRST_OFF();
+ 248   1      }
+ 249          
+ 250          //----------------------------------------------------------------------------
+ 251          // Hook function of NUM LED ON
+ 252          //----------------------------------------------------------------------------
+ 253          void Hook_NUMLED_ON(void)
+ 254          {
+ 255   1          //NUMLED_ON();
+ 256   1      }
+ 257          
+ 258          //----------------------------------------------------------------------------
+ 259          // Hook function of NUM LED OFF
+ 260          //----------------------------------------------------------------------------
+ 261          void Hook_NUMLED_OFF(void)
+ 262          {
+ 263   1          //NUMLED_OFF();
+ 264   1      }
+ 265          
+ 266          //----------------------------------------------------------------------------
+ 267          // Hook function of CAP LED ON
+ 268          //----------------------------------------------------------------------------
+ 269          void Hook_CAPLED_ON(void)
+ 270          {
+ 271   1          CAPLED_ON();
+ 272   1      }
+ 273          
+ 274          //----------------------------------------------------------------------------
+ 275          // Hook function of CAP LED OFF
+ 276          //----------------------------------------------------------------------------
+ 277          void Hook_CAPLED_OFF(void)
+ 278          {
+ 279   1          CAPLED_OFF();
+ 280   1      }
+ 281          
+ 282          //----------------------------------------------------------------------------
+ 283          // Hook function of BACKLIGHT on off
+ 284          //----------------------------------------------------------------------------
+ 285                      
+ 286          
+ 287          
+ 288          void BackLight_ON(BYTE Blk_tye)
+ 289          {
+ 290   1              CLEAR_MASK(Oem_GPU_EC_BLK,Blk_tye);
+ 291   1              if(0x00==Oem_GPU_EC_BLK)
+ 292   1              {
+ 293   2                      Setup_Brightness(LCD_BRIGHTNESS);
+ 294   2                      //BLK_EC_EN_ON();
+ 295   2              }
+ 296   1              
+ 297   1      
+ 298   1      }
+ 299          
+ 300          void BackLight_OFF(BYTE Blk_tye)
+ 301          {
+ 302   1              SET_MASK(Oem_GPU_EC_BLK,Blk_tye);
+C51 COMPILER V7.50   OEM_GPIO                                                              09/08/2020 15:56:21 PAGE 6   
+
+ 303   1              //if(Oem_GPU_EC_BLK)
+ 304   1              //{
+ 305   1                      //BLK_EC_EN_OFF();
+ 306   1                      //PWM_VADJ = 0x40;  //BrightnessTBL_PWM[12] 
+ 307   1                      
+ 308   1              //}
+ 309   1      }
+ 310          
+ 311               
+ 312          
+C51 COMPILER V7.50   OEM_GPIO                                                              09/08/2020 15:56:21 PAGE 7   
+
+ASSEMBLY LISTING OF GENERATED OBJECT CODE
+
+
+             ; FUNCTION Com001E (BEGIN)
+0000         L?0031:
+0000 75F003            MOV     B,#03H
+0003 EF                MOV     A,R7
+0004 120000      E     LCALL   ?C?OFFXADD
+0007 E4                CLR     A
+0008 93                MOVC    A,@A+DPTR
+0009 22                RET     
+             ; FUNCTION Com001E (END)
+
+             ; FUNCTION Init_GPIO (BEGIN)
+                                           ; SOURCE LINE # 128
+                                           ; SOURCE LINE # 129
+                                           ; SOURCE LINE # 131
+;---- Variable 'index' assigned to Register 'R7' ----
+0000 E4                CLR     A
+0001 FF                MOV     R7,A
+0002         ?C0001:
+                                           ; SOURCE LINE # 132
+                                           ; SOURCE LINE # 133
+                                           ; SOURCE LINE # 134
+0002 900000      R     MOV     DPTR,#asInitGPIOReg+02H
+0005 120000      R     LCALL   L?0031
+0008 FE                MOV     R6,A
+0009 900000      R     MOV     DPTR,#asInitGPIOReg
+000C 120000      R     LCALL   L?0031
+000F FC                MOV     R4,A
+0010 7401              MOV     A,#01H
+0012 93                MOVC    A,@A+DPTR
+0013 F582              MOV     DPL,A
+0015 8C83              MOV     DPH,R4
+0017 EE                MOV     A,R6
+0018 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 135
+0019 0F                INC     R7
+                                           ; SOURCE LINE # 136
+001A EF                MOV     A,R7
+001B B45AE4            CJNE    A,#05AH,?C0001
+                                           ; SOURCE LINE # 137
+001E         ?C0003:
+001E 22                RET     
+             ; FUNCTION Init_GPIO (END)
+
+             ; FUNCTION TurnOnOffCamera (BEGIN)
+                                           ; SOURCE LINE # 140
+                                           ; SOURCE LINE # 141
+                                           ; SOURCE LINE # 142
+0000 900000      E     MOV     DPTR,#Device_Status_Lenovo
+0003 E0                MOVX    A,@DPTR
+                                           ; SOURCE LINE # 143
+                                           ; SOURCE LINE # 145
+                                           ; SOURCE LINE # 147
+                                           ; SOURCE LINE # 149
+                                           ; SOURCE LINE # 150
+0004         ?C0006:
+0004 22                RET     
+             ; FUNCTION TurnOnOffCamera (END)
+
+             ; FUNCTION TurnOnOffWlan (BEGIN)
+C51 COMPILER V7.50   OEM_GPIO                                                              09/08/2020 15:56:21 PAGE 8   
+
+                                           ; SOURCE LINE # 153
+                                           ; SOURCE LINE # 154
+                                           ; SOURCE LINE # 155
+0000 900000      E     MOV     DPTR,#Device_Status_Lenovo
+0003 E0                MOVX    A,@DPTR
+                                           ; SOURCE LINE # 156
+                                           ; SOURCE LINE # 158
+                                           ; SOURCE LINE # 160
+                                           ; SOURCE LINE # 162
+                                           ; SOURCE LINE # 163
+0004         ?C0009:
+0004 22                RET     
+             ; FUNCTION TurnOnOffWlan (END)
+
+             ; FUNCTION TurnOnOffBT (BEGIN)
+                                           ; SOURCE LINE # 165
+                                           ; SOURCE LINE # 166
+                                           ; SOURCE LINE # 167
+0000 900000      E     MOV     DPTR,#OS_Type
+0003 E0                MOVX    A,@DPTR
+0004 C3                CLR     C
+0005 940C              SUBB    A,#0CH
+0007 4004              JC      ?C0014
+                                           ; SOURCE LINE # 168
+                                           ; SOURCE LINE # 169
+0009 900000      E     MOV     DPTR,#Device_Status_Lenovo
+000C E0                MOVX    A,@DPTR
+                                           ; SOURCE LINE # 170
+                                           ; SOURCE LINE # 172
+                                           ; SOURCE LINE # 174
+                                           ; SOURCE LINE # 176
+                                           ; SOURCE LINE # 177
+                                           ; SOURCE LINE # 179
+                                           ; SOURCE LINE # 181
+                                           ; SOURCE LINE # 182
+000D         ?C0014:
+000D 22                RET     
+             ; FUNCTION TurnOnOffBT (END)
+
+             ; FUNCTION Hook_SCION (BEGIN)
+                                           ; SOURCE LINE # 189
+                                           ; SOURCE LINE # 190
+                                           ; SOURCE LINE # 191
+0000 900000      E     MOV     DPTR,#PM1IC
+0003 E0                MOVX    A,@DPTR
+0004 54FB              ANL     A,#0FBH
+0006 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 192
+0007 22                RET     
+             ; FUNCTION Hook_SCION (END)
+
+             ; FUNCTION Hook_SCIOFF (BEGIN)
+                                           ; SOURCE LINE # 197
+                                           ; SOURCE LINE # 198
+                                           ; SOURCE LINE # 199
+0000 900000      E     MOV     DPTR,#PM1IC
+0003 E0                MOVX    A,@DPTR
+0004 4404              ORL     A,#04H
+0006 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 200
+0007 22                RET     
+             ; FUNCTION Hook_SCIOFF (END)
+C51 COMPILER V7.50   OEM_GPIO                                                              09/08/2020 15:56:21 PAGE 9   
+
+
+             ; FUNCTION Hook_SMION (BEGIN)
+                                           ; SOURCE LINE # 205
+                                           ; SOURCE LINE # 206
+                                           ; SOURCE LINE # 207
+0000 900000      E     MOV     DPTR,#GPDRD
+0003 E0                MOVX    A,@DPTR
+0004 4410              ORL     A,#010H
+0006 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 208
+0007 22                RET     
+             ; FUNCTION Hook_SMION (END)
+
+             ; FUNCTION Hook_SMIOFF (BEGIN)
+                                           ; SOURCE LINE # 213
+                                           ; SOURCE LINE # 214
+                                           ; SOURCE LINE # 215
+0000 900000      E     MOV     DPTR,#GPDRD
+0003 E0                MOVX    A,@DPTR
+0004 54EF              ANL     A,#0EFH
+0006 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 216
+0007 22                RET     
+             ; FUNCTION Hook_SMIOFF (END)
+
+             ; FUNCTION Hook_A20ON (BEGIN)
+                                           ; SOURCE LINE # 221
+                                           ; SOURCE LINE # 222
+                                           ; SOURCE LINE # 224
+0000 22                RET     
+             ; FUNCTION Hook_A20ON (END)
+
+             ; FUNCTION Hook_A20OFF (BEGIN)
+                                           ; SOURCE LINE # 229
+                                           ; SOURCE LINE # 230
+                                           ; SOURCE LINE # 232
+0000 22                RET     
+             ; FUNCTION Hook_A20OFF (END)
+
+             ; FUNCTION Hook_KBRSTON (BEGIN)
+                                           ; SOURCE LINE # 237
+                                           ; SOURCE LINE # 238
+                                           ; SOURCE LINE # 240
+0000 22                RET     
+             ; FUNCTION Hook_KBRSTON (END)
+
+             ; FUNCTION Hook_KBRSTOFF (BEGIN)
+                                           ; SOURCE LINE # 245
+                                           ; SOURCE LINE # 246
+                                           ; SOURCE LINE # 248
+0000 22                RET     
+             ; FUNCTION Hook_KBRSTOFF (END)
+
+             ; FUNCTION Hook_NUMLED_ON (BEGIN)
+                                           ; SOURCE LINE # 253
+                                           ; SOURCE LINE # 254
+                                           ; SOURCE LINE # 256
+0000 22                RET     
+             ; FUNCTION Hook_NUMLED_ON (END)
+
+             ; FUNCTION Hook_NUMLED_OFF (BEGIN)
+                                           ; SOURCE LINE # 261
+C51 COMPILER V7.50   OEM_GPIO                                                              09/08/2020 15:56:21 PAGE 10  
+
+                                           ; SOURCE LINE # 262
+                                           ; SOURCE LINE # 264
+0000 22                RET     
+             ; FUNCTION Hook_NUMLED_OFF (END)
+
+             ; FUNCTION Hook_CAPLED_ON (BEGIN)
+                                           ; SOURCE LINE # 269
+                                           ; SOURCE LINE # 270
+                                           ; SOURCE LINE # 271
+0000 900000      E     MOV     DPTR,#GPDRA
+0003 E0                MOVX    A,@DPTR
+0004 54BF              ANL     A,#0BFH
+0006 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 272
+0007 22                RET     
+             ; FUNCTION Hook_CAPLED_ON (END)
+
+             ; FUNCTION Hook_CAPLED_OFF (BEGIN)
+                                           ; SOURCE LINE # 277
+                                           ; SOURCE LINE # 278
+                                           ; SOURCE LINE # 279
+0000 900000      E     MOV     DPTR,#GPDRA
+0003 E0                MOVX    A,@DPTR
+0004 4440              ORL     A,#040H
+0006 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 280
+0007 22                RET     
+             ; FUNCTION Hook_CAPLED_OFF (END)
+
+             ; FUNCTION _BackLight_ON (BEGIN)
+                                           ; SOURCE LINE # 288
+;---- Variable 'Blk_tye' assigned to Register 'R7' ----
+                                           ; SOURCE LINE # 289
+                                           ; SOURCE LINE # 290
+0000 900000      E     MOV     DPTR,#Oem_GPU_EC_BLK
+0003 E0                MOVX    A,@DPTR
+0004 FE                MOV     R6,A
+0005 EF                MOV     A,R7
+0006 F4                CPL     A
+0007 FF                MOV     R7,A
+0008 EE                MOV     A,R6
+0009 5F                ANL     A,R7
+000A F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 291
+000B E0                MOVX    A,@DPTR
+000C 7008              JNZ     ?C0028
+                                           ; SOURCE LINE # 292
+                                           ; SOURCE LINE # 293
+000E 900000      E     MOV     DPTR,#LCD_BRIGHTNESS
+0011 E0                MOVX    A,@DPTR
+0012 FF                MOV     R7,A
+0013 120000      E     LCALL   _Setup_Brightness
+                                           ; SOURCE LINE # 295
+                                           ; SOURCE LINE # 298
+0016         ?C0028:
+0016 22                RET     
+             ; FUNCTION _BackLight_ON (END)
+
+             ; FUNCTION _BackLight_OFF (BEGIN)
+                                           ; SOURCE LINE # 300
+;---- Variable 'Blk_tye' assigned to Register 'R7' ----
+                                           ; SOURCE LINE # 301
+C51 COMPILER V7.50   OEM_GPIO                                                              09/08/2020 15:56:21 PAGE 11  
+
+                                           ; SOURCE LINE # 302
+0000 900000      E     MOV     DPTR,#Oem_GPU_EC_BLK
+0003 E0                MOVX    A,@DPTR
+0004 4F                ORL     A,R7
+0005 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 309
+0006 22                RET     
+             ; FUNCTION _BackLight_OFF (END)
+
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    149    ----
+   CONSTANT SIZE    =    270    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

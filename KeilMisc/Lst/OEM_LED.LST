@@ -1,0 +1,658 @@
+C51 COMPILER V7.50   OEM_LED                                                               09/08/2020 15:56:21 PAGE 1   
+
+
+C51 COMPILER V7.50, COMPILATION OF MODULE OEM_LED
+OBJECT MODULE PLACED IN Code\OEM\OEM_LED.OBJ
+COMPILER INVOKED BY: C:\Keil\C51\BIN\c51.exe Code\OEM\OEM_LED.C LA WL(1) CD OT(9,SIZE) NOAREGS OR INCDIR(.\Code\CORE\INC
+                    -LUDE\;.\Code\OEM\INCLUDE\;.\Code\CHIP\INCLUDE\)
+
+line level    source
+
+   1          /*-----------------------------------------------------------------------------
+   2           * TITLE: OEM_LED.C
+   3           *
+   4           * Copyright (c) 1983-2007, Insyde Software Corporation. All Rights Reserved.
+   5           *
+   6           * You may not reproduce, distribute, publish, display, perform, modify, adapt,
+   7           * transmit, broadcast, present, recite, release, license or otherwise exploit
+   8           * any part of this publication in any form, by any means, without the prior
+   9           * written permission of Insyde Software Corporation.
+  10           *---------------------------------------------------------------------------*/
+  11          
+  12          #include <CORE_INCLUDE.H>
+  13          #include <OEM_INCLUDE.H>
+  14          
+  15          /* ----------------------------------------------------------------------------
+  16           * FUNCTION:   OEM_Write_Leds
+  17           *
+  18           * Write to SCROLL LOCK, NUM LOCK, CAPS LOCK, and any custom LEDs (including
+  19           * an "Fn" key LED).
+  20           *
+  21           * Input: data (LED_ON bit) = Data to write to the LEDs
+  22           *         bit 0 - SCROLL, Scroll Lock
+  23           *         bit 1 - NUM,    Num Lock
+  24           *         bit 2 - CAPS,   Caps Lock
+  25           *         bit 3 - OVL,    Fn LED
+  26           *         bit 4 - LED4,   Undefined
+  27           *         bit 5 - LED5,   Undefined
+  28           *         bit 6 - LED6,   Undefined
+  29           *         bit 7 - LED7,   Undefined
+  30           *
+  31           * Updates Led_Data variable and calls send_leds if appropriate.
+  32           * ------------------------------------------------------------------------- */
+  33          void OEM_Write_Leds(BYTE data_byte)
+  34          {
+  35   1          Led_Data = data_byte;
+  36   1          if ( data_byte & BIT1 )
+  37   1          {
+  38   2                      Hook_NUMLED_ON();
+  39   2          }
+  40   1              else
+  41   1              {
+  42   2                      Hook_NUMLED_OFF();
+  43   2              }
+  44   1              
+  45   1          if ( data_byte & BIT2 )
+  46   1          {
+  47   2                      Hook_CAPLED_ON();
+  48   2          }
+  49   1              else
+  50   1              {
+  51   2                      Hook_CAPLED_OFF();
+  52   2              }
+  53   1      }
+  54          
+C51 COMPILER V7.50   OEM_LED                                                               09/08/2020 15:56:21 PAGE 2   
+
+  55          
+  56          
+  57          
+  58          void ProcessLED(void)
+  59          {
+  60   1              BYTE bat_index, pwr_index;   
+  61   1      
+  62   1              if(ledTestFlag)
+  63   1                      return;
+  64   1      
+  65   1              if(SystemIsS4 || SystemIsS5)
+  66   1              {
+  67   2                      GPCRA1=OUTPUT;
+  68   2                      PWM1LHE=0x00;
+  69   2                      PWR_LED_OFF();
+  70   2              }
+  71   1              else if(SystemIsS3)
+  72   1              {
+  73   2                      GPCRA1=ALT;
+  74   2                      PWM1LHE = 0x01;                         
+  75   2              }
+  76   1              else
+  77   1              {
+  78   2                      //TF_004A--     GPCRA1=OUTPUT;
+  79   2                      GPCRA1=ALT;     //TF_004A++
+  80   2                      PWM1LHE=0x00;
+  81   2                      //TF_004A--     PWR_LED_ON();   
+  82   2                      //TF_004B--     DCR1 = 0x20;    //TF_004A++
+  83   2                      DCR1 = 0x2C;    //TF_004B++
+  84   2              }
+  85   1              if ((Read_ACIN()) && (IS_BATTERY1_IN()))
+  86   1              {
+  87   2                      BAT_LED_Cnt_Low = 0;
+  88   2                      BAT_LED_Cnt_CLow = 0;
+  89   2                      //TF_004--      if (IS_MASK_SET(BAT1_ALARM1, FullyChg))
+  90   2                      if (BAT1_RSOC > 95)     //TF_004++
+  91   2                      {
+  92   3                              BAT_LED1_ON();
+  93   3                              BAT_LED2_OFF();
+  94   3                              //TF_004++>>
+  95   3                              if (IS_MASK_SET(BAT1_ALARM1, FullyChg))
+  96   3                              {
+  97   4                              //TF_004++<<
+  98   4                                      BAT1_CHG |= BAT1_full;
+  99   4                                      BAT1_CHG &= ~BAT1_charging;
+ 100   4                              }       //TF_004++
+ 101   3                      }
+ 102   2                      else
+ 103   2                      {
+ 104   3                              BAT_LED2_ON();
+ 105   3                              BAT_LED1_OFF();
+ 106   3                              BAT1_CHG |= BAT1_charging;
+ 107   3                              BAT1_CHG &= ~BAT1_full;
+ 108   3                      }
+ 109   2              }
+ 110   1              else
+ 111   1              {
+ 112   2                      BAT1_CHG &= ~BAT1_charging;
+ 113   2                      BAT1_CHG &= ~BAT1_full;
+ 114   2                      BAT_LED1_OFF();
+ 115   2                      //TF_004--      if((BAT1_RSOC < 6) && SystemIsS0)
+ 116   2                      if((BAT1_RSOC < 6) && SystemIsS0 && IS_BATTERY1_IN())   //TF_004++
+C51 COMPILER V7.50   OEM_LED                                                               09/08/2020 15:56:21 PAGE 3   
+
+ 117   2                      {
+ 118   3                              BAT_LED_Cnt_Low = 0;
+ 119   3                              BAT_LED_Cnt_CLow++;
+ 120   3                              if(BAT_LED_Cnt_CLow == 1)
+ 121   3                                      BAT_LED2_ON();
+ 122   3                              else if (BAT_LED_Cnt_CLow == 3)
+ 123   3                                      BAT_LED2_OFF();
+ 124   3                              else if (BAT_LED_Cnt_CLow > 5)
+ 125   3                                      BAT_LED_Cnt_CLow = 0;
+ 126   3                      }
+ 127   2                      //TF_004--      else if((BAT1_RSOC < 11) && SystemIsS0)
+ 128   2                      else if((BAT1_RSOC < 11) && SystemIsS0 && IS_BATTERY1_IN())     //TF_004++
+ 129   2                      {
+ 130   3                              BAT_LED_Cnt_CLow = 0;
+ 131   3                              BAT_LED_Cnt_Low++;
+ 132   3                              if(BAT_LED_Cnt_Low == 1)
+ 133   3                                      BAT_LED2_ON();
+ 134   3                              else if (BAT_LED_Cnt_Low == 11)
+ 135   3                                      BAT_LED2_OFF();
+ 136   3                              else if (BAT_LED_Cnt_Low > 20)
+ 137   3                                      BAT_LED_Cnt_Low = 0;
+ 138   3                      }
+ 139   2                      else
+ 140   2                      {
+ 141   3                              BAT_LED2_OFF();
+ 142   3                              BAT_LED_Cnt_Low = 0;
+ 143   3                              BAT_LED_Cnt_CLow = 0;
+ 144   3                      }
+ 145   2              }
+ 146   1      }
+ 147          
+ 148          void Process_KBLED_Control(unsigned char KBLED_CONTROL,unsigned char POW_STATE)
+ 149          {
+ 150   1              if(KBLED_CONTROL == SET_KBLED_ON)
+ 151   1              {
+ 152   2                      switch(POW_STATE)
+ 153   2                      {
+ 154   3                              case SYSTEM_S0:
+ 155   3                              case SYSTEM_S3_S0:
+ 156   3                              case SYSTEM_S4_S0:
+ 157   3                              case SYSTEM_S5_S0:
+ 158   3                                      KBLED_ON();
+ 159   3                                      KBLED_Status = SET_KBLED_ON;
+ 160   3                              break;
+ 161   3                              case SYSTEM_S3:
+ 162   3                              case SYSTEM_S4:
+ 163   3                              case SYSTEM_S5:
+ 164   3                                      KBLED_OFF();
+ 165   3                                      KBLED_Status = SET_KBLED_OFF;   
+ 166   3                              break;
+ 167   3                      }
+ 168   2              }
+ 169   1              else
+ 170   1              {
+ 171   2                      switch(POW_STATE)
+ 172   2                      {
+ 173   3                              case SYSTEM_S0:
+ 174   3                              //case _PST_S0_to_S0://reboot
+ 175   3                              case SYSTEM_S3_S0:
+ 176   3                              case SYSTEM_S4_S0:
+ 177   3                              case SYSTEM_S3:
+ 178   3                              case SYSTEM_S4:
+C51 COMPILER V7.50   OEM_LED                                                               09/08/2020 15:56:21 PAGE 4   
+
+ 179   3                              case SYSTEM_S5:
+ 180   3                              case SYSTEM_S5_S0:
+ 181   3                                      KBLED_OFF();
+ 182   3                                      KBLED_Status = SET_KBLED_OFF;
+ 183   3                              break;
+ 184   3                      }
+ 185   2              }
+ 186   1      }
+C51 COMPILER V7.50   OEM_LED                                                               09/08/2020 15:56:21 PAGE 5   
+
+ASSEMBLY LISTING OF GENERATED OBJECT CODE
+
+
+             ; FUNCTION Com0036 (BEGIN)
+0000         L?0055:
+0000         L?0056:
+0000 E4                CLR     A
+0001 900000      E     MOV     DPTR,#BAT_LED_Cnt_Low
+0004 F0                MOVX    @DPTR,A
+0005 900000      E     MOV     DPTR,#BAT_LED_Cnt_CLow
+0008 22                RET     
+0009         L?0057:
+0009         L?0058:
+0009 900000      E     MOV     DPTR,#GPDRC
+000C E0                MOVX    A,@DPTR
+000D 54BF              ANL     A,#0BFH
+000F F0                MOVX    @DPTR,A
+0010 22                RET     
+             ; FUNCTION Com0036 (END)
+
+             ; FUNCTION _OEM_Write_Leds (BEGIN)
+                                           ; SOURCE LINE # 33
+0000 900000      R     MOV     DPTR,#data_byte
+0003 EF                MOV     A,R7
+0004 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 34
+                                           ; SOURCE LINE # 35
+0005 E0                MOVX    A,@DPTR
+0006 FF                MOV     R7,A
+0007 F500        E     MOV     Led_Data,A
+                                           ; SOURCE LINE # 36
+0009 EF                MOV     A,R7
+000A 30E105            JNB     ACC.1,?C0001
+                                           ; SOURCE LINE # 37
+                                           ; SOURCE LINE # 38
+000D 120000      E     LCALL   Hook_NUMLED_ON
+                                           ; SOURCE LINE # 39
+0010 8003              SJMP    ?C0002
+0012         ?C0001:
+                                           ; SOURCE LINE # 41
+                                           ; SOURCE LINE # 42
+0012 120000      E     LCALL   Hook_NUMLED_OFF
+                                           ; SOURCE LINE # 43
+0015         ?C0002:
+                                           ; SOURCE LINE # 45
+0015 900000      R     MOV     DPTR,#data_byte
+0018 E0                MOVX    A,@DPTR
+0019 30E203            JNB     ACC.2,?C0003
+                                           ; SOURCE LINE # 46
+                                           ; SOURCE LINE # 47
+001C 020000      E     LJMP    Hook_CAPLED_ON
+                                           ; SOURCE LINE # 48
+001F         ?C0003:
+                                           ; SOURCE LINE # 50
+                                           ; SOURCE LINE # 51
+001F 120000      E     LCALL   Hook_CAPLED_OFF
+                                           ; SOURCE LINE # 52
+                                           ; SOURCE LINE # 53
+0022         ?C0005:
+0022 22                RET     
+             ; FUNCTION _OEM_Write_Leds (END)
+
+C51 COMPILER V7.50   OEM_LED                                                               09/08/2020 15:56:21 PAGE 6   
+
+             ; FUNCTION ProcessLED (BEGIN)
+                                           ; SOURCE LINE # 58
+                                           ; SOURCE LINE # 59
+                                           ; SOURCE LINE # 62
+0000 900000      E     MOV     DPTR,#ledTestFlag
+0003 E0                MOVX    A,@DPTR
+0004 6003              JZ      $ + 5H
+0006 020000      R     LJMP    ?C0007
+0009         ?C0006:
+                                           ; SOURCE LINE # 65
+0009 900000      E     MOV     DPTR,#SysPowState
+000C E0                MOVX    A,@DPTR
+000D 6444              XRL     A,#044H
+000F 6004              JZ      ?C0009
+0011 E0                MOVX    A,@DPTR
+0012 B45514            CJNE    A,#055H,?C0008
+0015         ?C0009:
+                                           ; SOURCE LINE # 66
+                                           ; SOURCE LINE # 67
+0015 900000      E     MOV     DPTR,#GPCRA1
+0018 7440              MOV     A,#040H
+001A F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 68
+001B E4                CLR     A
+001C 900000      E     MOV     DPTR,#PWM1LHE
+001F F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 69
+0020 900000      E     MOV     DPTR,#GPDRA
+0023 E0                MOVX    A,@DPTR
+0024 4402              ORL     A,#02H
+0026 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 70
+0027 8022              SJMP    ?C0010
+0029         ?C0008:
+                                           ; SOURCE LINE # 71
+0029 900000      E     MOV     DPTR,#SysPowState
+002C E0                MOVX    A,@DPTR
+002D B4330C            CJNE    A,#033H,?C0011
+                                           ; SOURCE LINE # 72
+                                           ; SOURCE LINE # 73
+0030 E4                CLR     A
+0031 900000      E     MOV     DPTR,#GPCRA1
+0034 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 74
+0035 900000      E     MOV     DPTR,#PWM1LHE
+0038 04                INC     A
+0039 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 75
+003A 800F              SJMP    ?C0010
+003C         ?C0011:
+                                           ; SOURCE LINE # 77
+                                           ; SOURCE LINE # 79
+003C E4                CLR     A
+003D 900000      E     MOV     DPTR,#GPCRA1
+0040 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 80
+0041 900000      E     MOV     DPTR,#PWM1LHE
+0044 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 83
+0045 900000      E     MOV     DPTR,#DCR1
+0048 742C              MOV     A,#02CH
+004A F0                MOVX    @DPTR,A
+C51 COMPILER V7.50   OEM_LED                                                               09/08/2020 15:56:21 PAGE 7   
+
+                                           ; SOURCE LINE # 84
+004B         ?C0010:
+                                           ; SOURCE LINE # 85
+004B 900000      E     MOV     DPTR,#GPDRI
+004E E0                MOVX    A,@DPTR
+004F 30E34B            JNB     ACC.3,?C0013
+0052 E0                MOVX    A,@DPTR
+0053 20E447            JB      ACC.4,?C0013
+                                           ; SOURCE LINE # 86
+                                           ; SOURCE LINE # 87
+                                           ; SOURCE LINE # 88
+0056 120000      R     LCALL   L?0055
+0059 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 90
+005A 900000      E     MOV     DPTR,#BAT1_RSOC
+005D E0                MOVX    A,@DPTR
+005E D3                SETB    C
+005F 945F              SUBB    A,#05FH
+0061 4020              JC      ?C0014
+                                           ; SOURCE LINE # 91
+                                           ; SOURCE LINE # 92
+0063 900000      E     MOV     DPTR,#GPDRJ
+0066 E0                MOVX    A,@DPTR
+0067 4410              ORL     A,#010H
+0069 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 93
+006A 120000      R     LCALL   L?0057
+                                           ; SOURCE LINE # 95
+006D 900000      E     MOV     DPTR,#BAT1_ALARM1
+0070 E0                MOVX    A,@DPTR
+0071 20E503            JB      ACC.5,$ + 6H
+0074 020000      R     LJMP    ?C0007
+                                           ; SOURCE LINE # 96
+                                           ; SOURCE LINE # 98
+0077 900000      E     MOV     DPTR,#BAT1_CHG
+007A E0                MOVX    A,@DPTR
+007B 4408              ORL     A,#08H
+007D F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 99
+007E E0                MOVX    A,@DPTR
+007F 54EF              ANL     A,#0EFH
+0081 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 100
+                                           ; SOURCE LINE # 101
+0082 22                RET     
+0083         ?C0014:
+                                           ; SOURCE LINE # 103
+                                           ; SOURCE LINE # 104
+0083 900000      E     MOV     DPTR,#GPDRC
+0086 E0                MOVX    A,@DPTR
+0087 4440              ORL     A,#040H
+0089 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 105
+008A 900000      E     MOV     DPTR,#GPDRJ
+008D E0                MOVX    A,@DPTR
+008E 54EF              ANL     A,#0EFH
+0090 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 106
+0091 900000      E     MOV     DPTR,#BAT1_CHG
+0094 E0                MOVX    A,@DPTR
+0095 4410              ORL     A,#010H
+0097 F0                MOVX    @DPTR,A
+C51 COMPILER V7.50   OEM_LED                                                               09/08/2020 15:56:21 PAGE 8   
+
+                                           ; SOURCE LINE # 107
+0098 E0                MOVX    A,@DPTR
+0099 54F7              ANL     A,#0F7H
+009B F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 108
+                                           ; SOURCE LINE # 109
+009C 22                RET     
+009D         ?C0013:
+                                           ; SOURCE LINE # 111
+                                           ; SOURCE LINE # 112
+009D 900000      E     MOV     DPTR,#BAT1_CHG
+00A0 E0                MOVX    A,@DPTR
+00A1 54EF              ANL     A,#0EFH
+00A3 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 113
+00A4 E0                MOVX    A,@DPTR
+00A5 54F7              ANL     A,#0F7H
+00A7 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 114
+00A8 900000      E     MOV     DPTR,#GPDRJ
+00AB E0                MOVX    A,@DPTR
+00AC 54EF              ANL     A,#0EFH
+00AE F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 116
+00AF 900000      E     MOV     DPTR,#BAT1_RSOC
+00B2 E0                MOVX    A,@DPTR
+00B3 C3                CLR     C
+00B4 9406              SUBB    A,#06H
+00B6 5030              JNC     ?C0018
+00B8 900000      E     MOV     DPTR,#SysPowState
+00BB E0                MOVX    A,@DPTR
+00BC 6410              XRL     A,#010H
+00BE 7028              JNZ     ?C0018
+00C0 900000      E     MOV     DPTR,#GPDRI
+00C3 E0                MOVX    A,@DPTR
+00C4 20E421            JB      ACC.4,?C0018
+                                           ; SOURCE LINE # 117
+                                           ; SOURCE LINE # 118
+                                           ; SOURCE LINE # 119
+00C7 120000      R     LCALL   L?0055
+00CA E0                MOVX    A,@DPTR
+00CB 04                INC     A
+00CC F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 120
+00CD E0                MOVX    A,@DPTR
+00CE B40102            CJNE    A,#01H,?C0019
+                                           ; SOURCE LINE # 121
+00D1 803C              SJMP    ?C0051
+00D3         ?C0019:
+                                           ; SOURCE LINE # 122
+00D3 900000      E     MOV     DPTR,#BAT_LED_Cnt_CLow
+00D6 E0                MOVX    A,@DPTR
+00D7 B40302            CJNE    A,#03H,?C0021
+                                           ; SOURCE LINE # 123
+00DA 8042              SJMP    ?C0052
+00DC         ?C0021:
+                                           ; SOURCE LINE # 124
+00DC 900000      E     MOV     DPTR,#BAT_LED_Cnt_CLow
+00DF E0                MOVX    A,@DPTR
+00E0 D3                SETB    C
+00E1 9405              SUBB    A,#05H
+00E3 4050              JC      ?C0007
+C51 COMPILER V7.50   OEM_LED                                                               09/08/2020 15:56:21 PAGE 9   
+
+                                           ; SOURCE LINE # 125
+00E5 E4                CLR     A
+00E6 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 126
+00E7 22                RET     
+00E8         ?C0018:
+                                           ; SOURCE LINE # 128
+00E8 900000      E     MOV     DPTR,#BAT1_RSOC
+00EB E0                MOVX    A,@DPTR
+00EC C3                CLR     C
+00ED 940B              SUBB    A,#0BH
+00EF 503D              JNC     ?C0025
+00F1 900000      E     MOV     DPTR,#SysPowState
+00F4 E0                MOVX    A,@DPTR
+00F5 6410              XRL     A,#010H
+00F7 7035              JNZ     ?C0025
+00F9 900000      E     MOV     DPTR,#GPDRI
+00FC E0                MOVX    A,@DPTR
+00FD 20E42E            JB      ACC.4,?C0025
+                                           ; SOURCE LINE # 129
+                                           ; SOURCE LINE # 130
+0100 E4                CLR     A
+0101 900000      E     MOV     DPTR,#BAT_LED_Cnt_CLow
+0104 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 131
+0105 900000      E     MOV     DPTR,#BAT_LED_Cnt_Low
+0108 E0                MOVX    A,@DPTR
+0109 04                INC     A
+010A F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 132
+010B E0                MOVX    A,@DPTR
+010C B40108            CJNE    A,#01H,?C0026
+                                           ; SOURCE LINE # 133
+010F         ?C0051:
+010F 900000      E     MOV     DPTR,#GPDRC
+0112 E0                MOVX    A,@DPTR
+0113 4440              ORL     A,#040H
+0115 F0                MOVX    @DPTR,A
+0116 22                RET     
+0117         ?C0026:
+                                           ; SOURCE LINE # 134
+0117 900000      E     MOV     DPTR,#BAT_LED_Cnt_Low
+011A E0                MOVX    A,@DPTR
+011B B40B04            CJNE    A,#0BH,?C0028
+                                           ; SOURCE LINE # 135
+011E         ?C0052:
+011E 120000      R     LCALL   L?0057
+0121 22                RET     
+0122         ?C0028:
+                                           ; SOURCE LINE # 136
+0122 900000      E     MOV     DPTR,#BAT_LED_Cnt_Low
+0125 E0                MOVX    A,@DPTR
+0126 D3                SETB    C
+0127 9414              SUBB    A,#014H
+0129 400A              JC      ?C0007
+                                           ; SOURCE LINE # 137
+012B E4                CLR     A
+012C F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 138
+012D 22                RET     
+012E         ?C0025:
+                                           ; SOURCE LINE # 140
+C51 COMPILER V7.50   OEM_LED                                                               09/08/2020 15:56:21 PAGE 10  
+
+                                           ; SOURCE LINE # 141
+012E 120000      R     LCALL   L?0058
+                                           ; SOURCE LINE # 142
+                                           ; SOURCE LINE # 143
+0131 120000      R     LCALL   L?0056
+0134 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 144
+                                           ; SOURCE LINE # 145
+                                           ; SOURCE LINE # 146
+0135         ?C0007:
+0135 22                RET     
+             ; FUNCTION ProcessLED (END)
+
+             ; FUNCTION _Process_KBLED_Control (BEGIN)
+                                           ; SOURCE LINE # 148
+;---- Variable 'POW_STATE' assigned to Register 'R5' ----
+;---- Variable 'KBLED_CONTROL' assigned to Register 'R7' ----
+                                           ; SOURCE LINE # 149
+                                           ; SOURCE LINE # 150
+0000 EF                MOV     A,R7
+0001 B4012D            CJNE    A,#01H,?C0032
+                                           ; SOURCE LINE # 151
+                                           ; SOURCE LINE # 152
+0004 ED                MOV     A,R5
+0005 120000      E     LCALL   ?C?CCASE
+0008 0000        R     DW      ?C0037
+000A 10                DB      010H
+000B 0000        R     DW      ?C0037
+000D 30                DB      030H
+000E 0000        R     DW      ?C0040
+0010 33                DB      033H
+0011 0000        R     DW      ?C0037
+0013 40                DB      040H
+0014 0000        R     DW      ?C0040
+0016 44                DB      044H
+0017 0000        R     DW      ?C0037
+0019 50                DB      050H
+001A 0000        R     DW      ?C0040
+001C 55                DB      055H
+001D 0000              DW      00H
+001F 0000        R     DW      ?C0050
+                                           ; SOURCE LINE # 153
+                                           ; SOURCE LINE # 154
+                                           ; SOURCE LINE # 155
+                                           ; SOURCE LINE # 156
+                                           ; SOURCE LINE # 157
+0021         ?C0037:
+                                           ; SOURCE LINE # 158
+0021 900000      E     MOV     DPTR,#GPDRJ
+0024 E0                MOVX    A,@DPTR
+0025 4420              ORL     A,#020H
+0027 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 159
+0028 900000      E     MOV     DPTR,#KBLED_Status
+002B 7401              MOV     A,#01H
+002D F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 160
+002E 22                RET     
+                                           ; SOURCE LINE # 161
+                                           ; SOURCE LINE # 162
+                                           ; SOURCE LINE # 163
+002F         ?C0040:
+C51 COMPILER V7.50   OEM_LED                                                               09/08/2020 15:56:21 PAGE 11  
+
+                                           ; SOURCE LINE # 164
+                                           ; SOURCE LINE # 165
+                                           ; SOURCE LINE # 166
+002F 801D              SJMP    ?C0053
+                                           ; SOURCE LINE # 167
+                                           ; SOURCE LINE # 168
+0031         ?C0032:
+                                           ; SOURCE LINE # 170
+                                           ; SOURCE LINE # 171
+0031 ED                MOV     A,R5
+0032 120000      E     LCALL   ?C?CCASE
+0035 0000        R     DW      ?C0049
+0037 10                DB      010H
+0038 0000        R     DW      ?C0049
+003A 30                DB      030H
+003B 0000        R     DW      ?C0049
+003D 33                DB      033H
+003E 0000        R     DW      ?C0049
+0040 40                DB      040H
+0041 0000        R     DW      ?C0049
+0043 44                DB      044H
+0044 0000        R     DW      ?C0049
+0046 50                DB      050H
+0047 0000        R     DW      ?C0049
+0049 55                DB      055H
+004A 0000              DW      00H
+004C 0000        R     DW      ?C0050
+                                           ; SOURCE LINE # 172
+                                           ; SOURCE LINE # 173
+                                           ; SOURCE LINE # 175
+                                           ; SOURCE LINE # 176
+                                           ; SOURCE LINE # 177
+                                           ; SOURCE LINE # 178
+                                           ; SOURCE LINE # 179
+                                           ; SOURCE LINE # 180
+004E         ?C0049:
+                                           ; SOURCE LINE # 181
+004E         ?C0053:
+004E 900000      E     MOV     DPTR,#GPDRJ
+0051 E0                MOVX    A,@DPTR
+0052 54DF              ANL     A,#0DFH
+0054 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 182
+0055 E4                CLR     A
+0056 900000      E     MOV     DPTR,#KBLED_Status
+0059 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 183
+                                           ; SOURCE LINE # 184
+                                           ; SOURCE LINE # 185
+                                           ; SOURCE LINE # 186
+005A         ?C0050:
+005A 22                RET     
+             ; FUNCTION _Process_KBLED_Control (END)
+
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    453    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----       3
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+C51 COMPILER V7.50   OEM_LED                                                               09/08/2020 15:56:21 PAGE 12  
+
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

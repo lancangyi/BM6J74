@@ -1,0 +1,751 @@
+C51 COMPILER V7.50   OEM_MEMORY                                                            09/08/2020 15:56:24 PAGE 1   
+
+
+C51 COMPILER V7.50, COMPILATION OF MODULE OEM_MEMORY
+OBJECT MODULE PLACED IN Code\Oem\OEM_MEMORY.OBJ
+COMPILER INVOKED BY: C:\Keil\C51\BIN\c51.exe Code\Oem\OEM_MEMORY.C LA WL(1) CD OT(9,SIZE) NOAREGS OR INCDIR(.\Code\CORE\
+                    -INCLUDE\;.\Code\OEM\INCLUDE\;.\Code\CHIP\INCLUDE\)
+
+line level    source
+
+   1           /*-----------------------------------------------------------------------------
+   2           * Filename:OEM_MEMORY.C     For Chipset: ITE.IT85XX
+   3           *
+   4           * Function: Memory Definition for extern all code base reference
+   5           *
+   6           * [Memory Map Description]
+   7           *
+   8           * Chip Internal Ram : 0x00-0xFF For Kernel and Chip Level use
+   9           *
+  10           ***************************************************
+  11           * Chip 8500       : External ram 0x000-0x7FF
+  12           * Chip Other 85XX : External ram 0x000-0xFFF
+  13           ***************************************************
+  14           *
+  15           * [OEM Memory Range]
+  16           * [External Ram]
+  17           * 0x100-0x1FF   OEM RAM    EC RAM space
+  18           * 0x200-0x2FF   OEM RAM
+  19           * 0x300-0x3FF   OEM RAM
+  20           * 0x400-0x4FF   OEM RAM
+  21           * 0x500-0x5FF   OEM RAM      
+  22          
+  23           * 0x800-0x8FF   OEM RAM
+  24           * 0x800-0x9FF   OEM RAM 
+  25           * 0xA00-0xAFF   OEM RAM 
+  26           * 0xB00-0xBFF   OEM RAM  
+  27           * 0xC00-0xCFF   OEM RAM 
+  28           * 0xD00-0xDFF   OEM RAM 
+  29           * 0xE00-0xEFF   OEM RAM 
+  30           * 0xF00-0xFFF    OEM RAM
+  31           *
+  32           * Copyright (c) 2006-2009, ITE Tech. Inc. All Rights Reserved.
+  33           *---------------------------------------------------------------------------*/
+  34          
+  35          #include <CORE_INCLUDE.H>
+  36          #include <OEM_INCLUDE.H>
+  37          
+  38          //*******************************************************************************
+  39          //      0x100-0x1FF   OEM RAM 1  
+  40          //*******************************************************************************
+  41          XBYTE VCMD_Lenovo                                       _at_(ECRAM+0x00); 
+  42          XBYTE VDAT_Lenovo                                       _at_(ECRAM+0x01); 
+  43          XBYTE VPC2_Lenovo                                       _at_(ECRAM+0x02);
+  44          XBYTE ECVersionPCB                                      _at_(ECRAM+0x03);
+  45          XBYTE VPC_Lenovo                                        _at_(ECRAM+0x06);
+  46          XBYTE Device_Status_Lenovo          _at_(ECRAM+0x08);
+  47          XBYTE Device_Status_AllRF                       _at_(ECRAM+0x09);
+  48          
+  49          XBYTE SYS_state                                 _at_(ECRAM+0x0B);
+  50          
+  51          XBYTE LCD_BRIGHTNESS_BK                         _at_(ECRAM+0x0E);
+  52          XBYTE LCD_BRIGHTNESS                    _at_(ECRAM+0x0F);       
+  53          
+  54          XBYTE Fn_S_V_Flag                       _at_(ECRAM+0x11);
+C51 COMPILER V7.50   OEM_MEMORY                                                            09/08/2020 15:56:24 PAGE 2   
+
+  55          XBYTE auto_S4                                   _at_(ECRAM+0x13);       //TF_014++
+  56          XBYTE CpuTm                                     _at_(ECRAM+0x1E);
+  57          XBYTE EMC1412Tm                             _at_(ECRAM+0x1F);
+  58          XBYTE MXM_EMC1402Tm                     _at_(ECRAM+0x20);
+  59          
+  60          XBYTE ADC7_NTC_T                            _at_(ECRAM+0x23);   
+  61          XBYTE ADC0_NTC_T                            _at_(ECRAM+0x24);
+  62          XBYTE ADC1_NTC_T                            _at_(ECRAM+0x25);
+  63          XBYTE BAT1_ManufacturerName[14]         _at_(ECRAM+0x26);
+  64          XBYTE BAT1_MFGF2L                               _at_(ECRAM+0x34);  //Battery 1
+  65          XBYTE BAT1_MFGF2H                           _at_(ECRAM+0x35); 
+  66          
+  67          XBYTE OS_mode                                           _at_(ECRAM+0x40);       //(BYTE)OS System Type DOS(00H),98(01H),2000(02H),ME(03H),XP(04H) ..
+             -.
+  68          XBYTE OemAllDevices_state                       _at_(ECRAM+0x41);
+  69          XBYTE OS_Type                           _at_(ECRAM+0x42);
+  70          XBYTE OS_BIOS                           _at_(ECRAM+0x43);       //TF_011++
+  71          XBYTE Oem_For_Bios_Flag                         _at_(ECRAM+0x44);
+  72          XBYTE ECMainVersionInfo                         _at_(ECRAM+0x46);
+  73          XBYTE ECVersionInfo                                     _at_(ECRAM+0x47);       //(BYTE)EC DATA 5 FOR EXT COMMAND = 0x46B
+  74          XBYTE Bios_Battery_Health_2                     _at_(ECRAM+0x48);
+  75          XBYTE BIOS_OEM_battery_health           _at_(ECRAM+0x49);
+  76          XBYTE EC_EXT_SOURCE_STATE                       _at_(ECRAM+0x4A);       //(BYTE)EXTERN SOURCE STATUS    
+  77          XBYTE Sys_Power_Status                          _at_(ECRAM+0x4B);
+  78          XBYTE EC_EXT_CMD                        _at_(ECRAM+0x4C);   // command
+  79          XBYTE xbBIOS_Notify_Flag                        _at_(ECRAM+0x4D);               //TF_001++
+  80          //TF_001--      XBYTE EC_DAT1                           _at_(ECRAM+0x4D);       //(BYTE)EC DATA 1 FOR EXT COMMAND  
+  81          XBYTE EC_DAT2                           _at_(ECRAM+0x4E);       //(BYTE)EC DATA 2 FOR EXT COMMAND  
+  82          XBYTE EC_DAT3                           _at_(ECRAM+0x4F);       //(BYTE)EC DATA 3 FOR EXT COMMAND  
+  83          XBYTE Bat1_FW[8]                                        _at_(ECRAM+0x50);               // 0x54-0x5B
+  84          XBYTE SYS_MISC1                                 _at_(ECRAM+0x58);       // System Misc flag 1
+  85          XBYTE Oem_RTP_ID_CMD                _at_(ECRAM+0x59);  
+  86          XBYTE SMB_PRTC                                  _at_(ECRAM+0x5A);   // EC SMB1 Protocol register
+  87          XBYTE SMB_STS                                           _at_(ECRAM+0x5B);       // EC SMB1 Status register
+  88          XBYTE SMB_ADDR                                  _at_(ECRAM+0x5C);       // EC SMB1 Address register
+  89          XBYTE SMB_CMD                                           _at_(ECRAM+0x5D);       // EC SMB1 Command register
+  90          XBYTE SMB_DATA                                          _at_(ECRAM+0x5E);       // EC SMB1 Data register array (32 bytes)
+  91          XBYTE SMB_DATA1[31]                             _at_(ECRAM+0x5F);
+  92          XBYTE SMB_BCNT                                          _at_(ECRAM+0x7E);       // EC SMB1 Block Count register
+  93          XBYTE BAT1_STATUS                                       _at_(ECRAM+0x7F);
+  94          XBYTE BAT1_CHG                                      _at_(ECRAM+0x80);
+  95          
+  96          XBYTE BAT1_AC_L                             _at_(ECRAM+0x8E);
+  97          XBYTE BAT1_AC_H                             _at_(ECRAM+0x8F);
+  98          XBYTE BAT1_temp_L                               _at_(ECRAM+0x90);
+  99          XBYTE BAT1_temp_H                               _at_(ECRAM+0x91);
+ 100          XBYTE BAT1_volt_L                               _at_(ECRAM+0x92);
+ 101          XBYTE BAT1_volt_H                               _at_(ECRAM+0x93);
+ 102          XBYTE BAT1_current_L                            _at_(ECRAM+0x94);
+ 103          XBYTE BAT1_current_H                            _at_(ECRAM+0x95);
+ 104          XBYTE BAT1_RSOC                                         _at_(ECRAM+0x96);
+ 105          XBYTE BAT1_RMcap_L                              _at_(ECRAM+0x98);
+ 106          XBYTE BAT1_RMcap_H                              _at_(ECRAM+0x99);
+ 107          XBYTE BAT1_FCcap_L                              _at_(ECRAM+0x9A);
+ 108          XBYTE BAT1_FCcap_H                              _at_(ECRAM+0x9B);
+ 109          
+ 110          XBYTE BAT1_DesignVoltage_L          _at_(ECRAM+0xA2);
+ 111          XBYTE BAT1_DesignVoltage_H          _at_(ECRAM+0xA3);
+ 112          
+ 113          XBYTE BAT1_CycleCount_L                 _at_(ECRAM+0xA8);
+ 114          XBYTE BAT1_CycleCount_H                         _at_(ECRAM+0xA9);
+ 115          XBYTE BAT1_CV_L                                 _at_(ECRAM+0xAA);
+C51 COMPILER V7.50   OEM_MEMORY                                                            09/08/2020 15:56:24 PAGE 3   
+
+ 116          XBYTE BAT1_CV_H                                 _at_(ECRAM+0xAB);
+ 117          XBYTE BAT1_CC_L                                 _at_(ECRAM+0xAC);
+ 118          XBYTE BAT1_CC_H                                         _at_(ECRAM+0xAD);
+ 119          XBYTE BAT1_DScap_L                                      _at_(ECRAM+0xAE);                       
+ 120          XBYTE BAT1_DScap_H                                      _at_(ECRAM+0xAF);
+ 121          XWORD BAT1_SerialNumber                         _at_(ECRAM+0xB0);
+ 122          
+ 123          XBYTE Bat_ShipMode_Cmd                          _at_(ECRAM+0xB5);
+ 124          XBYTE Oem_BAT1_ALARM                    _at_(ECRAM+0xB6);   // Battery 1
+ 125          XWORD R_CHARGE_CTRL0                            _at_(ECRAM+0xB7);
+ 126          XWORD R_CHARGE_CTRL1                            _at_(ECRAM+0xB9);
+ 127          XWORD R_CHARGE_CTRL2                            _at_(ECRAM+0xBB);
+ 128          XWORD R_CHARGE_CURRENT                          _at_(ECRAM+0xBD);
+ 129          
+ 130          XWORD R_CHARGE_VOLTAGE                          _at_(ECRAM+0xC0);
+ 131          XWORD R_INPUT_CURRENT                           _at_(ECRAM+0xC2);
+ 132          XWORD R_MANUFACTURER_ID                         _at_(ECRAM+0xC4);
+ 133          XBYTE CHG_STATUS                                        _at_(ECRAM+0xC6);
+ 134          XBYTE TEMP_SENSOR_STATUS                        _at_(ECRAM+0xC7);
+ 135          XWORD TEMP_CHARGE_INPUT                         _at_(ECRAM+0xC8);
+ 136          XWORD EC_OptionalMfgFunction2           _at_(ECRAM+0xCA);
+ 137          
+ 138          XBYTE BAT1_ALARM1                               _at_(ECRAM+0xD2);
+ 139          XBYTE BAT1_ALARM2                           _at_(ECRAM+0xD3);
+ 140          XBYTE BAT1_DeviceName[10]                       _at_(ECRAM+0xD4);
+ 141          
+ 142          XWORD SHUT_COUNT                                    _at_(ECRAM+0xE4);
+ 143          
+ 144          XWORD FAN1_CurrentRPM                           _at_(ECRAM+0xF2);
+ 145          XWORD FAN2_CurrentRPM                           _at_(ECRAM+0xF4);
+ 146          XBYTE FANerror                                      _at_(ECRAM+0xF6); //TF_005++
+ 147          XBYTE DebugFan2RPMT                                     _at_(ECRAM+0xf7);
+ 148          
+ 149          XBYTE DebugTCPU                                         _at_(ECRAM+0xfb);
+ 150          WORD  DebugReadRPM                              _at_(ECRAM+0xfc);    
+ 151          XBYTE DebugFan1RPMT                                     _at_(ECRAM+0xfe);
+ 152          XBYTE DebugFanStatus                            _at_(ECRAM+0xff);
+ 153          //***************Reserved 0xa3~ 0xff  *********************
+ 154          
+ 155          //-------------------------------------------------------------------------------
+ 156          //      0x200-0x2FF   OEM RAM 2  
+ 157          //-------------------------------------------------------------------------------
+ 158          XBYTE   SPIBuffer[256]               _at_(SPIBufferRAM+0x00);    // 256 bytes SPI read/write buffer
+ 159          
+ 160          //-------------------------------------------------------------------------------
+ 161          //      0x300-0x3FF   OEM RAM 3  
+ 162          //-------------------------------------------------------------------------------
+ 163          
+ 164          //+++++++++++++battery++++++++++++++++++++++++++++
+ 165          
+ 166          XBYTE Oem_BatCtrl_F                     _at_(OEMRAM3+0x00);
+ 167          WORD  BAT1_RMcap_Pre                    _at_(OEMRAM3+0x01);
+ 168          XBYTE Bat_Test_Mode_f                           _at_(OEMRAM3+0x03); 
+ 169          XBYTE BAT_Calibrate_Step                _at_(OEMRAM3+0x04);
+ 170          XBYTE BAT_Storagemode_Step                      _at_(OEMRAM3+0x05);
+ 171          XBYTE Oem_Globe_Flag                        _at_(OEMRAM3+0x06);
+ 172          XBYTE Oem_Globe_Flag1                   _at_(OEMRAM3+0x07);
+ 173          XBYTE DebugFan1VoltageOut               _at_(OEMRAM3+0x08);
+ 174          XWORD guoyong001                        _at_(OEMRAM3+0x09);
+ 175          XBYTE guoyong003                        _at_(OEMRAM3+0x0b);
+ 176          XBYTE Oem_Device_Status                         _at_(OEMRAM3+0x0c);
+ 177          XBYTE Oem_Globe_Flag2                   _at_(OEMRAM3+0x0d);
+C51 COMPILER V7.50   OEM_MEMORY                                                            09/08/2020 15:56:24 PAGE 4   
+
+ 178          XBYTE Oem_GPU_EC_BLK                    _at_(OEMRAM3+0x0e);
+ 179          XBYTE Oem_PC_Beep_EN                    _at_(OEMRAM3+0x0f);
+ 180          XBYTE TDIM0_temp                                _at_(OEMRAM3+0x10);   // DRAM 0 temperature
+ 181          XBYTE TDIM1_temp                                _at_(OEMRAM3+0x11);   // DRAM 1 temperature
+ 182          XBYTE TPkg_temp                                 _at_(OEMRAM3+0x12);   // 
+ 183          XBYTE TVGA_temp                                 _at_(OEMRAM3+0x13);   // VGA Temperature
+ 184          XBYTE TPCH_temp                                 _at_(OEMRAM3+0x14);   // PCH Temperature
+ 185          XBYTE TSys_temp                                 _at_(OEMRAM3+0x15);   // system Temperature
+ 186          XBYTE TCPU_temp                                 _at_(OEMRAM3+0x16);   // CPU Temperature
+ 187          XBYTE PECI_CPU_temp                             _at_(OEMRAM3+0x17);   // Use PECI interface to read CPU temperature
+ 188          XBYTE TPKG_Pch_temp                     _at_(OEMRAM3+0x18);   // PCH temperature  package 20bytes
+ 189          XBYTE Pch_temp_Smbus                    _at_(OEMRAM3+0x19);
+ 190          
+ 191          //reserved 0x2E , 0x2F,0x30,0x31
+ 192          
+ 193          XBYTE CPU_TooHot_Cnt                    _at_(OEMRAM3+0x32);
+ 194          XBYTE GPU_INFO_FLG                              _at_(OEMRAM3+0x33); 
+ 195          XBYTE GPU_INIT_CNT                      _at_(OEMRAM3+0x34);
+ 196          XBYTE OEM_2S_COUNT                              _at_(OEMRAM3+0x35);
+ 197          XBYTE Adapter_Null_Counter                      _at_(OEMRAM3+0x36);
+ 198          XBYTE Adapter_In_Counter                        _at_(OEMRAM3+0x37);
+ 199          XBYTE Oem_Storage_mode_f                        _at_(OEMRAM3+0x38);
+ 200          XBYTE Oem_Mute_Delay_Cnt                _at_(OEMRAM3+0x39); 
+ 201          XBYTE ledTestFlag                               _at_(OEMRAM3+0x3A); 
+ 202          
+ 203          XBYTE Lenvo_dust_mode                           _at_(OEMRAM3+0x3C); 
+ 204          XBYTE Lenvo_general_f                           _at_(OEMRAM3+0x3D);
+ 205          XBYTE buttonflag                                _at_(OEMRAM3+0x3E);
+ 206          XBYTE SCI_timer_RLOAD                           _at_(OEMRAM3+0x40);
+ 207          XBYTE SCI_timer_cnt                                     _at_(OEMRAM3+0x41);
+ 208          XBYTE EC_STATE_BUF                      _at_(OEMRAM3+0x42);
+ 209          XBYTE Oem_BatLedBlik_Cnt                        _at_(OEMRAM3+0x43);
+ 210          XBYTE UART_Buffer_Status                _at_(OEMRAM3+0x44);
+ 211          XWORD UART_TX_Buffer_In                 _at_(OEMRAM3+0x45);
+ 212          XWORD UART_TX_Buffer_Out                _at_(OEMRAM3+0x47);
+ 213          XBYTE OEM_flag_1                                _at_(OEMRAM3+0x49);
+ 214          XBYTE ITS_GPU_BYTE1                     _at_(OEMRAM3+0x4A);//Read GPU internal TS to read GPU temperature through SM
+             -BUS
+ 215          XBYTE ITS_GPU_BYTE2                     _at_(OEMRAM3+0x4B);
+ 216          XBYTE ITS_GPU_BYTE3                     _at_(OEMRAM3+0x4C);
+ 217          XBYTE ITS_GPU_BYTE4                     _at_(OEMRAM3+0x4D);
+ 218          XBYTE Bat_ShipMode_Data_L                       _at_(OEMRAM3+0x4E);
+ 219          XBYTE Bat_ShipMode_Data_H                       _at_(OEMRAM3+0x4F);
+ 220          XWORD OEM_Debug_flag                    _at_(OEMRAM3+0x50);
+ 221          XWORD BAT1_RMcap_L_temp                 _at_(OEMRAM3+0x52);
+ 222          XWORD BAT1_FCcap_Pre                    _at_(OEMRAM3+0x54);
+ 223          
+ 224          XWORD SYSTEM_POWER_BATOnly_Current              _at_(OEMRAM3+0x5A);// (*(volatile WORD xdata *)0x035A)
+ 225          XWORD SYSTEM_POWER_BATProtect_C                 _at_(OEMRAM3+0x5C);// (*(volatile WORD xdata *)0x035C)
+ 226          
+ 227          XWORD SystemWatts_BatChar_C                     _at_(OEMRAM3+0x62);// (*(volatile WORD xdata*)   0x0362)  // current n
+             -ow  battery request
+ 228          XWORD Pre_SystemWatts_BatChar_C                 _at_(OEMRAM3+0x64);// (*(volatile WORD xdata*)   0x0364)
+ 229          XBYTE SystemWatts_CHRStatus                             _at_(OEMRAM3+0x66);// (*(volatile unsigned char xdata*)0x0366)
+ 230          XWORD SysCurrent                                        _at_(OEMRAM3+0x67);// (*(volatile WORD xdata*) 0x0367)
+ 231          XBYTE SystemWatts                       _at_(OEMRAM3+0x69);// (*(volatile BYTE xdata *)0x0369)
+ 232          XBYTE SystemPowerCtrlStep               _at_(OEMRAM3+0x6A);// (*(volatile BYTE xdata *)0x036A)
+ 233          XBYTE SystemWatts_Over_Cnt              _at_(OEMRAM3+0x6B);// (*(volatile BYTE xdata *)0x036B)
+ 234          XBYTE SystemWatts_Resume_Cnt            _at_(OEMRAM3+0x6C);// (*(volatile BYTE xdata *)0x036C)
+ 235          XWORD SystemWatts_BatChar_BK            _at_(OEMRAM3+0x6D);// (*(volatile WORD xdata *)0x036D)
+ 236          XBYTE Power_Protect_Cnt                         _at_(OEMRAM3+0x6F);// (*(volatile BYTE xdata *)0x036F)
+ 237          XBYTE DebugECFlash                      _at_(OEMRAM3+0x70);
+C51 COMPILER V7.50   OEM_MEMORY                                                            09/08/2020 15:56:24 PAGE 5   
+
+ 238          
+ 239          XBYTE Oem_RTP_ID_Flag                           _at_(OEMRAM3+0x80); 
+ 240          XBYTE Oem_RTP_ID_Step                           _at_(OEMRAM3+0x81);  
+ 241          XBYTE Oem_RTP_ID_Index                          _at_(OEMRAM3+0x82);  
+ 242          XBYTE Oem_RTP_ID_LOOP_Index             _at_(OEMRAM3+0x83);  
+ 243          XWORD Oem_RTP_ID_1s_T                           _at_(OEMRAM3+0x84);      
+ 244          XBYTE Oem_RTP_ID_1s_EN                          _at_(OEMRAM3+0x86);      
+ 245          XWORD Oem_RTP_ID_PWR_Delay              _at_(OEMRAM3+0x87);  
+ 246          
+ 247          XBYTE HomeBtn_Ass_F                                     _at_(OEMRAM3+0xC0);
+ 248          XBYTE EnterDeepSleep_ACDC_Cnt           _at_(OEMRAM3+0xC1);
+ 249          XBYTE EnterDeepSleep_ACDC_f             _at_(OEMRAM3+0xC2);
+ 250          
+ 251          XBYTE POWER_FLAG1                               _at_(OEMRAM3+0xD0);     // EC power flag 1
+ 252          XBYTE POWER_FLAG2                               _at_(OEMRAM3+0xD1);     // EC power flag 2
+ 253          XBYTE POWER_FLAG3                               _at_(OEMRAM3+0xD2);     // EC power flag 3
+ 254          //reserved  D3~D5
+ 255          XBYTE EVT_STATUS1                               _at_(OEMRAM3+0xD6);     // Event status flag 1
+ 256          XBYTE EVT_STATUS2                               _at_(OEMRAM3+0xD7);     // Event status flag 2
+ 257          XBYTE EVT_STATUS3                               _at_(OEMRAM3+0xD8);     // Event status flag 3
+ 258          XBYTE MISC_FLAG1                                _at_(OEMRAM3+0xD9);     // Misc flag 1
+ 259          XBYTE MISC_FLAG2                                _at_(OEMRAM3+0xDA);     // Misc flag 2
+ 260          XBYTE MISC_FLAG3                                _at_(OEMRAM3+0xDB);     // Misc flag 3
+ 261          XBYTE MISC_FLAG4                                _at_(OEMRAM3+0xDC);     // Misc flag 4
+ 262          XBYTE BT1_STATUS1                               _at_(OEMRAM3+0xDD);   // Battery 1 status1 flag
+ 263          XBYTE BT1_STATUS2                               _at_(OEMRAM3+0xDE);   // Battery 1 status2 flag
+ 264          XBYTE BT1_STATUS3                               _at_(OEMRAM3+0xDF);   // Battery 1
+ 265          XBYTE EC_CPU_TEMP                                       _at_(OEMRAM3+0xE0); //(BYTE)CPU Temperature
+ 266          XBYTE B1SS_Bak                                  _at_(OEMRAM3+0xE1);
+ 267          XBYTE FanSpeedLow                                       _at_(OEMRAM3+0xE2);           
+ 268          XBYTE FanSpeedHigh                                      _at_(OEMRAM3+0xE3);
+ 269          XBYTE BrgLevel                                  _at_(OEMRAM3+0xE4);   // Brightness level
+ 270          XBYTE CrisisKeyStatus                           _at_(OEMRAM3+0xE5);   // Crisis key flag
+ 271          
+ 272          XBYTE BAT1_ACCESSL                              _at_(OEMRAM3+0xE7);   //Battery 1
+ 273          XBYTE BAT1_ACCESSH                              _at_(OEMRAM3+0xE8);   //Battery 1 
+ 274          XBYTE BAT1_MODEL                                _at_(OEMRAM3+0xE9);
+ 275          XBYTE BAT1_MODEH                                _at_(OEMRAM3+0xEA);
+ 276          
+ 277          XBYTE temp_guoyong1                                     _at_(OEMRAM3+0xF0);// (*(volatile unsigned char xdata*) 0x03f0)
+ 278          XBYTE temp_guoyong2                                     _at_(OEMRAM3+0xF1);// (*(volatile unsigned char xdata*) 0x03f1)
+ 279          XWORD temp_guoyong3                                     _at_(OEMRAM3+0xF2);// (*(volatile WORD xdata*)  0x03f2)
+ 280          XWORD temp_guoyong4                                     _at_(OEMRAM3+0xF4);// (*(volatile WORD xdata*)  0x03f4)
+ 281          XBYTE ACPI_Count                                        _at_(OEMRAM3+0xF6);
+ 282          XBYTE ACPI_Flag                                         _at_(OEMRAM3+0xF7);
+ 283          XBYTE SysPostTime                                       _at_(OEMRAM3+0xF8);
+ 284          XBYTE CoolBootTime                              _at_(OEMRAM3+0xF9);
+ 285          XBYTE CoolBootFlag                      _at_(OEMRAM3+0xFA);
+ 286          XBYTE AdjustBLDelay                     _at_(OEMRAM3+0xFB);
+ 287          XBYTE RSMRST_count                                      _at_(OEMRAM3+0xFC);
+ 288          XBYTE restartStep                       _at_(OEMRAM3+0xFD);
+ 289          //-------------------------------------------------------------------------------
+ 290          //      0x400-0x4FF   OEM RAM 4  
+ 291          //-------------------------------------------------------------------------------
+ 292          //===============================================================================
+ 293          // OEMRAM4 Offset 0x00 ~ 0x0F   Power sequnce control 
+ 294          XBYTE   SysPowState                                     _at_(PowerSequnceRAM+0x00); //(byte)
+ 295          XBYTE   PWSeqStep                                       _at_(PowerSequnceRAM+0x01); //(byte)
+ 296          XBYTE   DeepSleepCunt                           _at_(PowerSequnceRAM+0x02); //(byte)
+ 297          XWORD   DelayDoPowerSeq                         _at_(PowerSequnceRAM+0x03); //(word)
+ 298          XWORD   PowSeqDelay                                     _at_(PowerSequnceRAM+0x05); //(word)
+ 299          XBYTE   ECAutoPowerOn                           _at_(PowerSequnceRAM+0x07); //(byte)
+C51 COMPILER V7.50   OEM_MEMORY                                                            09/08/2020 15:56:24 PAGE 6   
+
+ 300          XBYTE   ECWDTRSTNow                                     _at_(PowerSequnceRAM+0x08); //(byte)
+ 301          XBYTE   CheckPowerStateIndex            _at_(PowerSequnceRAM+0x09);    //(byte)
+ 302          XBYTE   SBSWReleaseCunt                         _at_(PowerSequnceRAM+0x0A); //(byte)
+ 303          XWORD   PSW_COUNTER                     _at_(PowerSequnceRAM+0x0B); //(word)
+ 304          XWORD   HWPG_TIMER                      _at_(PowerSequnceRAM+0x0D); //(word)
+ 305          XBYTE   ShutDnCause                             _at_(PowerSequnceRAM+0x0F); //(byte)
+ 306          //===============================================================================
+ 307          
+ 308          //===============================================================================
+ 309          // OEMRAM4 Offset 0x10 ~ 0x1F   Thermal variables
+ 310          XBYTE   VeryHotCnt                              _at_(ThermalRAM+0x00);  //(byte)        
+ 311          XBYTE   PCHVeryHotCnt                           _at_(ThermalRAM+0x01);  //(byte)        
+ 312          XBYTE   TmToSensor                                      _at_(ThermalRAM+0x02);
+ 313          //Reserved offset 0x02 ~ 0x0F
+ 314          //===============================================================================
+ 315          
+ 316          //===============================================================================
+ 317          // OEMRAM4 Offset 0x20 ~ 0x27   LED variables
+ 318          XWORD   LED_FLASH_CNT                           _at_(LEDRAM+0x00);  //(word) LED index
+ 319          XWORD   BAT_LED_Cnt_ON                  _at_(LEDRAM+0x02);
+ 320          XBYTE   BAT_LED_Cnt_OFF                         _at_(LEDRAM+0x04);
+ 321          XBYTE   KBLED_Status                            _at_(LEDRAM+0x05);
+ 322          XBYTE   BAT_LED_Cnt_Low                         _at_(LEDRAM+0x06);
+ 323          XBYTE   BAT_LED_Cnt_CLow                        _at_(LEDRAM+0x07);
+ 324          //Reserved offset 0x02 ~ 0x07
+ 325          //===============================================================================
+ 326          
+ 327          //===============================================================================
+ 328          // OEMRAM4 Offset 0x28 ~ 0x2F   LCD variables
+ 329          XBYTE   bBrightness                             _at_(LCDRAM+0x00);  //(byte)
+ 330          XBYTE   LCD_CTRL                        _at_(LCDRAM+0x01); 
+ 331          XBYTE   lidflag                                 _at_(LCDRAM+0x02);              //TF_007++
+ 332          //Reserved offset 0x01 ~ 0x07
+ 333          //===============================================================================
+ 334          
+ 335          //===============================================================================
+ 336          // OEMRAM4 Offset 0x30 ~ 0x4F   ADC variables
+ 337          XWORD   ADCAvg0                                         _at_(ADCRAM+0x00);
+ 338          XWORD   ADCAvg1                                         _at_(ADCRAM+0x02);
+ 339          XWORD   ADCAvg2                                         _at_(ADCRAM+0x04);
+ 340          XWORD   ADCAvg3                                         _at_(ADCRAM+0x06);
+ 341          XWORD   ADCAvg4                                         _at_(ADCRAM+0x08);
+ 342          XWORD   ADCAvg5                                         _at_(ADCRAM+0x0A);
+ 343          XWORD   ADCAvg6                                 _at_(ADCRAM+0x0C);
+ 344          XWORD   ADCAvg7                                 _at_(ADCRAM+0x0E);
+ 345          
+ 346          XBYTE   ADCDyTable1Index                _at_(ADCRAM+0x10);
+ 347          XBYTE   ADCDyTable2Index                _at_(ADCRAM+0x11);
+ 348          //Reserved offset 0x12 ~ 0x1F
+ 349          //===============================================================================
+ 350          
+ 351          //===============================================================================
+ 352          // OEMRAM4 Offset 0x50 ~ 0x6F   SMBus center variables
+ 353          XBYTE   SMBus1Flag1                                     _at_(SMBusCenterRAM+0x00);
+ 354          XBYTE   SMBus1Flag2                                     _at_(SMBusCenterRAM+0x01);
+ 355          XBYTE   SMBus1Flag3                                     _at_(SMBusCenterRAM+0x02);
+ 356          XBYTE   SMBus1Flag4                                     _at_(SMBusCenterRAM+0x03);
+ 357          XBYTE   SMBus1Flag5                                     _at_(SMBusCenterRAM+0x04);
+ 358          XBYTE   SMBus2Flag1                                     _at_(SMBusCenterRAM+0x05);
+ 359          XBYTE   SMBus2Flag2                                     _at_(SMBusCenterRAM+0x06);
+ 360          XBYTE   SMBus2Flag3                                     _at_(SMBusCenterRAM+0x07);
+ 361          XBYTE   SMBus2Flag4                                     _at_(SMBusCenterRAM+0x08);
+C51 COMPILER V7.50   OEM_MEMORY                                                            09/08/2020 15:56:24 PAGE 7   
+
+ 362          XBYTE   SMBus2Flag5                                     _at_(SMBusCenterRAM+0x09);
+ 363          XBYTE   SMBus3Flag1                                     _at_(SMBusCenterRAM+0x0A);
+ 364          XBYTE   SMBusSelection                  _at_(SMBusCenterRAM+0x0B);
+ 365          XBYTE   F_Service_SMBus1                _at_(SMBusCenterRAM+0x0C);
+ 366          XBYTE   F_Service_SMBus2                _at_(SMBusCenterRAM+0x0D);
+ 367          XBYTE   F_Service_SMBus3                _at_(SMBusCenterRAM+0x0E);
+ 368          XBYTE   F_Service_SMBus4                _at_(SMBusCenterRAM+0x0F);
+ 369          XBYTE   SMBus1ByteCunt                  _at_(SMBusCenterRAM+0x10);
+ 370          XBYTE   SMBus2ByteCunt                          _at_(SMBusCenterRAM+0x11);
+ 371          XBYTE   SMBus3ByteCunt                          _at_(SMBusCenterRAM+0x12);
+ 372          XBYTE   SMBus1counter                           _at_(SMBusCenterRAM+0x13);
+ 373          XBYTE   SMBus2counter                           _at_(SMBusCenterRAM+0x14);
+ 374          XBYTE   SMBus3counter                           _at_(SMBusCenterRAM+0x15);
+ 375          XBYTE   SMBus1index                                     _at_(SMBusCenterRAM+0x16);
+ 376          XBYTE   SMBus2index                                     _at_(SMBusCenterRAM+0x17);
+ 377          XBYTE   SMBus3index                                     _at_(SMBusCenterRAM+0x18);
+ 378          XBYTE   SMBus1InUsing                   _at_(SMBusCenterRAM+0x19);
+ 379          XBYTE   SMBus2InUsing                   _at_(SMBusCenterRAM+0x1A);
+ 380          XBYTE   SMBus3InUsing                   _at_(SMBusCenterRAM+0x1B);
+ 381          XBYTE   SMBus1TableSize                 _at_(SMBusCenterRAM+0x1C);
+ 382          XBYTE   SMBus2TableSize                 _at_(SMBusCenterRAM+0x1D);
+ 383          XBYTE   SMBus3TableSize                 _at_(SMBusCenterRAM+0x1E);
+ 384          XBYTE   SMBusXStatus                    _at_(SMBusCenterRAM+0x1F);
+ 385          //===============================================================================
+ 386          
+ 387          //===============================================================================
+ 388          // OEMRAM4 Offset 0x70 ~ 0x9F   Battery 1 control variables
+ 389          XBYTE   BAT1_CtrlStep                   _at_(BAT1CtrlRAM+0x00);
+ 390          XBYTE   BAT1_ID_Step                    _at_(BAT1CtrlRAM+0x01);
+ 391          XBYTE   BAT1_1SecTimer                  _at_(BAT1CtrlRAM+0x02);
+ 392          XBYTE   BAT1_S_Number                   _at_(BAT1CtrlRAM+0x03);
+ 393          XBYTE   ByteTemp01                      _at_(BAT1CtrlRAM+0x04);
+ 394          XBYTE   ByteTemp02                      _at_(BAT1CtrlRAM+0x05);
+ 395          XBYTE   BAT1_ID_TimeOut_CNT             _at_(BAT1CtrlRAM+0x06);
+ 396          XBYTE   BAT1_Number                     _at_(BAT1CtrlRAM+0x07);
+ 397          XBYTE   BAT1_FailCause                          _at_(BAT1CtrlRAM+0x08);
+ 398          XBYTE   BAT1_FirstDataIndex             _at_(BAT1CtrlRAM+0x09);
+ 399          XBYTE   INPUT_CURRENT_LO                _at_(BAT1CtrlRAM+0x0A);
+ 400          XBYTE   INPUT_CURRENT_HI                _at_(BAT1CtrlRAM+0x0B);
+ 401          XBYTE   CHARGE_CURRENT_LO               _at_(BAT1CtrlRAM+0x0C);
+ 402          XBYTE   CHARGE_CURRENT_HI               _at_(BAT1CtrlRAM+0x0D);
+ 403          XBYTE   CHARGE_VOLTAGE_LO               _at_(BAT1CtrlRAM+0x0E);    
+ 404          XBYTE   CHARGE_VOLTAGE_HI               _at_(BAT1CtrlRAM+0x0F);
+ 405          XBYTE   Charger_TimeOut                 _at_(BAT1CtrlRAM+0x10);
+ 406          XBYTE   WakeUpChrCunt_Min               _at_(BAT1CtrlRAM+0x11); 
+ 407          XWORD   PreChrCunt_Min                  _at_(BAT1CtrlRAM+0x12); 
+ 408          XWORD   NormalChrCunt_Min               _at_(BAT1CtrlRAM+0x14); 
+ 409          XWORD   WakeUpChrCunt                   _at_(BAT1CtrlRAM+0x16);  
+ 410          XWORD   PreChrCunt                      _at_(BAT1CtrlRAM+0x18);  
+ 411          XWORD   NormalChrCunt                   _at_(BAT1CtrlRAM+0x1A);  
+ 412          XBYTE   BAT1_OTCunt                     _at_(BAT1CtrlRAM+0x1C);
+ 413          XBYTE   BAT1_OVCunt                     _at_(BAT1CtrlRAM+0x1D);
+ 414          XBYTE   BAT1_BADCunt                    _at_(BAT1CtrlRAM+0x1E);
+ 415          XWORD   CHARGE_CURRENT_BK               _at_(BAT1CtrlRAM+0x1F); 
+ 416          XWORD   CHARGE_VOLTAGE_BK               _at_(BAT1CtrlRAM+0x21); 
+ 417          XBYTE   CHARGER_OPTION_L                        _at_(BAT1CtrlRAM+0x23);
+ 418          XBYTE   CHARGER_OPTION_H                        _at_(BAT1CtrlRAM+0x24);
+ 419          XBYTE   ACIN_FLAG                                       _at_(BAT1CtrlRAM+0x25);
+ 420          XWORD   CHARGE_OP                       _at_(BAT1CtrlRAM+0x26);
+ 421          XWORD   CHARGE_OP1                      _at_(BAT1CtrlRAM+0x28);
+ 422          XBYTE   AC_in                                   _at_(BAT1CtrlRAM+0x2A);
+ 423          XBYTE   BAT_in                                  _at_(BAT1CtrlRAM+0x2B);
+C51 COMPILER V7.50   OEM_MEMORY                                                            09/08/2020 15:56:24 PAGE 8   
+
+ 424          XWORD   InputCurrent                            _at_(BAT1CtrlRAM+0x2C); //TF_019++
+ 425          //===============================================================================
+ 426          // OEMRAM4 Offset 0xA0 ~ 0xAF   Power sequnce control 
+ 427          XBYTE   PowerStatusBK                   _at_(PowerSequnce2RAM+0x00);    
+ 428          XWORD   PowerOnWDT                      _at_(PowerSequnce2RAM+0x01);
+ 429          XBYTE   MUTEflag                                        _at_(PowerSequnce2RAM+0x03);    
+ 430          //===============================================================================
+ 431          // OEMRAM4 Offset 0xB0 ~ 0xBF  Lightsensor control 
+ 432          XBYTE   LIGHTDATE                       _at_(LightsensorRAM+0x00);
+ 433          
+ 434          XBYTE   xEC_PDPort0MainVersion      _at_ (UCSIRAM+0xB0); 
+ 435          XBYTE   xEC_PDPort0SubVersion       _at_ (UCSIRAM+0xB1);
+ 436          XBYTE   xEC_PDPort1MainVersion      _at_ (UCSIRAM+0xB2);
+ 437          XBYTE   xEC_PDPort1SubVersion       _at_ (UCSIRAM+0xB3);
+ 438          XBYTE   xEC_UCSIMajorVersion        _at_ (UCSIRAM+0xB4);
+ 439          XBYTE   xEC_UCSIMinorVersion        _at_ (UCSIRAM+0xB5);
+ 440          XBYTE   xEC_UCSIRevVersion          _at_ (UCSIRAM+0xB6);
+ 441          XBYTE   xUCSI_DS_VERSION[2]         _at_ (UCSIRAM+0xC0);
+ 442          XBYTE   xUCSI_DS_RESERVED[2]        _at_ (UCSIRAM+0xC2);
+ 443          XBYTE   xUCSI_DS_CCI0               _at_ (UCSIRAM+0xC4);
+ 444          XBYTE   xUCSI_DS_CCI1               _at_ (UCSIRAM+0xC5);
+ 445          XBYTE   xUCSI_DS_CCI2               _at_ (UCSIRAM+0xC6);
+ 446          XBYTE   xUCSI_DS_CCI3               _at_ (UCSIRAM+0xC7);
+ 447          XBYTE   xUCSI_DS_CTL0               _at_ (UCSIRAM+0xC8);
+ 448          #define xUCSI_COMMAND       xUCSI_DS_CTL0
+ 449          XBYTE   xUCSI_DS_CTL1               _at_ (UCSIRAM+0xC9);
+ 450          XBYTE   xUCSI_DS_CTL2               _at_ (UCSIRAM+0xCA);
+ 451          XBYTE   xUCSI_DS_CTL3               _at_ (UCSIRAM+0xCB);
+ 452          XBYTE   xUCSI_DS_CTL4               _at_ (UCSIRAM+0xCC);
+ 453          XBYTE   xUCSI_DS_CTL5               _at_ (UCSIRAM+0xCD);
+ 454          XBYTE   xUCSI_DS_CTL6               _at_ (UCSIRAM+0xCE);
+ 455          XBYTE   xUCSI_DS_CTL7               _at_ (UCSIRAM+0xCF);
+ 456          XBYTE   xUCSI_DS_MGI[16]            _at_ (UCSIRAM+0xD0);
+ 457          XBYTE   xUCSI_DS_MGO[16]            _at_ (UCSIRAM+0xE0);
+ 458          
+ 459          //-------------------------------------------------
+ 460          //Event debounce counter ,  OEMRAM4 Offset 0xF0 ~ 0xFF 
+ 461          //-------------------------------------------------
+ 462          XBYTE   DEBOUNCE_CONT1                          _at_(DebounceRAM+0x00); //(byte)
+ 463          XBYTE   DEBOUNCE_CONT2                          _at_(DebounceRAM+0x01); //(byte)
+ 464          XBYTE   DEBOUNCE_CONT3                          _at_(DebounceRAM+0x02); //(byte)
+ 465          XBYTE   DEBOUNCE_CONT4                          _at_(DebounceRAM+0x03); //(byte) 
+ 466          XBYTE   DEBOUNCE_CONT5                          _at_(DebounceRAM+0x04); //(byte)
+ 467          XBYTE   DEBOUNCE_CONT6                          _at_(DebounceRAM+0x05); //(byte)
+ 468          XBYTE   DEBOUNCE_CONT7                          _at_(DebounceRAM+0x06); //(byte)
+ 469          XBYTE   DEBOUNCE_CONT8                          _at_(DebounceRAM+0x07); //(byte)
+ 470          XBYTE   DEBOUNCE_CONT9                          _at_(DebounceRAM+0x08); //(byte) 
+ 471          XBYTE   DEBOUNCE_CONT10                         _at_(DebounceRAM+0x09); //(byte)
+ 472          XBYTE   DEBOUNCE_CONT11                         _at_(DebounceRAM+0x0A); //(byte) 
+ 473          XBYTE   DEBOUNCE_CONT12                         _at_(DebounceRAM+0x0B); //(byte)
+ 474          XBYTE   DEBOUNCE_CONT13                         _at_(DebounceRAM+0x0C); //(byte)
+ 475          XBYTE   DEBOUNCE_CONT14                         _at_(DebounceRAM+0x0D); //(byte)
+ 476          XBYTE   DEBOUNCE_CONT15                         _at_(DebounceRAM+0x0E); //(byte)
+ 477          XBYTE   DEBOUNCE_CONT16                         _at_(DebounceRAM+0x0F); //(byte) 
+ 478          //===============================================================================
+ 479          
+ 480          //-------------------------------------------------------------------------------
+ 481          //      0x500-0x5FF   OEM RAM 5  
+ 482          //-------------------------------------------------------------------------------
+ 483          //===============================================================================
+ 484          // OEMRAM5 Offset 0x00 ~ 0x3F   For fan control 
+ 485          XBYTE   Fan1On_Step1                            _at_(FanCtrlRAM+0x00);
+C51 COMPILER V7.50   OEM_MEMORY                                                            09/08/2020 15:56:24 PAGE 9   
+
+ 486          XBYTE   Fan1On_Step2                            _at_(FanCtrlRAM+0x01);
+ 487          XBYTE   Fan1On_Step3                            _at_(FanCtrlRAM+0x02);
+ 488          XBYTE   Fan1On_Step4                            _at_(FanCtrlRAM+0x03);
+ 489          XBYTE   Fan1On_Step5                            _at_(FanCtrlRAM+0x04);
+ 490          XBYTE   Fan1On_Step6                            _at_(FanCtrlRAM+0x05);
+ 491          XBYTE   Fan1On_Step7                            _at_(FanCtrlRAM+0x06);
+ 492          XBYTE   Fan1On_Step8                            _at_(FanCtrlRAM+0x07);
+ 493          XBYTE   Fan2On_Step1                            _at_(FanCtrlRAM+0x08);
+ 494          XBYTE   Fan2On_Step2                            _at_(FanCtrlRAM+0x09);
+ 495          XBYTE   Fan2On_Step3                            _at_(FanCtrlRAM+0x0A);
+ 496          XBYTE   Fan2On_Step4                            _at_(FanCtrlRAM+0x0B);
+ 497          XBYTE   Fan2On_Step5                            _at_(FanCtrlRAM+0x0C);
+ 498          XBYTE   Fan2On_Step6                            _at_(FanCtrlRAM+0x0D);
+ 499          XBYTE   Fan2On_Step7                            _at_(FanCtrlRAM+0x0E);
+ 500          XBYTE   Fan2On_Step8                            _at_(FanCtrlRAM+0x0F);
+ 501          
+ 502          XBYTE   Fan1Off_Step1                           _at_(FanCtrlRAM+0x10);
+ 503          XBYTE   Fan1Off_Step2                           _at_(FanCtrlRAM+0x11);
+ 504          XBYTE   Fan1Off_Step3                           _at_(FanCtrlRAM+0x12);
+ 505          XBYTE   Fan1Off_Step4                           _at_(FanCtrlRAM+0x13);
+ 506          XBYTE   Fan1Off_Step5                           _at_(FanCtrlRAM+0x14);
+ 507          XBYTE   Fan1Off_Step6                           _at_(FanCtrlRAM+0x15);
+ 508          XBYTE   Fan1Off_Step7                           _at_(FanCtrlRAM+0x16);
+ 509          XBYTE   Fan1Off_Step8                           _at_(FanCtrlRAM+0x17);
+ 510          XBYTE   Fan2Off_Step1                           _at_(FanCtrlRAM+0x18);
+ 511          XBYTE   Fan2Off_Step2                           _at_(FanCtrlRAM+0x19);
+ 512          XBYTE   Fan2Off_Step3                           _at_(FanCtrlRAM+0x1A);
+ 513          XBYTE   Fan2Off_Step4                           _at_(FanCtrlRAM+0x1B);
+ 514          XBYTE   Fan2Off_Step5                           _at_(FanCtrlRAM+0x1C);
+ 515          XBYTE   Fan2Off_Step6                           _at_(FanCtrlRAM+0x1D);
+ 516          XBYTE   Fan2Off_Step7                           _at_(FanCtrlRAM+0x1E);
+ 517          XBYTE   Fan2Off_Step8                           _at_(FanCtrlRAM+0x1F);
+ 518          
+ 519          XBYTE   Fan1RPM_Step1                           _at_(FanCtrlRAM+0x20);
+ 520          XBYTE   Fan1RPM_Step2                           _at_(FanCtrlRAM+0x21);
+ 521          XBYTE   Fan1RPM_Step3                           _at_(FanCtrlRAM+0x22);
+ 522          XBYTE   Fan1RPM_Step4                           _at_(FanCtrlRAM+0x23);
+ 523          XBYTE   Fan1RPM_Step5                           _at_(FanCtrlRAM+0x24);
+ 524          XBYTE   Fan1RPM_Step6                           _at_(FanCtrlRAM+0x25);
+ 525          XBYTE   Fan1RPM_Step7                           _at_(FanCtrlRAM+0x26);
+ 526          XBYTE   Fan1RPM_Step8                           _at_(FanCtrlRAM+0x27);
+ 527          XBYTE   Fan2RPM_Step1                           _at_(FanCtrlRAM+0x28);
+ 528          XBYTE   Fan2RPM_Step2                           _at_(FanCtrlRAM+0x29);
+ 529          XBYTE   Fan2RPM_Step3                           _at_(FanCtrlRAM+0x2A);
+ 530          XBYTE   Fan2RPM_Step4                           _at_(FanCtrlRAM+0x2B);
+ 531          XBYTE   Fan2RPM_Step5                           _at_(FanCtrlRAM+0x2C);
+ 532          XBYTE   Fan2RPM_Step6                           _at_(FanCtrlRAM+0x2D);
+ 533          XBYTE   Fan2RPM_Step7                           _at_(FanCtrlRAM+0x2E);
+ 534          XBYTE   Fan2RPM_Step8                           _at_(FanCtrlRAM+0x2F);
+ 535          
+ 536          XWORD   RPM1                                            _at_(FanCtrlRAM+0x30);
+ 537          XWORD   RPM2                                            _at_(FanCtrlRAM+0x32);
+ 538          XBYTE   Fan1RPM                                         _at_(FanCtrlRAM+0x34);
+ 539          XBYTE   Fan2RPM                                         _at_(FanCtrlRAM+0x35);
+ 540          XBYTE   FanLevel                                        _at_(FanCtrlRAM+0x36);
+ 541          XBYTE   FanLeve2                                        _at_(FanCtrlRAM+0x37);
+ 542          XBYTE   temperature1                            _at_(FanCtrlRAM+0x38);  
+ 543          XBYTE   temperature2                            _at_(FanCtrlRAM+0x39);
+ 544          XBYTE   Debugtemperature1                       _at_(FanCtrlRAM+0x3A);                  
+ 545          XBYTE   Debugtemperature2                       _at_(FanCtrlRAM+0x3B);  
+ 546          XBYTE   DummyStep                                       _at_(FanCtrlRAM+0x3C);
+ 547          XBYTE   FanFullOnCont                           _at_(FanCtrlRAM+0x3D);
+C51 COMPILER V7.50   OEM_MEMORY                                                            09/08/2020 15:56:24 PAGE 10  
+
+ 548          XBYTE   RPMTimeShift                            _at_(FanCtrlRAM+0x3E);  
+ 549          XBYTE   FANTEST                                         _at_(FanCtrlRAM+0x3F);  
+ 550          //===============================================================================
+ 551          
+ 552          //-------------------------------------------------
+ 553          // For PECI function ,  OEMRAM5 Offset 0x40 ~ 0xAF  
+ 554          //-------------------------------------------------
+ 555          XBYTE   PECIReadBuffer[16]              _at_( PECICtrlRAM + 0x000);
+ 556          XBYTE   PECIWriteBuffer[16]             _at_( PECICtrlRAM + 0x010);
+ 557          XBYTE   PECI_CRC8                       _at_( PECICtrlRAM + 0x020);
+ 558          XBYTE   PECI_CompletionCode             _at_( PECICtrlRAM + 0x021);
+ 559          XBYTE   PECI_PCIConfigAddr[4]           _at_( PECICtrlRAM + 0x022);
+ 560          
+ 561          XBYTE   PECI_PowerCtrlStep              _at_( PECICtrlRAM + 0x030);
+ 562          XBYTE   PECI_PowerUnit                  _at_( PECICtrlRAM + 0x031);
+ 563          XBYTE   PECI_EnergyUnit                 _at_( PECICtrlRAM + 0x032);
+ 564          XBYTE   PECI_TimeUnit                   _at_( PECICtrlRAM + 0x033);
+ 565          XBYTE   PECI_PL2Watts                   _at_( PECICtrlRAM + 0x034);
+ 566          XBYTE   PECI_MAXPL2                     _at_( PECICtrlRAM + 0x035);
+ 567          XBYTE   PECI_PL1TDP                     _at_( PECICtrlRAM + 0x036);
+ 568          XBYTE   PECI_PL1Time                    _at_( PECICtrlRAM + 0x037);
+ 569          XBYTE   PECI_Ctrl                       _at_( PECICtrlRAM + 0x038);
+ 570          XBYTE   PECI_AdaptorWatts               _at_( PECICtrlRAM + 0x039);
+ 571          XBYTE   PECI_SystemWatts                _at_( PECICtrlRAM + 0x03A);
+ 572          XBYTE   PECI_Algorithm_Delay            _at_( PECICtrlRAM + 0x03B);
+ 573          LWORD   PECI_ErrorCount                 _at_( PECICtrlRAM + 0x03C);
+ 574          XBYTE   PECI_StressToolBuf[32]          _at_( PECICtrlRAM + 0x040);
+ 575          XBYTE   PSTB_Timer                      _at_( PECICtrlRAM + 0x060);
+ 576          XBYTE   PSTB_CmdStatus                  _at_( PECICtrlRAM + 0x061);
+ 577          XBYTE   PSTB_RepeatIntervalCount    _at_( PECICtrlRAM + 0x062);  
+ 578          LWORD   PSTB_RepeatCycle                _at_( PECICtrlRAM + 0x063);
+ 579          XBYTE   CPUTjmax                                _at_( PECICtrlRAM + 0x067);
+ 580          XBYTE   ReadCPUTjmaxCUNT                _at_( PECICtrlRAM + 0x068);
+ 581          XBYTE   StressToolReadBufIndex          _at_( PECICtrlRAM + 0x069);
+ 582          LWORD   PECI_PkgPower_Pre                       _at_( PECICtrlRAM + 0x06A);  
+ 583          LWORD   PECI_PkgPower_Cur                       _at_( PECICtrlRAM + 0x06E);
+ 584          
+ 585          LWORD    PECI_PkgPower                  _at_( PECICtrlRAM + 0x072);
+ 586          LWORD    PECI_PkgPower_average          _at_( PECICtrlRAM + 0x076);
+ 587          XBYTE    PECI_PkgPower_average_count   _at_( PECICtrlRAM + 0x07a);
+ 588          
+ 589          
+ 590          //===============================================================================
+ 591          // OEMRAM5 Offset 0xC0 ~ 0xCF   For OEM SPI function 
+ 592          
+ 593          XBYTE   SPI_Mouse_Buf[3]                _at_( SPI_Mouse + 0x00);
+ 594          XBYTE   SPI_Mouse_DeltaX                _at_( SPI_Mouse + 0x03);
+ 595          XBYTE   SPI_Mouse_DeltaY                _at_( SPI_Mouse + 0x04);
+ 596          XBYTE   SPI_Mouse_BYTE1                 _at_( SPI_Mouse + 0x05);
+ 597          XBYTE   SPI_Mouse_XMovement             _at_( SPI_Mouse + 0x06);
+ 598          XBYTE   SPI_Mouse_YMovement             _at_( SPI_Mouse + 0x07);
+ 599          XBYTE   SPI_Mouse_Buf_Index             _at_( SPI_Mouse + 0x08);
+ 600          XBYTE   SPI_Mouse_Misc                  _at_( SPI_Mouse + 0x09);
+ 601          XBYTE   SPI_Mouse_ID                    _at_( SPI_Mouse + 0x0A);
+ 602          
+ 603          //Reserved offset 0x0B ~ 0x0F
+ 604          //===============================================================================
+ 605          
+ 606          //===============================================================================
+ 607          // OEMRAM5 Offset 0xD0 ~ 0xEF   For OEM SCI qevent function
+ 608          XBYTE   SCI_Event_In_Index                                      _at_( SCI_Qevent_Ctrl + 0x00);
+ 609          XBYTE   SCI_Event_Out_Index                             _at_( SCI_Qevent_Ctrl + 0x01);
+C51 COMPILER V7.50   OEM_MEMORY                                                            09/08/2020 15:56:24 PAGE 11  
+
+ 610          XBYTE   SCI_Event_Buffer[EVENT_BUFFER_SIZE] _at_( SCI_Qevent_Ctrl + 0x02); // EVENT_BUFFER_SIZE bytes
+ 611          
+ 612          XBYTE   PD_SCI_Event_In_Index                       _at_( SCI_Qevent_Ctrl + 0x10);
+ 613          XBYTE   PD_SCI_Event_Out_Index                          _at_( SCI_Qevent_Ctrl + 0x11);
+ 614          XBYTE   PD_SCI_Event_Buffer[PENDING_BUFFER] _at_( SCI_Qevent_Ctrl + 0x12); // PENDING_BUFFER bytes
+ 615          
+ 616          //===============================================================================
+ 617          // OEMRAM5 Offset 0xF0 ~ 0xFF   For OEM HSPI function
+ 618          XBYTE   HSPI_SelfRamCode_Index              _at_( HSPI_Ctrl + 0x00);
+ 619          XBYTE   HSPI_tempcmd                        _at_( HSPI_Ctrl + 0x01);
+ 620          XBYTE   HSPI_FPT_timeout                    _at_( HSPI_Ctrl + 0x02);
+ 621          XBYTE   HSPI_Misc1                          _at_( HSPI_Ctrl + 0x03);
+ 622          
+ 623          //===============================================================================
+ 624          
+ 625          //*******************************************************************************
+ 626          //      0x800-0x8FF   OEM RAM 8  
+ 627          //-------------------------------------------------------------------------------
+ 628          XBYTE UART_RX_Buffer[UART_RX_MAX_LEN]       _at_( OEMRAM8 + 0x00);
+ 629          XBYTE UART_RX_Buffer_In                     _at_( OEMRAM8 + 0x20);  //0x0800
+ 630          //TF_008-->>
+ 631          /*
+ 632          #define debug_Base                  0x8830
+ 633          XWORD  debug_flag                                                       _at_ debug_Base + 0x00;
+ 634          */
+ 635          //TF_008--<<
+ 636          LWORD HashRandom[5]                                             _at_ (OEMRAM8+0x30);   //TF_008++
+ 637          
+ 638          XBYTE   xHI2C_CTRL_SMBus                _at_( HI2C_MemBase + 0x00);
+ 639          XBYTE   xHI2C_CHN                       _at_( HI2C_MemBase + 0x01);
+ 640          XBYTE   xHI2C_STATUS                    _at_( HI2C_MemBase + 0x02);
+ 641          XBYTE   xHI2C_START                     _at_( HI2C_MemBase + 0x03);
+ 642          XBYTE   xHI2C_ADDR                      _at_( HI2C_MemBase + 0x04);
+ 643          XBYTE   xHI2C_CMD                       _at_( HI2C_MemBase + 0x05);
+ 644          XBYTE   xHI2C_DATA0                     _at_( HI2C_MemBase + 0x06);
+ 645          XBYTE   xHI2C_DATA1                     _at_( HI2C_MemBase + 0x07);
+ 646          XBYTE   xHI2C_BYTECNT                   _at_( HI2C_MemBase + 0x08);
+ 647          XBYTE   xHI2C_TIMER_1MS                 _at_( HI2C_MemBase + 0x09);
+ 648          XBYTE   xHI2C_EC_BURST                  _at_( HI2C_MemBase + 0x0A);
+ 649          XBYTE   xHI2C_DATA[32]                  _at_( HI2C_MemBase + 0x10);
+ 650          
+ 651          
+ 652          //*******************************************************************************
+ 653          //      0x900-0x9FF   OEM RAM 9  
+ 654          //-------------------------------------------------------------------------------
+ 655          // Don't Use,  define for RAM debug
+ 656          
+ 657          
+ 658          //*******************************************************************************
+ 659          //      0xA00-0xAFF   OEM RAM A  
+ 660          //*******************************************************************************
+ 661          // Don't Use,  define for BRAM to RAM
+ 662          
+ 663          
+ 664          //*******************************************************************************
+ 665          //      0xB00-0xBFF   OEM RAM B  
+ 666          //*******************************************************************************
+ 667          
+ 668          
+ 669          
+ 670          //*******************************************************************************
+ 671          //      0xC00-0xCFF   OEM RAM C  
+C51 COMPILER V7.50   OEM_MEMORY                                                            09/08/2020 15:56:24 PAGE 12  
+
+ 672          //*******************************************************************************
+ 673          //TF_008-->>
+ 674          /*
+ 675          LWORD HashRandom[5]                                             _at_ (OEMRAMC+0x00);   
+ 676          LWORD SHA1ECProcV[5]                                    _at_ (OEMRAMC+0x20); 
+ 677          LWORD Respond[5]                                                _at_ (OEMRAMC+0x40); 
+ 678          */
+ 679          //TF_008--<<
+ 680          //*******************************************************************************
+ 681          //-------------------------------------------------------------------------------
+ 682          //      0xD00-0xDFF   OEM RAM D  
+ 683          //-------------------------------------------------------------------------------
+ 684          //*******************************************************************************
+ 685          
+ 686          
+ 687          
+ 688          //*******************************************************************************
+ 689          //      0xE00-0xEFF   OEM RAM E  
+ 690          //-------------------------------------------------------------------------------
+ 691          //      0xF00-0xFFF   OEM RAM F  
+ 692          //-------------------------------------------------------------------------------
+ 693          // Don't Use,  define for UART debug
+ 694          
+ 695          
+ 696          
+ 697          
+C51 COMPILER V7.50   OEM_MEMORY                                                            09/08/2020 15:56:24 PAGE 13  
+
+ASSEMBLY LISTING OF GENERATED OBJECT CODE
+
+
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =   ----    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
